@@ -1,4 +1,11 @@
-Depedencies:
+Jarvis is a Python daemon, with various clients:
+
+- CLI: `python cli.py` to run
+- HTTP: `python web.py` to run
+- Android: To be published to seperate repo
+
+
+Dependencies:
 
 - Python 2.5+
 - MySQL
