@@ -1,6 +1,15 @@
+Depedencies:
+
+- Python 2.5+
+- MySQL
+- http://pypi.python.org/pypi/python-daemon/
+- http://pypi.python.org/pypi/cmd2
+- http://mysql-python.sourceforge.net/MySQLdb.html
+
+
 Database structure:
 
-<code>
+``
 
 CREATE TABLE IF NOT EXISTS `function_calendar_events` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -18,4 +27,4 @@ CREATE TABLE IF NOT EXISTS `function_list_items` (
   KEY `listname` (`listname`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
 
-</code>
+``
