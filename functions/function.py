@@ -61,6 +61,10 @@ class response(object):
 
 
 class action_help(kernel.action.action):
+    '''
+    Generic "help" action for listing other actions
+    in this function group
+    '''
 
     usage = ''
 
@@ -76,7 +80,16 @@ class action_help(kernel.action.action):
 
         for action in keys:
             actionname = action[7:]
-            ausage = '%s %s %s' % (func.name, actionname, actions[action].usage)
+
+            # If action has extra usage notes, probably has parameters
+            if actions[action].usage:
+                ausage = '%s %s %s' % (func.name, actionname, actions[action].usage)
+
+            # Otherwise we can link directly to the call
+            else:
+                call = '/%s/%s' % (func.name, actionname)
+                ausage = '<a href="%s">%s %s</a>' % (call, func.name, actionname)
+
             usage.append(ausage)
 
         return response(STATE_SUCCESS, text, usage)
