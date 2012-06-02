@@ -12,7 +12,7 @@ def init():
     ## Startup daemon process
 
     ## Connect to data source
-    jarvis.register('data', data.init())
+    jarvis.register('data', data.init(jarvis))
 
     ## Initialise functions
     jarvis.register('function', functions.init())

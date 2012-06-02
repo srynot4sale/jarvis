@@ -4,8 +4,8 @@ import MySQLdb.cursors
 import kernel
 import kernel.service
 
-def init():
-    return [data()]
+def init(jarvis):
+    return [data(jarvis)]
 
 
 
@@ -14,8 +14,13 @@ class data(kernel.service.service):
     name = 'primary'
     _conn = None
 
-    def __init__(self):
+    def __init__(self, jarvis):
+        '''
+        Initialise database connection and check structure
+        '''
+        self.kernel = jarvis
         self._connect()
+        self._check_version()
 
 
     def _connect(self):
@@ -31,6 +36,18 @@ class data(kernel.service.service):
             passwd = password,
             cursorclass = MySQLdb.cursors.DictCursor
         )
+
+
+    def _check_version(self):
+        '''
+        Check to see if the database structure is up-to-date,
+        and if not - upgrade it
+        '''
+        import data.upgrade
+        if not data.upgrade.check(self):
+            self.kernel.log('Running database upgrade')
+            data.upgrade.run(self)
+
 
 
     def _execute(self, sql, data = [], noretry = False):

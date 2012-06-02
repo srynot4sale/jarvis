@@ -1,5 +1,6 @@
 # Jarvis list function
 import function
+import kernel
 import kernel.action
 import platform
 
@@ -57,5 +58,6 @@ class action_stats(kernel.action.action):
         stats.append('CPU usage: %s%%' % self._call_ps('pcpu'))
         stats.append('Memory usage: %s (%s%%)' % (self._call_ps('vsize'), self._call_ps('pmem')))
         stats.append('Jarvis uptime: %s' % self._call_ps('etime'))
+        stats.append('Database version: %s' % kernel.getConfig('version'))
 
         return function.response(function.STATE_SUCCESS, str, stats)
