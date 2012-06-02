@@ -1,7 +1,7 @@
 import data
 import kernel
 
-database_version = 1
+database_version = 2
 
 def check(data):
     '''
@@ -87,6 +87,36 @@ def run(data):
                 '0'
             ]
         )
+        set_version(data, version)
+
+    kernel.setConfig('version', current)
+
+    version = 2
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE IF NOT EXISTS `function_calendar_events` (
+              `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+              `datetime` datetime NOT NULL,
+              PRIMARY KEY (`id`),
+              KEY `datetime` (`datetime`)
+            ) ENGINE=MyISAM DEFAULT CHARSET=latin1 ;
+            """
+        )
+
+        data.execute(
+            """
+            CREATE TABLE IF NOT EXISTS `function_list_items` (
+              `listname` varchar(255) CHARACTER SET utf8 NOT NULL,
+              `item` varchar(255) CHARACTER SET utf8 NOT NULL,
+              `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+              PRIMARY KEY (`id`),
+              KEY `item` (`item`),
+              KEY `listname` (`listname`)
+            ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+            """
+        )
+
         set_version(data, version)
 
     kernel.setConfig('version', current)
