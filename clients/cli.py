@@ -40,7 +40,7 @@ class interpreter(cmd.Cmd):
     def _parse_response(self, url, responsestr):
 
         respstr = ''
-        respstr += self.colorize('%s\n' % url, 'blue')
+        respstr += self.colorize('%s\n' % urllib.unquote(url), 'blue')
 
         try:
             response = json.loads(responsestr)
