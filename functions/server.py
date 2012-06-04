@@ -4,7 +4,7 @@ import kernel
 import kernel.action
 import platform
 
-import os, urllib, json
+import json, os, socket, urllib
 
 
 
@@ -54,7 +54,8 @@ class action_stats(kernel.action.action):
         str = 'Current Jarvis server stats:'
         stats = []
         stats.append('Daemon PID: %d' % os.getpid())
-        stats.append('Python Version: %s' % platform.release())
+        stats.append('Server address: %s:%s' % (socket.gethostname(), kernel.getConfig('interface_http_port')))
+        stats.append('Python version: %s' % platform.release())
         stats.append('CPU usage: %s%%' % self._call_ps('pcpu'))
         stats.append('Memory usage: %s (%s%%)' % (self._call_ps('vsize'), self._call_ps('pmem')))
         stats.append('Jarvis uptime: %s' % self._call_ps('etime'))
