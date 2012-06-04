@@ -156,7 +156,7 @@ class action_delete(kernel.action.action):
         itemdata = None
         data = []
         for i in items:
-            data.append('%s %s' % (i['id'], itemid))
+            data.append('[%s] %s' % (i['id'], i['item']))
             if i['id'] == int(itemid):
                 itemdata = i
                 break
