@@ -3,8 +3,7 @@ import interface
 import kernel
 #import libs.bottle as bottle
 
-import BaseHTTPServer
-import json
+import BaseHTTPServer, json, urllib
 
 
 def init(k):
@@ -45,7 +44,11 @@ class handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         function = parts[0]
         action = parts[1] if len(parts) >= 2 else ''
-        data = parts[2].split('%20') if len(parts) >= 3 else ''
+
+        data = parts[2] if len(parts) >= 3 else ''
+        data = urllib.unquote(data)
+        data = data.split(' ')
+
         result = self.server.kernel.call(function, action, data)
 
         resultbasic = result.returnBasic()

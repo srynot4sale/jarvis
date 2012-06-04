@@ -30,6 +30,9 @@ class interpreter(cmd.Cmd):
 
             i += 1
 
+        if len(params) > 1:
+            params[1] = urllib.quote(params[1], '')
+
         uri = '/'.join(params)
         return uri
 
