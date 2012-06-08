@@ -1,7 +1,7 @@
 import data
 import kernel
 
-database_version = 2
+database_version = 3
 
 def check(data):
     '''
@@ -89,7 +89,7 @@ def run(data):
         )
         set_version(data, version)
 
-    kernel.setConfig('version', current)
+    kernel.setConfig('version', version)
 
     version = 2
     if current < version:
@@ -119,4 +119,18 @@ def run(data):
 
         set_version(data, version)
 
-    kernel.setConfig('version', current)
+    kernel.setConfig('version', version)
+
+    version = 3
+    if current < version:
+        data.execute(
+            """
+            ALTER TABLE  `function_list_items` ADD  `added` DATETIME NULL ,
+            ADD  `deleted` DATETIME NULL ,
+            ADD INDEX (  `added` ,  `deleted` )
+            """
+        )
+
+        set_version(data, version)
+
+    kernel.setConfig('version', version)

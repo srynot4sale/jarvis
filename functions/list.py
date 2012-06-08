@@ -25,6 +25,8 @@ class lstfunc(function.function):
                 listname
             FROM
                 function_list_items
+            WHERE
+                deleted IS NULL
             ORDER BY
                 listname
         """
@@ -50,6 +52,7 @@ class lstobj(object):
                 function_list_items
             WHERE
                 listname = %s
+            AND deleted IS NULL
             ORDER BY
                 id
         """
@@ -66,9 +69,9 @@ class lstobj(object):
         sql = """
             INSERT INTO
                 function_list_items
-                (listname, item)
+                (listname, item, added, deleted)
             VALUES
-                (%s, %s)
+                (%s, %s, NOW(), NULL)
         """
         data = [self.name, newitem]
         datasource.execute(sql, data)
@@ -78,8 +81,10 @@ class lstobj(object):
         datasource = self.func.get_data_source()
         # IMPROVE SQL / protect from injection
         sql = """
-            DELETE FROM
+            UPDATE
                 function_list_items
+            SET
+                deleted = NOW()
             WHERE
                 listname = %s
             AND id = %s
