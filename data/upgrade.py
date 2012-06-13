@@ -1,5 +1,4 @@
 import data
-import kernel
 
 database_version = 3
 
@@ -8,7 +7,7 @@ def check(data):
     Check version of database structure
     '''
     current = get_version(data)
-    kernel.setConfig('version', current)
+    data.kernel.setConfig('version', current)
     return current >= database_version
 
 
@@ -89,7 +88,7 @@ def run(data):
         )
         set_version(data, version)
 
-    kernel.setConfig('version', version)
+    data.kernel.setConfig('version', version)
 
     version = 2
     if current < version:
@@ -119,7 +118,7 @@ def run(data):
 
         set_version(data, version)
 
-    kernel.setConfig('version', version)
+    data.kernel.setConfig('version', version)
 
     version = 3
     if current < version:
@@ -133,4 +132,4 @@ def run(data):
 
         set_version(data, version)
 
-    kernel.setConfig('version', version)
+    data.kernel.setConfig('version', version)

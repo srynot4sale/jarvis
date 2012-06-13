@@ -6,10 +6,14 @@ class kernel(object):
     _data = {}
     _function = {}
     _interface = {}
+    _config = {}
 
 
-    def __init__(self):
+    def __init__(self, config):
         self.log('Initialised')
+        self.log('Load configuration')
+        for c in config:
+            self.setConfig(c, config[c])
 
 
     def log(self, message):
@@ -53,3 +57,11 @@ class kernel(object):
 
         # Run action
         return act().execute(func, data)
+
+
+    def setConfig(self, key, value):
+        self._config[key] = value
+
+
+    def getConfig(self, key):
+        return self._config[key]

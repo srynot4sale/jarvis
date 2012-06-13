@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 import config
 
 #
@@ -19,7 +18,7 @@ import kernel
 import sys
 
 if len(sys.argv) > 1 and sys.argv[1] == 'debug':
-    kernel.init()
+    kernel.init(config.config)
 else:
     with daemon.DaemonContext():
-        kernel.init()
+        kernel.init(config.config)

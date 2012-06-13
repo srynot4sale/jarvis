@@ -17,7 +17,7 @@ class http(interface.interface):
     def __init__(self, k):
         interface.interface.__init__(self, 'http')
         self.kernel = k
-        port = kernel.getConfig('interface_http_port')
+        port = self.kernel.getConfig('interface_http_port')
         self.server = server(('', int(port)), handler, k)
         self.server.serve_forever()
 

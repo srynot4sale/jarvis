@@ -1,7 +1,6 @@
 import MySQLdb
 import MySQLdb.cursors
 
-import kernel
 import kernel.service
 
 def init(jarvis):
@@ -24,9 +23,9 @@ class data(kernel.service.service):
 
 
     def _connect(self):
-        host = kernel.getConfig('data_host')
-        username = kernel.getConfig('data_username')
-        password = kernel.getConfig('data_password')
+        host = self.kernel.getConfig('data_host')
+        username = self.kernel.getConfig('data_username')
+        password = self.kernel.getConfig('data_password')
 
         # Connect to the db
         self._conn = MySQLdb.connect(

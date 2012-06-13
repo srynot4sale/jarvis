@@ -3,11 +3,9 @@ import data
 import functions
 import interfaces
 
-config = {}
-
-def init():
+def init(config):
     ## Initialise jarvis kernel
-    jarvis = kernel.kernel()
+    jarvis = kernel.kernel(config)
 
     ## Startup daemon process
 
@@ -24,11 +22,3 @@ def init():
     print jarvis.call('calendar', 'event_list')
 
     return
-
-
-def setConfig(key, value):
-    config[key] = value
-
-
-def getConfig(key):
-    return config[key]
