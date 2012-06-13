@@ -10,6 +10,7 @@ import config
 # config['data_password']         = 'password'
 # config['interface_http_port']   = 'XXXX'
 # config['username']              = 'My Name'
+# config['secret']                = 'secrethash'
 #
 
 ## Initialise Jarvis kernel

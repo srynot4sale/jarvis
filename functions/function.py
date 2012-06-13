@@ -5,6 +5,7 @@ import kernel.action
 STATE_SUCCESS = 1       # Response completed succesfully
 STATE_FAILURE = 2       # Response failed due to user error
 STATE_PANIC   = 3       # Response failed due to system error
+STATE_AUTHERR = 4       # Response failed due to authentication error
 
 class function(kernel.service.service):
     def __init__(self, name):
@@ -58,6 +59,22 @@ class response(object):
         basic['message'] = self.message
         basic['data'] = self.data
         return basic
+
+
+    def getHTTPCode(self):
+        if self.state == STATE_SUCCESS:
+            return 200
+
+        if self.state == STATE_FAILURE:
+            return 400
+
+        if self.state == STATE_PANIC:
+            return 500
+
+        if self.state == STATE_AUTHERR:
+            return 401
+
+        return 500
 
 
 class action_help(kernel.action.action):

@@ -7,8 +7,6 @@ def init(config):
     ## Initialise jarvis kernel
     jarvis = kernel.kernel(config)
 
-    ## Startup daemon process
-
     ## Connect to data source
     jarvis.register('data', data.init(jarvis))
 

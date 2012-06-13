@@ -21,17 +21,18 @@ Dependencies:
 - http://pypi.python.org/pypi/python-daemon/
 - http://pypi.python.org/pypi/cmd2
 - http://mysql-python.sourceforge.net/MySQLdb.html
+- http://docs.python-requests.org/en/latest/
 
 
 Config file's (config.py) expected content:
 
-    import kernel
-    kernel.setConfig('data_host',             'localhost')
-    kernel.setConfig('data_username',         'jarvis')
-    kernel.setConfig('data_password',         'password')
-    kernel.setConfig('interface_http_port',   'XXXX')
-    kernel.setConfig('username',              'My Name')
-    kernel.setConfig('debuglogfile',          '/path/to/logfile')
+    config = {}
+    config['data_host']             = 'localhost'
+    config['data_username']         = 'jarvis'
+    config['data_password']         = 'password'
+    config['interface_http_port']   = 'XXXX'
+    config['username']              = 'My Name'
+    config['secret']                = 'secrethash'
 
 
 Database tables will be installed on first run.

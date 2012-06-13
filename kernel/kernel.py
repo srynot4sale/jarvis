@@ -42,7 +42,14 @@ class kernel(object):
             return None
 
 
-    def call(self, function, action, data = None):
+    def call(self, authentication, function, action, data = None):
+        if authentication != self.getConfig('secret'):
+            response = functions.function.response(
+                functions.function.STATE_AUTHERR,
+                'Authentication failure'
+            )
+            return response
+
         # Get function
         func = self.get('function', function)
 

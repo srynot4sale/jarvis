@@ -2,18 +2,21 @@
 import cmd2 as cmd
 import readline
 import urllib
-import re
+import requests
 import json
+import re
 
 
 class interpreter(cmd.Cmd):
 
     baseurl = ''
     prompt = '> '
+    secret = None
 
 
-    def init(self, baseurl):
+    def init(self, baseurl, secret):
         self.baseurl = baseurl
+        self.secret = secret
         self._connect()
         self.cmdloop()
 
@@ -37,13 +40,12 @@ class interpreter(cmd.Cmd):
         return uri
 
 
-    def _parse_response(self, url, responsestr):
-
+    def _parse_response(self, url, responseobj):
         respstr = ''
         respstr += self.colorize('%s\n' % urllib.unquote(url), 'blue')
 
         try:
-            response = json.loads(responsestr)
+            response = json.loads(responseobj.text)
         except ValueError:
             respstr += self.colorize('ERROR: Server\'s response could not be parsed:\n', 'red')
             respstr += responsestr
@@ -78,13 +80,14 @@ class interpreter(cmd.Cmd):
         url = '%s/%s/%s' % (self.baseurl, type, uri)
 
         # Query server
-        response = urllib.urlopen(url)
+        response = requests.get(url, headers={'secret': self.secret})
 
-        print self._parse_response('%s/%s' % (type, uri), response.read())
+        print self._parse_response('%s/%s' % (type, uri), response)
         return False
 
 
     def _connect(self):
+        print self.colorize('Connecting to %s' % self.baseurl, 'blue')
         return self._handle_command('server', 'connect')
 
 
