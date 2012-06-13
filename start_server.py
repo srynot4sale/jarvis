@@ -4,12 +4,12 @@ import config
 #
 # config.py is expected to contain:
 #
-# import kernel
-# kernel.setConfig('data_host',             'localhost')
-# kernel.setConfig('data_username',         'jarvis')
-# kernel.setConfig('data_password',         'password')
-# kernel.setConfig('interface_http_port',   'XXXX')
-# kernel.setConfig('username',              'My Name')
+# config = {}
+# config['data_host']             = 'localhost'
+# config['data_username']         = 'jarvis'
+# config['data_password']         = 'password'
+# config['interface_http_port']   = 'XXXX'
+# config['username']              = 'My Name'
 #
 
 ## Initialise Jarvis kernel
