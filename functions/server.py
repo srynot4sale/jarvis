@@ -54,11 +54,11 @@ class action_stats(kernel.action.action):
         str = 'Current Jarvis server stats:'
         stats = []
         stats.append('Daemon PID: %d' % os.getpid())
-        stats.append('Server address: %s:%s' % (socket.gethostname(), kernel.getConfig('interface_http_port')))
+        stats.append('Server address: %s:%s' % (socket.gethostname(), self.kernel.getConfig('interface_http_port')))
         stats.append('Python version: %s' % platform.release())
         stats.append('CPU usage: %s%%' % self._call_ps('pcpu'))
         stats.append('Memory usage: %s (%s%%)' % (self._call_ps('vsize'), self._call_ps('pmem')))
         stats.append('Jarvis uptime: %s' % self._call_ps('etime'))
-        stats.append('Database version: %s' % kernel.getConfig('version'))
+        stats.append('Database version: %s' % self.kernel.getConfig('version'))
 
         return function.response(function.STATE_SUCCESS, str, stats)
