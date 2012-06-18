@@ -22,22 +22,9 @@ class interpreter(cmd.Cmd):
 
 
     def _parse_command(self, command):
-        points = command.split(' ')
-        params = []
-        i = 0
-        for point in points:
-            if i <= 1:
-                params.append(point)
-            else:
-                params[1] += ' %s' % point
-
-            i += 1
-
-        if len(params) > 1:
-            params[1] = urllib.quote(params[1], '')
-
-        uri = '/'.join(params)
-        return uri
+        command = urllib.quote(command, '')
+        # Replace first space with a slash (as first word is the action)
+        return = command.replace(urllib.quote(' '), '/', 1)
 
 
     def _parse_response(self, url, responseobj):
