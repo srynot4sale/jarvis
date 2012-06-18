@@ -48,7 +48,7 @@ class interpreter(cmd.Cmd):
             response = json.loads(responseobj.text)
         except ValueError:
             respstr += self.colorize('ERROR: Server\'s response could not be parsed:\n', 'red')
-            respstr += responsestr
+            respstr += responseobj.text
             return respstr
 
         color = ('green' if response['state'] == 1 else 'red')
