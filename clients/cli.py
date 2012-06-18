@@ -24,7 +24,7 @@ class interpreter(cmd.Cmd):
     def _parse_command(self, command):
         command = urllib.quote(command, '')
         # Replace first space with a slash (as first word is the action)
-        return = command.replace(urllib.quote(' '), '/', 1)
+        return command.replace(urllib.quote(' '), '/', 1)
 
 
     def _parse_response(self, url, responseobj):
