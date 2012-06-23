@@ -1,6 +1,7 @@
 class action(object):
 
     usage = ''
+    function = None
 
     def execute(self):
         pass

@@ -63,6 +63,7 @@ class kernel(object):
             return functions.function.response(functions.function.STATE_FAILURE, 'Action does not exist', action)
 
         # Run action
+        act.function = func
         return act().execute(func, data)
 
 
