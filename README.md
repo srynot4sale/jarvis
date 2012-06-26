@@ -6,7 +6,7 @@ much use to anyone but me at the moment!
 Jarvis is a Python daemon which communicates with it's clients
 via a REST interface.
 
-It's client clients include:
+It's clients include:
 
 - CLI: `python cli.py` to run
 - HTTP: `python web.py` to run
@@ -18,7 +18,6 @@ Dependencies:
 
 - Python 2.5+
 - MySQL
-- http://pypi.python.org/pypi/python-daemon/
 - http://pypi.python.org/pypi/cmd2
 - http://mysql-python.sourceforge.net/MySQLdb.html
 - http://docs.python-requests.org/en/latest/
