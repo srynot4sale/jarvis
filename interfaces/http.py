@@ -8,7 +8,7 @@ import BaseHTTPServer, json, urllib
 
 
 def init(k):
-    return [http(k)]
+    return http(k)
 
 
 class http(interface.interface):
