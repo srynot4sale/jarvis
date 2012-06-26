@@ -16,7 +16,4 @@ def init(config):
     ## Boot up interfaces
     jarvis.register('interface', interfaces.init(jarvis))
 
-    ## Connect to io streams
-    print jarvis.call('calendar', 'event_list')
-
-    return
+    return jarvis

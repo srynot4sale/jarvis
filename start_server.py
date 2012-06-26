@@ -19,7 +19,9 @@ import kernel
 import sys
 
 if len(sys.argv) > 1 and sys.argv[1] == 'debug':
-    kernel.init(config.config)
+    jarvis = kernel.init(config.config)
+    jarvis.get('interface', 'http').start()
 else:
     with daemon.DaemonContext():
-        kernel.init(config.config)
+        jarvis = kernel.init(config.config)
+        jarvis.get('interface', 'http').start()

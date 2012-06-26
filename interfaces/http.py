@@ -20,6 +20,10 @@ class http(interface.interface):
         self.kernel = k
         port = self.kernel.getConfig('interface_http_port')
         self.server = server(('', int(port)), handler, k)
+
+
+    def start(self):
+        self.kernel.log('Start serving HTTP interface')
         self.server.serve_forever()
 
 
