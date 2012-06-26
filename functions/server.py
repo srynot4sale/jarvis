@@ -55,10 +55,10 @@ class action_stats(kernel.action.action):
         stats = []
         stats.append('Daemon PID: %d' % os.getpid())
         stats.append('Server address: %s:%s' % (socket.gethostname(), func.kernel.getConfig('interface_http_port')))
-        stats.append('Python version: %s' % platform.release())
-        stats.append('CPU usage: %s%%' % self._call_ps('pcpu'))
-        stats.append('Memory usage: %s (%s%%)' % (self._call_ps('vsize'), self._call_ps('pmem')))
+        stats.append('Jarvis CPU usage: %s%%' % self._call_ps('pcpu'))
+        stats.append('Jarvis memory usage: %skb (%s%%)' % (self._call_ps('rss'), self._call_ps('pmem')))
         stats.append('Jarvis uptime: %s' % self._call_ps('etime'))
+        stats.append('Python version: %s' % platform.release())
         stats.append('Database version: %s' % func.kernel.getConfig('version'))
 
         return function.response(function.STATE_SUCCESS, str, stats)
