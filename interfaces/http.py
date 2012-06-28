@@ -1,6 +1,7 @@
 # Jarvis http interface
 import interface
 import kernel
+import kernel.kernel
 import functions.function
 #import libs.bottle as bottle
 
@@ -39,8 +40,13 @@ class server(BaseHTTPServer.HTTPServer):
 class handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(self):
+        output = None
+        httpcode = 500
+
         try:
             authentication = self.headers['secret'] if 'secret' in self.headers else None
+            if authentication != self.server.kernel.getConfig('secret'):
+                raise kernel.kernel.JarvisAuthException('Authentication failure')
 
             relative = self.path[1:]
             parts = relative.split('/')
@@ -52,29 +58,37 @@ class handler(BaseHTTPServer.BaseHTTPRequestHandler):
             data = urllib.unquote(data)
             data = data.split(' ')
 
-            result = self.server.kernel.call(authentication, function, action, data)
+            result = self.server.kernel.call(function, action, data)
 
             resultbasic = result.returnBasic()
+            httpcode = result.getHTTPCode()
+            output = json.dumps(resultbasic)
 
-            self.send_response(result.getHTTPCode())
-            self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
+        except kernel.kernel.JarvisException as e:
+            httpcode = e.httpcode
+            basic = {}
+            basic['state'] = e.state
+            basic['message'] = 'ERROR: %s' % e.message
+            basic['data'] = e.data
+            output = json.dumps(basic)
 
-            self.wfile.write(json.dumps(resultbasic))
         except Exception as e:
-            self.send_response(500)
-            self.send_header('Content-type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.end_headers()
-
+            httpcode = 500
             basic = {}
             basic['state'] = functions.function.STATE_PANIC
             basic['message'] = 'ERROR: Server panic'
             basic['data'] = []
-            self.wfile.write(json.dumps(basic))
+            output = json.dumps(basic)
 
             # Print exception details to stdout
             import traceback, sys
             print 'EXCEPTION [%s]: %s' % (type(e).__name__, str(e))
             traceback.print_exc(file=sys.stdout)
+
+        self.send_response(httpcode)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+
+        if output:
+            self.wfile.write(output)

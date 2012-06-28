@@ -42,25 +42,18 @@ class kernel(object):
             return None
 
 
-    def call(self, authentication, function, action, data = None):
-        if authentication != self.getConfig('secret'):
-            response = functions.function.response(
-                functions.function.STATE_AUTHERR,
-                'Authentication failure'
-            )
-            return response
-
+    def call(self, function, action, data = None):
         # Get function
         func = self.get('function', function)
 
         if func == None:
-            return functions.function.response(functions.function.STATE_FAILURE, 'Function does not exist', function)
+            raise JarvisException('Function does not exist', function)
 
         # Get action
         act = func.get_action(action)
 
         if act == None:
-            return functions.function.response(functions.function.STATE_FAILURE, 'Action does not exist', action)
+            raise JarvisException('Action does not exist', action)
 
         # Run action
         act.function = func
@@ -73,3 +66,20 @@ class kernel(object):
 
     def getConfig(self, key):
         return self._config[key]
+
+
+class JarvisException(Exception):
+    state = functions.function.STATE_FAILURE
+    httpcode = functions.function.HTTPCODE_FAILURE
+
+    def __init__(self, message, data = []):
+        self.message = message
+        self.data = data
+
+class JarvisAuthException(JarvisException):
+    state = functions.function.STATE_AUTHERR
+    httpcode = functions.function.HTTPCODE_AUTHERR
+
+class JarvisPanicException(JarvisException):
+    state = functions.function.STATE_PANIC
+    httpcode = functions.function.HTTPCODE_PANIC

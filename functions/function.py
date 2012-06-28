@@ -7,6 +7,11 @@ STATE_FAILURE = 2       # Response failed due to user error
 STATE_PANIC   = 3       # Response failed due to system error
 STATE_AUTHERR = 4       # Response failed due to authentication error
 
+HTTPCODE_SUCCESS = 200
+HTTPCODE_FAILURE = 400
+HTTPCODE_PANIC   = 500
+HTTPCODE_AUTHERR = 401
+
 class function(kernel.service.service):
     def __init__(self, name):
         self.name = name
@@ -63,18 +68,18 @@ class response(object):
 
     def getHTTPCode(self):
         if self.state == STATE_SUCCESS:
-            return 200
+            return HTTPCODE_SUCCESS
 
         if self.state == STATE_FAILURE:
-            return 400
+            return HTTPCODE_FAILURE
 
         if self.state == STATE_PANIC:
-            return 500
+            return HTTPCODE_PANIC
 
         if self.state == STATE_AUTHERR:
-            return 401
+            return HTTPCODE_AUTHERR
 
-        return 500
+        return HTTPCODE_PANIC
 
 
 class action_help(kernel.action.action):
