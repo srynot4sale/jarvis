@@ -100,9 +100,9 @@ class action_view(kernel.action.action):
 
     usage = '$listkey'
 
-    def execute(self, func, data):
+    def execute(self, data):
         lstkey = data[0]
-        l = lstobj(func, lstkey)
+        l = lstobj(self.function, lstkey)
 
         items = l.get_all()
 
@@ -118,8 +118,8 @@ class action_view(kernel.action.action):
 
 class action_list(kernel.action.action):
 
-    def execute(self, func, data):
-        lists = func.get_all_lists()
+    def execute(self, data):
+        lists = self.function.get_all_lists()
         data = []
         for ls in lists:
             data.append('<a href="/list/view/%s">%s</a>' % (ls['listname'], ls['listname']))
@@ -131,14 +131,14 @@ class action_add(kernel.action.action):
 
     usage = '$listkey $newitem'
 
-    def execute(self, func, data):
+    def execute(self, data):
         lstkey = data[0]
         newitem = ' '.join(data[1:])
 
         if newitem.strip() == '':
             return function.response(function.STATE_FAILURE, 'No item to add')
 
-        l = lstobj(func, lstkey)
+        l = lstobj(self.function, lstkey)
         l.add_new(newitem)
 
         return function.response(function.STATE_SUCCESS, 'Adding "%s" to "<a href="/list/view/%s">%s</a>"' % (newitem, lstkey, lstkey))
@@ -151,11 +151,11 @@ class action_delete(kernel.action.action):
 
     usage = '$listkey $deleteid'
 
-    def execute(self, func, data):
+    def execute(self, data):
         lstkey = data[0]
         itemid = data[1]
 
-        l = lstobj(func, lstkey)
+        l = lstobj(self.function, lstkey)
         items = l.get_all()
 
         itemdata = None
@@ -186,7 +186,7 @@ class action_find(kernel.action.action):
 
     usage = '$listkey $itemtofind'
 
-    def execute(self, func, data):
+    def execute(self, data):
         lstkey = data[0]
         finditem = data[1]
         l = listobj

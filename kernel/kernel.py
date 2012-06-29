@@ -57,7 +57,7 @@ class kernel(object):
 
         # Run action
         act.function = func
-        return act().execute(func, data)
+        return act().execute(data)
 
 
     def setConfig(self, key, value):

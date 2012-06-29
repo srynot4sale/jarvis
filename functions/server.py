@@ -55,15 +55,15 @@ class action_stats(kernel.action.action):
         pid = os.getpid()
         return os.popen('ps -p %d -o %s | tail -1' % (pid, option)).read().strip()
 
-    def execute(self, func, data):
+    def execute(self, data):
         str = 'Current Jarvis server stats:'
         stats = []
         stats.append('Daemon PID: %d' % os.getpid())
-        stats.append('Server address: %s:%s' % (socket.gethostname(), func.kernel.getConfig('interface_http_port')))
+        stats.append('Server address: %s:%s' % (socket.gethostname(), self.function.kernel.getConfig('interface_http_port')))
         stats.append('Jarvis CPU usage: %s%%' % self._call_ps('pcpu'))
         stats.append('Jarvis memory usage: %skb (%s%%)' % (self._call_ps('rss'), self._call_ps('pmem')))
         stats.append('Jarvis uptime: %s' % self._call_ps('etime'))
         stats.append('Python version: %s' % platform.release())
-        stats.append('Database version: %s' % func.kernel.getConfig('version'))
+        stats.append('Database version: %s' % self.function.kernel.getConfig('version'))
 
         return function.response(function.STATE_SUCCESS, str, stats)
