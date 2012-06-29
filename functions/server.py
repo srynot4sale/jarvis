@@ -24,10 +24,10 @@ class job_hourly(kernel.job.job):
 
     def execute(self):
         weather = self.function.kernel.call('list', 'view', ['#weather']).data
+        dataids = []
         if weather and len(weather):
             for d in weather:
-                dataid = re.match('\[([0-9]+)\]', d).group(1)
-                self.function.kernel.call('list', 'remove', ['#weather', dataid])
+                dataids.append(re.match('\[([0-9]+)\]', d).group(1))
 
         r = urllib.urlopen('http://www.metservice.com/publicData/localForecastWellington')
         data = json.loads(r.read())
@@ -39,7 +39,11 @@ class job_hourly(kernel.job.job):
             d = data['days'][days[day]]
             daydata = (day, d['dow'], d['date'], d['min'], d['max'], d['forecast'])
             daystr = '%s (%s %s): %s-%s&deg;C %s' % daydata
-            self.function.kernel.call('list', 'add', ['#weather', daystr])
+
+            if len(dataids):
+                self.function.kernel.call('list', 'update', ['#weather', dataids.pop(0), daystr])
+            else:
+                self.function.kernel.call('list', 'add', ['#weather', daystr])
 
 
 class action_connect(kernel.action.action):
