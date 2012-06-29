@@ -46,6 +46,16 @@ class function(kernel.service.service):
         return actions
 
 
+    def get_job(self, type):
+        func = self._get_module()
+
+        job_type = 'job_%s' % type
+        if hasattr(func, job_type):
+            return getattr(func, job_type)
+
+        return None
+
+
 class response(object):
 
     state = None

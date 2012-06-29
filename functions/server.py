@@ -2,9 +2,10 @@
 import function
 import kernel
 import kernel.action
+import kernel.job
 import platform
 
-import json, os, socket, urllib
+import json, os, re, socket, urllib
 
 
 
@@ -19,10 +20,14 @@ class serverfunc(function.function):
 
 
 
-class action_connect(kernel.action.action):
+class job_hourly(kernel.job.job):
 
-    def _get_weather(self):
-        weather = []
+    def execute(self):
+        weather = self.function.kernel.call('list', 'view', ['#weather']).data
+        if weather and len(weather):
+            for d in weather:
+                dataid = re.match('\[([0-9]+)\]', d).group(1)
+                self.function.kernel.call('list', 'remove', ['#weather', dataid])
 
         r = urllib.urlopen('http://www.metservice.com/publicData/localForecastWellington')
         data = json.loads(r.read())
@@ -34,11 +39,16 @@ class action_connect(kernel.action.action):
             d = data['days'][days[day]]
             daydata = (day, d['dow'], d['date'], d['min'], d['max'], d['forecast'])
             daystr = '%s (%s %s): %s-%s&deg;C %s' % daydata
-            weather.append(daystr)
+            self.function.kernel.call('list', 'add', ['#weather', daystr])
 
-        return weather
 
-    def execute(self, func, data):
+class action_connect(kernel.action.action):
+
+    def _get_weather(self):
+        weather = self.function.kernel.call('list', 'view', ['#weather'])
+        return weather.data
+
+    def execute(self, data):
         welcome = 'Connected to Jarvis, welcome Aaron'
         data = self._get_weather()
         today = self.function.kernel.call('list', 'view', ['today'])
