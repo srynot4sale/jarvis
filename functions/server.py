@@ -41,6 +41,11 @@ class action_connect(kernel.action.action):
     def execute(self, func, data):
         welcome = 'Connected to Jarvis, welcome Aaron'
         data = self._get_weather()
+        today = self.function.kernel.call('list', 'view', ['today'])
+        if today.state == function.STATE_SUCCESS:
+            data.append('==== Today ====')
+            data += today.data
+
         return function.response(function.STATE_SUCCESS, welcome, data)
 
 
