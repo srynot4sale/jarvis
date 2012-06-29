@@ -77,6 +77,25 @@ class lstobj(object):
         datasource.execute(sql, data)
         self._load()
 
+    def update(self, itemid, item):
+        datasource = self.func.get_data_source()
+        # IMPROVE SQL / protect from injection
+        sql = """
+            UPDATE
+                function_list_items
+            SET
+                added = NOW(),
+                item  = %s
+            WHERE
+                listname = %s
+            AND id = %s
+            LIMIT
+                1
+        """
+        data = [item, self.name, itemid]
+        datasource.execute(sql, data)
+        self._load()
+
     def delete_item(self, itemid):
         datasource = self.func.get_data_source()
         # IMPROVE SQL / protect from injection
@@ -180,6 +199,27 @@ class action_delete(kernel.action.action):
 class action_remove(action_delete):
 
     usage = '(alias of "list delete")'
+
+
+class action_update(kernel.action.action):
+
+    usage = '$listkey $updateid $item'
+
+    def execute(self, data):
+        lstkey = data[0]
+        itemid = data[1]
+        item   = ' '.join(data[2:])
+
+        if item.strip() == '':
+            return function.response(function.STATE_FAILURE, 'No item to add')
+
+        l = lstobj(self.function, lstkey)
+        l.update(itemid, item)
+
+        return function.response(function.STATE_SUCCESS, 'Updating item to "%s" to "<a href="/list/view/%s">%s</a>"' % (item, lstkey, lstkey))
+
+    def undo(self, list):
+        pass
 
 
 class action_find(kernel.action.action):
