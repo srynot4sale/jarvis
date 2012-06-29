@@ -100,12 +100,12 @@ class action_help(kernel.action.action):
 
     usage = ''
 
-    def execute(self, func, data):
+    def execute(self, data):
 
-        text = 'Usage for "%s"' % func.name
+        text = 'Usage for "%s"' % self.function.name
 
         usage = []
-        actions = func.get_actions()
+        actions = self.function.get_actions()
 
         keys = actions.keys()
         keys.sort()
@@ -115,12 +115,12 @@ class action_help(kernel.action.action):
 
             # If action has extra usage notes, probably has parameters
             if actions[action].usage:
-                ausage = '%s %s %s' % (func.name, actionname, actions[action].usage)
+                ausage = '%s %s %s' % (self.function.name, actionname, actions[action].usage)
 
             # Otherwise we can link directly to the call
             else:
-                call = '/%s/%s' % (func.name, actionname)
-                ausage = '<a href="%s">%s %s</a>' % (call, func.name, actionname)
+                call = '/%s/%s' % (self.function.name, actionname)
+                ausage = '<a href="%s">%s %s</a>' % (call, self.function.name, actionname)
 
             usage.append(ausage)
 
