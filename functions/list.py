@@ -130,7 +130,7 @@ class action_view(kernel.action.action):
 
         data = []
         for item in items:
-            data.append('[%s] %s' % (item['id'], item['item']))
+            data.append([item['id'], item['item']])
 
         return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data)
 

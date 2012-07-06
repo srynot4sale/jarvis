@@ -27,7 +27,7 @@ class job_hourly(kernel.job.job):
         dataids = []
         if weather and len(weather):
             for d in weather:
-                dataids.append(re.match('\[([0-9]+)\]', d).group(1))
+                dataids.append(d[0])
 
         r = urllib.urlopen('http://www.metservice.com/publicData/localForecastWellington')
         data = json.loads(r.read())

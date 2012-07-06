@@ -42,14 +42,16 @@ class interpreter(cmd.Cmd):
         respstr += self.colorize(response['message'], color)
         if response['data']:
             items = response['data']
+
+            # Make sure repsonse is a list
             if not isinstance(items, list):
                 items = [items]
 
-            l = 0
+            # Print all the data
             for line in items:
-                l+= 1
-                if l == 1:
-                    respstr += '\n= %s' % line
+                # If the data is a list, format it
+                if isinstance(line, list):
+                    respstr += '\n  %s' % '|'.join(str(l) for l in line)
                 else:
                     respstr += '\n  %s' % line
 
