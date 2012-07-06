@@ -66,18 +66,28 @@ class action_connect(kernel.action.action):
 class action_stats(kernel.action.action):
 
     def _call_ps(self, option):
+        '''
+        Query ps for details abou the current process
+        '''
         pid = os.getpid()
         return os.popen('ps -p %d -o %s | tail -1' % (pid, option)).read().strip()
 
     def execute(self, data):
         str = 'Current Jarvis server stats:'
+
+        pid    = os.getpid()
+        cpuuse = '%s%%' % self._call_ps('pcpu')
+        memuse = '%skb' % self._call_ps('rss')
+        uptime = self._call_ps('etime')
+        pyver  = platform.release()
+        dbver  = self.function.kernel.getConfig('version')
+
         stats = []
-        stats.append('Daemon PID: %d' % os.getpid())
-        stats.append('Server address: %s:%s' % (socket.gethostname(), self.function.kernel.getConfig('interface_http_port')))
-        stats.append('Jarvis CPU usage: %s%%' % self._call_ps('pcpu'))
-        stats.append('Jarvis memory usage: %skb (%s%%)' % (self._call_ps('rss'), self._call_ps('pmem')))
-        stats.append('Jarvis uptime: %s' % self._call_ps('etime'))
-        stats.append('Python version: %s' % platform.release())
-        stats.append('Database version: %s' % self.function.kernel.getConfig('version'))
+        stats.append('Daemon PID: %d' % pid)
+        stats.append('Jarvis CPU usage: %s' % cpuuse)
+        stats.append('Jarvis memory usage: %s' % memuse)
+        stats.append('Jarvis uptime: %s' % uptime)
+        stats.append('Python version: %s' % pyver)
+        stats.append('Database version: %s' % dbver)
 
         return function.response(function.STATE_SUCCESS, str, stats)
