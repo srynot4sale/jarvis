@@ -80,3 +80,52 @@ class data(kernel.service.service):
     def execute(self, sql, data = []):
         self._execute(sql, data)
         self._conn.commit()
+
+
+    def loadConfig(self, name, default=None):
+        '''
+        Attempt to load config variable from database
+
+        Should be merged with kernel.getConfig at some point
+        '''
+        try:
+            response = self.get_records(
+                """
+                SELECT
+                    `value`
+                FROM
+                    `config`
+                WHERE
+                    `name` = %s
+                """,
+                [name]
+            )
+            if len(response):
+                return response[0]['value']
+            else:
+                return default
+
+        except Exception:
+            return default
+
+
+    def updateConfig(self, name, value):
+        '''
+        Attempt to update config variable in database
+
+        Should be merged with kernel.setConfig at some point
+        '''
+        self.execute(
+            """
+            UPDATE
+                `config`
+            SET
+                `value` = %s
+            WHERE
+                `name` = %s
+            """,
+            [
+                str(value),
+                name
+            ]
+        )

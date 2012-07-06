@@ -83,6 +83,13 @@ class kernel(object):
         return self._config[key]
 
 
+    def getDataPrimary(self):
+        '''
+        Get primary data interface
+        '''
+        return self.get('data', 'primary')
+
+
 class JarvisException(Exception):
     state = functions.function.STATE_FAILURE
     httpcode = functions.function.HTTPCODE_FAILURE

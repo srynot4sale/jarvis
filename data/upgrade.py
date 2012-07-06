@@ -1,6 +1,6 @@
 import data
 
-database_version = 3
+database_version = 4
 
 def check(data):
     '''
@@ -128,6 +128,22 @@ def run(data):
             ADD  `deleted` DATETIME NULL ,
             ADD INDEX (  `added` ,  `deleted` )
             """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    version = 4
+    if current < version:
+        data.execute(
+            """
+            INSERT INTO `config` (`name`, `value`) VALUES (%s, %s)
+            """,
+            [
+                'lastcron',
+                0
+            ]
         )
 
         set_version(data, version)

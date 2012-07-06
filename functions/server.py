@@ -5,7 +5,7 @@ import kernel.action
 import kernel.job
 import platform
 
-import json, os, re, socket, urllib
+import datetime, json, os, re, socket, urllib
 
 
 
@@ -75,18 +75,24 @@ class action_stats(kernel.action.action):
     def execute(self, data):
         str = 'Current Jarvis server stats:'
 
+        db = self.function.kernel.getDataPrimary()
         pid    = os.getpid()
         cpuuse = '%s%%' % self._call_ps('pcpu')
         memuse = '%skb' % self._call_ps('rss')
         uptime = self._call_ps('etime')
         pyver  = platform.release()
         dbver  = self.function.kernel.getConfig('version')
+        cron   = db.loadConfig('lastcron')
+        if cron != 0:
+            d = datetime.datetime.fromtimestamp(float(cron))
+            cron = d.strftime('%Y-%m-%d %H:%M')
 
         stats = []
         stats.append('Daemon PID: %d' % pid)
         stats.append('Jarvis CPU usage: %s' % cpuuse)
         stats.append('Jarvis memory usage: %s' % memuse)
         stats.append('Jarvis uptime: %s' % uptime)
+        stats.append('Last cron run: %s' % cron)
         stats.append('Python version: %s' % pyver)
         stats.append('Database version: %s' % dbver)
 

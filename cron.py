@@ -16,6 +16,10 @@ import config
 ## Initialise Jarvis kernel
 import kernel
 import sys
+import time
 
 jarvis = kernel.init(config.config)
 jarvis.runJobs('hourly')
+
+d = jarvis.getDataPrimary()
+d.updateConfig('lastcron', int(time.time()))
