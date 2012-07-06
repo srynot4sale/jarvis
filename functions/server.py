@@ -29,8 +29,11 @@ class job_hourly(kernel.job.job):
             for d in weather:
                 dataids.append(d[0])
 
-        r = urllib.urlopen('http://www.metservice.com/publicData/localForecastWellington')
-        data = json.loads(r.read())
+        try:
+            r = urllib.urlopen('http://www.metservice.com/publicData/localForecastWellington')
+            data = json.loads(r.read())
+        except Exception:
+            return
 
         days = {'Today': 0, 'Tomorrow': 1}
         dates = days.keys()
