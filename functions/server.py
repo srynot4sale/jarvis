@@ -40,8 +40,8 @@ class job_hourly(kernel.job.job):
         dates.sort()
         for day in dates:
             d = data['days'][days[day]]
-            daydata = (day, d['dow'], d['date'], d['min'], d['max'], d['forecast'])
-            daystr = '%s (%s %s): %s-%s&deg;C %s' % daydata
+            daydata = (day, d['min'], d['max'], d['forecast'])
+            daystr = '%s: %s-%s&deg;C %s' % daydata
 
             if len(dataids):
                 self.function.kernel.call('list', 'update', ['#weather', dataids.pop(0), daystr])
@@ -56,7 +56,10 @@ class action_connect(kernel.action.action):
         return weather.data
 
     def execute(self, data):
-        welcome = 'Connected to Jarvis, welcome Aaron'
+        user = self.function.kernel.getConfig('username')
+        date = datetime.datetime.today().strftime('%A %B %d, %Y')
+        welcome = 'Hi %s. Today is %s' % (user, date)
+
         data = self._get_weather()
         today = self.function.kernel.call('list', 'view', ['today'])
         if today.state == function.STATE_SUCCESS:
