@@ -54,7 +54,7 @@ class handler(BaseHTTPServer.BaseHTTPRequestHandler):
             function = parts[0]
             action = parts[1] if len(parts) >= 2 else ''
 
-            data = parts[2] if len(parts) >= 3 else ''
+            data = '/'.join(parts[2:]) if len(parts) >= 3 else ''
             data = urllib.unquote(data)
             data = data.split(' ')
 
