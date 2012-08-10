@@ -18,9 +18,9 @@ Dependencies:
 
 - Python 2.5+
 - MySQL
-- http://pypi.python.org/pypi/cmd2
-- http://mysql-python.sourceforge.net/MySQLdb.html
-- http://docs.python-requests.org/en/latest/
+- cmd2 - http://pypi.python.org/pypi/cmd2
+- requests - http://docs.python-requests.org/en/latest/
+- MySQLdb - http://mysql-python.sourceforge.net/MySQLdb.html
 
 
 Config file's (config.py) expected content:
