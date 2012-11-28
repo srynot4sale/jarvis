@@ -125,3 +125,12 @@ class action_help(kernel.action.action):
             usage.append(ausage)
 
         return response(STATE_SUCCESS, text, usage)
+
+
+class action_default(action_help):
+    '''
+    Generic "default" action for listing common
+    actions in this function group
+    '''
+
+    usage = ''

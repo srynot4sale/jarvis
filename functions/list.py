@@ -230,3 +230,7 @@ class action_find(kernel.action.action):
         lstkey = data[0]
         finditem = data[1]
         l = listobj
+
+
+class action_default(action_list):
+    pass
