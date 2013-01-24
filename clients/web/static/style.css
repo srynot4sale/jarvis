@@ -1,0 +1,10 @@
+body, textarea {
+    background-color: #050505;
+    color: #06d5c3;
+}
+
+textarea#input {
+    border: 0;
+    width: 100%;
+    height: 100%;
+}

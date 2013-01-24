@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
+## Import config
+import config
+
 ## Initialise Jarvis web client
 import clients.web
 
-baseurl = 'http://localhost:4188'
-
-clients.web.setBaseUrl(baseurl)
+clients.web.setBaseUrl(config.config['web_baseurl'])
+clients.web.setSecret(config.config['secret'])
 clients.web.init()

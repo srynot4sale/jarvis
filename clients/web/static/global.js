@@ -1,6 +1,6 @@
 $(function() {
 
-    var input = $('<textarea style="border: 0; width: 100%; height: 100%;"></textarea>');
+    var input = $('<textarea id="input"></textarea>');
 
     $('body').append(input);
 
@@ -18,6 +18,8 @@ $(function() {
         }
     });
 
+    input.focus();
+
 });
 
 var api_call = function(url) {
@@ -30,6 +32,8 @@ var api_call = function(url) {
         var input = $('textarea');
 
         var text = '';
+
+        result = jQuery.parseJSON(result.responseText);
 
         if (!result) {
             text += 'Result: SERVER FAILURE\n';
@@ -45,7 +49,7 @@ var api_call = function(url) {
             text += 'Message: '+result['message']+'\n';
 
             console.log('check data');
-            if (result['data']) {
+            if (result['data'] && result['data'].length) {
                 text += 'Data:\n';
                 if (result['data'] instanceof Array) {
                 } else {
@@ -66,5 +70,11 @@ var api_call = function(url) {
     }
 
     console.log('make json call');
-    $.getJSON(baseurl+url, '', callback);
+    $.ajax({
+        dataType: "json",
+        url: baseurl+url,
+        data: '',
+        complete: callback,
+        headers: {'secret': $('span.secret').html()}
+    });
 }

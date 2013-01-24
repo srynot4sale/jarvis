@@ -32,6 +32,7 @@ Config file's (config.py) expected content:
     config['interface_http_port']   = 'XXXX'
     config['username']              = 'My Name'
     config['secret']                = 'secrethash'
+    config['web_baseurl']           = 'http://localhost:XXXX/'
 
 
 Database tables will be installed on first run.
