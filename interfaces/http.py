@@ -48,7 +48,7 @@ class handler(BaseHTTPServer.BaseHTTPRequestHandler):
             if authentication != self.server.kernel.getConfig('secret'):
                 raise kernel.kernel.JarvisAuthException('Authentication failure')
 
-            relative = self.path[1:]
+            relative = self.path.lstrip('/')
             parts = relative.split('/')
 
             function = parts[0]
