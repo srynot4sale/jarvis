@@ -61,6 +61,7 @@ class response(object):
     state = None
     message = None
     data = None
+    write = 0
 
     def __init__(self, state, message = '', data = None):
         self.state = state
@@ -68,11 +69,12 @@ class response(object):
         self.data = data
 
 
-    def returnBasic(self):
+    def returnAdvanced(self):
         basic = {}
         basic['state'] = self.state
         basic['message'] = self.message
         basic['data'] = self.data
+        basic['write'] = self.write
         return basic
 
 
@@ -115,12 +117,12 @@ class action_help(kernel.action.action):
 
             # If action has extra usage notes, probably has parameters
             if actions[action].usage:
-                ausage = '%s %s %s' % (self.function.name, actionname, actions[action].usage)
+                ausage = ['%s %s %s' % (self.function.name, actionname, actions[action].usage)]
 
             # Otherwise we can link directly to the call
             else:
                 call = '/%s/%s' % (self.function.name, actionname)
-                ausage = '<a href="%s">%s %s</a>' % (call, self.function.name, actionname)
+                ausage = ['%s %s' % (self.function.name, actionname), '%s %s' % (self.function.name, actionname)]
 
             usage.append(ausage)
 

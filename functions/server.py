@@ -52,18 +52,19 @@ class job_hourly(kernel.job.job):
 class action_connect(kernel.action.action):
 
     def _get_weather(self):
-        weather = self.function.kernel.call('list', 'view', ['#weather'])
-        return weather.data
+        return self.function.kernel.call('list', 'view', ['#weather'])
 
     def execute(self, data):
         user = self.function.kernel.getConfig('username')
         date = datetime.datetime.today().strftime('%A %B %d, %Y')
         welcome = 'Hi %s. Today is %s' % (user, date)
 
-        data = self._get_weather()
+        weather = self._get_weather()
+        data = weather.data
+
         today = self.function.kernel.call('list', 'view', ['today'])
         if today.state == function.STATE_SUCCESS:
-            data.append('==== Today ====')
+            data.append(['==== Today ====', 'list view today'])
             data += today.data
 
         return function.response(function.STATE_SUCCESS, welcome, data)
@@ -102,4 +103,8 @@ class action_stats(kernel.action.action):
         stats.append('Python version: %s' % pyver)
         stats.append('Database version: %s' % dbver)
 
-        return function.response(function.STATE_SUCCESS, str, stats)
+        advdata = []
+        for stat in stats:
+            advdata.append([stat])
+
+        return function.response(function.STATE_SUCCESS, str, advdata)

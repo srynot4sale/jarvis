@@ -126,11 +126,13 @@ class action_view(kernel.action.action):
         items = l.get_all()
 
         if not len(items):
-            return function.response(function.STATE_FAILURE, 'No items in list "%s" (<a href="/list/list">List all</a>)' % lstkey)
+            data = []
+            data.append(["List all lists", 'list list'])
+            return function.response(function.STATE_FAILURE, 'No items in list "%s"' % lstkey, data)
 
         data = []
         for item in items:
-            data.append([item['id'], item['item']])
+            data.append([item['item'], None, {'Delete': 'list remove %s %s' % (lstkey, item['id'])}])
 
         return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data)
 
@@ -141,7 +143,7 @@ class action_list(kernel.action.action):
         lists = self.function.get_all_lists()
         data = []
         for ls in lists:
-            data.append('<a href="/list/view/%s">%s</a>' % (ls['listname'], ls['listname']))
+            data.append([ls['listname'], 'list view %s' % ls['listname']])
 
         return function.response(function.STATE_SUCCESS, 'Lists available', data)
 
@@ -160,7 +162,12 @@ class action_add(kernel.action.action):
         l = lstobj(self.function, lstkey)
         l.add_new(newitem)
 
-        return function.response(function.STATE_SUCCESS, 'Adding "%s" to "<a href="/list/view/%s">%s</a>"' % (newitem, lstkey, lstkey))
+        data = []
+        data.append(["View list", "list view %s" % lstkey])
+        resp = function.response(function.STATE_SUCCESS, 'Adding "%s" to list "%s"' % (newitem, lstkey))
+        resp.data = data
+        resp.write = 1
+        return resp
 
     def undo(self, list):
         pass
@@ -178,19 +185,26 @@ class action_delete(kernel.action.action):
         items = l.get_all()
 
         itemdata = None
-        data = []
         for i in items:
-            data.append('[%s] %s' % (i['id'], i['item']))
             if i['id'] == int(itemid):
                 itemdata = i
                 break
 
+        data = []
+        data.append(["View list", "list view %s" % lstkey])
+
         if not itemdata:
-            return function.response(function.STATE_FAILURE, 'No item to delete in "<a href="/list/view/%s">%s</a>"' % (lstkey, lstkey), data)
+            resp = function.response(function.STATE_FAILURE, 'No item to delete in list "%s"' % lstkey)
+            resp.data = data
+            resp.write = 1
+            return resp
 
         l.delete_item(itemid)
 
-        return function.response(function.STATE_SUCCESS, 'Deleting "%s" from "<a href="/list/view/%s">%s</a>"' % (itemdata['item'], lstkey, lstkey))
+        resp = function.response(function.STATE_SUCCESS, 'Deleting "%s" from "%s"' % (itemdata['item'], lstkey))
+        resp.data = data
+        resp.write = 1
+        return resp
 
     def undo(self, list):
         pass

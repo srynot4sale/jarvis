@@ -60,7 +60,7 @@ class handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
             result = self.server.kernel.call(function, action, data)
 
-            resultbasic = result.returnBasic()
+            resultbasic = result.returnAdvanced()
             httpcode = result.getHTTPCode()
             output = json.dumps(resultbasic)
 
