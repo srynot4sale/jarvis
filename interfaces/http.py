@@ -39,6 +39,13 @@ class server(BaseHTTPServer.HTTPServer):
 
 class handler(BaseHTTPServer.BaseHTTPRequestHandler):
 
+    def do_OPTIONS(self):
+        self.send_response(200, "ok")
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type")
+
+
     def do_GET(self):
         output = None
         httpcode = 500
