@@ -78,8 +78,9 @@ class data(kernel.service.service):
 
 
     def execute(self, sql, data = []):
-        self._execute(sql, data)
+        cursor = self._execute(sql, data)
         self._conn.commit()
+        return cursor
 
 
     def loadConfig(self, name, default=None):

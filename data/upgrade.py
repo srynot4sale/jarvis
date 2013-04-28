@@ -1,6 +1,6 @@
 import data
 
-database_version = 4
+database_version = 5
 
 def check(data):
     '''
@@ -144,6 +144,41 @@ def run(data):
                 'lastcron',
                 0
             ]
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    version = 5
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `function_list_tags` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `list_item_id` int(10) unsigned NOT NULL,
+                `tag` varchar(255) NOT NULL,
+                `added` datetime DEFAULT NULL,
+                `deleted` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `list_item_id` (`list_item_id`, `tag`),
+                KEY `deleted` (`deleted`),
+                KEY `added` (`added`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
+        )
+
+        data.execute(
+            """
+            INSERT INTO `function_list_tags` (`list_item_id`, `tag`, `added`)
+            SELECT `id`, `listname`, `added` FROM `function_list_items`
+            """
+        )
+
+        data.execute(
+            """
+            ALTER TABLE `function_list_items` DROP `listname`
+            """
         )
 
         set_version(data, version)

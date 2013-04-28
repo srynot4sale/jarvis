@@ -22,13 +22,13 @@ class lstfunc(function.function):
         datasource = self.get_data_source()
         sql = """
             SELECT DISTINCT
-                listname
+                tag AS listname
             FROM
-                function_list_items
+                function_list_tags
             WHERE
                 deleted IS NULL
             ORDER BY
-                listname
+                tag
         """
         return datasource.get_records(sql)
 
@@ -47,14 +47,18 @@ class lstobj(object):
         datasource = self.func.get_data_source()
         sql = """
             SELECT
-                *
+                i.*
             FROM
-                function_list_items
+                function_list_items i
+            INNER JOIN
+                function_list_tags t
+             ON t.list_item_id = i.id
             WHERE
-                listname = %s
-            AND deleted IS NULL
+                t.tag = %s
+            AND t.deleted IS NULL
+            AND i.deleted IS NULL
             ORDER BY
-                id
+                t.id
         """
         data = [self.name]
         self.records = datasource.get_records(sql, data)
@@ -65,21 +69,34 @@ class lstobj(object):
 
     def add_new(self, newitem):
         datasource = self.func.get_data_source()
-        # IMPROVE SQL / protect from injection
+
+        # Insert item
         sql = """
             INSERT INTO
                 function_list_items
-                (listname, item, added, deleted)
+                (item, added, deleted)
+            VALUES
+                (%s, NOW(), NULL)
+        """
+        data = [newitem]
+        itemid = datasource.execute(sql, data).lastrowid
+
+        # Add tag
+        sql = """
+            INSERT INTO
+                function_list_tags
+                (list_item_id, tag, added, deleted)
             VALUES
                 (%s, %s, NOW(), NULL)
         """
-        data = [self.name, newitem]
+        data = [itemid, self.name]
         datasource.execute(sql, data)
         self._load()
 
     def update(self, itemid, item):
         datasource = self.func.get_data_source()
-        # IMPROVE SQL / protect from injection
+
+        # Update item
         sql = """
             UPDATE
                 function_list_items
@@ -87,12 +104,11 @@ class lstobj(object):
                 added = NOW(),
                 item  = %s
             WHERE
-                listname = %s
-            AND id = %s
+                id = %s
             LIMIT
                 1
         """
-        data = [item, self.name, itemid]
+        data = [item, itemid]
         datasource.execute(sql, data)
         self._load()
 
@@ -105,8 +121,7 @@ class lstobj(object):
             SET
                 deleted = NOW()
             WHERE
-                listname = %s
-            AND id = %s
+                id = %s
             LIMIT
                 1
         """
