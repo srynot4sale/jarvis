@@ -22,13 +22,21 @@ class lstfunc(function.function):
         datasource = self.get_data_source()
         sql = """
             SELECT DISTINCT
-                tag AS listname
+                t.tag AS listname
             FROM
-                function_list_tags
+                function_list_tags t
             WHERE
-                deleted IS NULL
+                t.deleted IS NULL
+            AND t.list_item_id IN (
+                SELECT
+                    i.id
+                FROM
+                    function_list_items i
+                WHERE
+                    i.deleted IS NULL
+            )
             ORDER BY
-                tag
+                t.tag
         """
         return datasource.get_records(sql)
 
