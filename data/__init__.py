@@ -77,6 +77,18 @@ class data(kernel.service.service):
         return result
 
 
+    def get_record(self, sql, data = []):
+        c = self._execute(sql, data)
+
+        result = None
+        for record in c:
+            result = record
+            break
+
+        self._conn.commit()
+        return result
+
+
     def execute(self, sql, data = []):
         cursor = self._execute(sql, data)
         self._conn.commit()

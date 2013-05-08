@@ -54,7 +54,7 @@ class lstobj(object):
     def _load(self):
         datasource = self.func.get_data_source()
         sql = """
-            SELECT
+            SELECT DISTINCT
                 i.*
             FROM
                 function_list_items i
@@ -75,6 +75,52 @@ class lstobj(object):
         self._load()
         return self.records
 
+    def get(self, itemid, tag = None):
+        datasource = self.func.get_data_source()
+
+        sql = """
+            SELECT
+                i.*
+            FROM
+                function_list_items i
+            INNER JOIN
+                function_list_tags t
+             ON t.list_item_id = i.id
+            WHERE
+                i.id = %s
+            AND t.deleted IS NULL
+            AND i.deleted IS NULL
+        """
+        if tag:
+            sql += "AND t.tag = %s"
+        sql += """
+            ORDER BY
+                t.id
+        """
+
+        data = [itemid]
+        if tag:
+            data.append(tag)
+
+        return datasource.get_record(sql, data)
+
+    def get_tags(self, itemid):
+        datasource = self.func.get_data_source()
+
+        sql = """
+            SELECT
+                t.tag
+            FROM
+                function_list_tags t
+            WHERE
+                t.list_item_id = %s
+            AND t.deleted IS NULL
+            ORDER BY
+                t.id
+        """
+        data = [itemid]
+        return datasource.get_records(sql, data)
+
     def add_new(self, newitem):
         datasource = self.func.get_data_source()
 
@@ -89,7 +135,11 @@ class lstobj(object):
         data = [newitem]
         itemid = datasource.execute(sql, data).lastrowid
 
-        # Add tag
+        self.add_tag(itemid, self.name)
+
+    def add_tag(self, itemid, tag):
+        datasource = self.func.get_data_source()
+
         sql = """
             INSERT INTO
                 function_list_tags
@@ -97,7 +147,23 @@ class lstobj(object):
             VALUES
                 (%s, %s, NOW(), NULL)
         """
-        data = [itemid, self.name]
+        data = [itemid, tag]
+        datasource.execute(sql, data)
+        self._load()
+
+    def remove_tag(self, itemid, tag):
+        datasource = self.func.get_data_source()
+
+        sql = """
+            UPDATE
+                function_list_tags
+            SET
+                deleted = NOW()
+            WHERE
+                list_item_id = %s
+            AND tag = %s
+        """
+        data = [itemid, tag]
         datasource.execute(sql, data)
         self._load()
 
@@ -117,23 +183,6 @@ class lstobj(object):
                 1
         """
         data = [item, itemid]
-        datasource.execute(sql, data)
-        self._load()
-
-    def delete_item(self, itemid):
-        datasource = self.func.get_data_source()
-        # IMPROVE SQL / protect from injection
-        sql = """
-            UPDATE
-                function_list_items
-            SET
-                deleted = NOW()
-            WHERE
-                id = %s
-            LIMIT
-                1
-        """
-        data = [self.name, itemid]
         datasource.execute(sql, data)
         self._load()
 
@@ -196,25 +245,52 @@ class action_add(kernel.action.action):
         pass
 
 
+class action_tag(kernel.action.action):
+
+    usage = '$tag $itemid'
+
+    def execute(self, data):
+        tag     = data[0]
+        itemid  = data[1]
+
+        l = lstobj(self.function, tag)
+
+        itemdata = l.get(itemid)
+        data = []
+        data.append(['View list "%s"' % tag, "list view %s" % tag])
+
+        if not itemdata:
+            resp = function.response(function.STATE_FAILURE, 'No item to tag "%s"' % tag)
+            resp.data = data
+            resp.write = 1
+            return resp
+
+        l.add_tag(itemid, tag)
+
+        data = []
+        data.append(['View list "%s"' % tag, "list view %s" % tag])
+        resp = function.response(function.STATE_SUCCESS, 'Adding "%s" to list "%s"' % (itemdata['item'], tag))
+        resp.data = data
+        resp.write = 1
+        return resp
+
+    def undo(self, list):
+        pass
+
+
 class action_delete(kernel.action.action):
 
-    usage = '$listkey $deleteid'
+    usage = '$tag $deleteid'
 
     def execute(self, data):
         lstkey = data[0]
         itemid = data[1]
 
         l = lstobj(self.function, lstkey)
-        items = l.get_all()
-
-        itemdata = None
-        for i in items:
-            if i['id'] == int(itemid):
-                itemdata = i
-                break
+        itemdata = l.get(itemid, lstkey)
 
         data = []
-        data.append(["View list", "list view %s" % lstkey])
+        data.append(['View list "%s"' % lstkey, "list view %s" % lstkey])
 
         if not itemdata:
             resp = function.response(function.STATE_FAILURE, 'No item to delete in list "%s"' % lstkey)
@@ -222,7 +298,12 @@ class action_delete(kernel.action.action):
             resp.write = 1
             return resp
 
-        l.delete_item(itemid)
+        l.remove_tag(itemid, lstkey)
+
+        tags = l.get_tags(itemid)
+        if tags:
+            for t in tags:
+                data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
 
         resp = function.response(function.STATE_SUCCESS, 'Deleting "%s" from "%s"' % (itemdata['item'], lstkey))
         resp.data = data
