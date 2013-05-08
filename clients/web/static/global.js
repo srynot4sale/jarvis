@@ -5,11 +5,11 @@ $(function() {
 
     $('body').append(input).append(output);
 
-    var buttons = ['server', 'list'];
+    var buttons = [['home', 'server connect'], ['server', 'server default'], ['list', 'list default']];
     for (var i in buttons) {
-        var button = $('<input type="button" class="action" value="'+buttons[i]+'"/>');
+        var button = $('<input type="button" class="action" data-call="'+buttons[i][1]+'" value="'+buttons[i][0]+'"/>');
         button.click(function() {
-            api_call($(this).val()+' default');
+            api_call($(this).data('call'));
         });
 
         input.append(button);
