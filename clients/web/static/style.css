@@ -80,6 +80,10 @@ div#output {
     padding: 0 5px;
 }
 
+.loading h3 {
+    color: #fff;
+}
+
 .action {
     cursor: pointer;
 }

@@ -34,15 +34,26 @@ $(function() {
 var api_call = function(url) {
     console.log('function api_call');
 
+    // Replace the first two spaces
     url = url.replace(' ', '/');
     url = url.replace(' ', '/');
 
     var baseurl = $('span.base_url').html();
 
+    var exists = $('div.response');
+    if (exists.length) {
+        exists.remove();
+    }
+
+    var output = $('#output');
+    var input = $('#input');
+    var render = $('<div class="response">');
+    render.append($('<h3>').html(url));
+    render.addClass('loading');
+    output.append(render);
+
     var callback = function(result) {
         console.log('function callback');
-        var output = $('#output');
-        var input = $('#input');
         input.val('');
 
         var res = {}
@@ -73,19 +84,6 @@ var api_call = function(url) {
                 res.data = result['data'];
             }
         }
-
-        var exists = $('div.response');
-        if (exists.length) {
-            exists.remove();
-        }
-
-        var render = $('<div class="response">');
-        render.append($('<h3>').html(res.url));
-        if (res.result) {
-            render.append($('<div class="result">').html(res.result));
-        }
-
-        render.append($('<div class="message">').html(res.message));
 
         var list = $('<ol>');
         for (line in res.data) {
@@ -133,13 +131,18 @@ var api_call = function(url) {
             list.append(li);
         }
 
-        render.append(list);
-
         console.log('update output');
-        output.append(render);
+        render.removeClass('loading');
+
+        if (res.result) {
+            render.append($('<div class="result">').html(res.result));
+        }
+
+        render.append($('<div class="message">').html(res.message));
+        render.append(list);
     }
 
-    console.log('make json call');
+    console.log('make json call to '+url);
     $.ajax({
         dataType: "json",
         url: baseurl+url,
