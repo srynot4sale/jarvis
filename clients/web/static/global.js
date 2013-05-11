@@ -48,8 +48,18 @@ var api_call = function(url) {
     var output = $('#output');
     var input = $('#input');
     var render = $('<div class="response">');
-    render.append($('<h3>').html(url));
+    render.data('call', url);
     render.addClass('loading');
+
+    var header = $('<h3>').html(url);
+    var refresh = $('<span class="refresh action" title="refresh">&crarr;</span>');
+    refresh.click(function() {
+        api_call(url);
+    });
+
+    header.prepend(refresh);
+    render.append(header);
+
     output.append(render);
 
     var callback = function(result) {

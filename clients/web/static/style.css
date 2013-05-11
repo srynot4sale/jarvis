@@ -36,6 +36,10 @@ div#output {
     margin: 5px;
 }
 
+.response h3 span.refresh {
+    float: right;
+}
+
 .response .message {
     background-color: #06d5c3;
     color: #050505;
