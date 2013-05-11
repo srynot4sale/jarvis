@@ -31,8 +31,8 @@ def weather_test():
     Test home page shows weather
     '''
     weather = make_request('server connect')
-    assert weather['data'][0][0].startswith('Tomorrow')
-    assert weather['data'][1][0].startswith('Today')
+    assert weather['data'][0][0].startswith('Today')
+    assert weather['data'][1][0].startswith('Tomorrow')
 
 def badinput_test():
     '''
@@ -45,7 +45,6 @@ def badinput_test():
         'UNITTESTLISTBAD\'',
         'UNITTESTLISTBAD\"',
         'UNITTESTLISTBAD%20',
-        'UNITTESTLISTBAD SPACE',
         'UNITTESTLISTBAD+SPACE',
         'UNITTESTLISTBAD%2fSPACE',
         'UNITTESTLISTBAD\0',
