@@ -46,7 +46,7 @@ class data(kernel.service.service):
         if not data.upgrade.check(self):
             self.kernel.log('Running database upgrade')
             data.upgrade.run(self)
-
+            self.kernel.log('Now at database version %s' % self.kernel.getConfig('version'))
 
 
     def _execute(self, sql, data = [], noretry = False):

@@ -1,6 +1,6 @@
 import data
 
-database_version = 5
+database_version = 6
 
 def check(data):
     '''
@@ -184,3 +184,20 @@ def run(data):
         set_version(data, version)
 
     data.kernel.setConfig('version', version)
+
+    version = 6
+    if current < version:
+        data.execute(
+            """
+            DELETE FROM `config` WHERE `name` = %s
+            """,
+            [
+                'lastcron'
+            ]
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+# Remember to update the database_version variable at the top of this file

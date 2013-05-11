@@ -3,9 +3,8 @@ import function
 import kernel
 import kernel.action
 import kernel.job
-import platform
 
-import datetime, json, os, re, socket, urllib
+import datetime, json, os, platform, re, socket, time, urllib
 
 
 
@@ -89,17 +88,23 @@ class action_stats(kernel.action.action):
         uptime = self._call_ps('etime')
         pyver  = platform.release()
         dbver  = self.function.kernel.getConfig('version')
-        cron   = db.loadConfig('lastcron')
-        if cron != 0:
-            d = datetime.datetime.fromtimestamp(float(cron))
-            cron = d.strftime('%Y-%m-%d %H:%M')
+        crons  = db.loadConfig('lastcronstart', 0)
+        cronf  = db.loadConfig('lastcronfinish', 0)
+        if crons != 0:
+            d = datetime.datetime.fromtimestamp(float(crons))
+            crons = d.strftime('%Y-%m-%d %H:%M')
+
+        if cronf != 0:
+            d = datetime.datetime.fromtimestamp(float(cronf))
+            cronf = d.strftime('%Y-%m-%d %H:%M')
 
         stats = []
         stats.append('Daemon PID: %d' % pid)
         stats.append('Jarvis CPU usage: %s' % cpuuse)
         stats.append('Jarvis memory usage: %s' % memuse)
         stats.append('Jarvis uptime: %s' % uptime)
-        stats.append('Last cron run: %s' % cron)
+        stats.append('Last cron start: %s' % crons)
+        stats.append('Last cron finish: %s' % cronf)
         stats.append('Python version: %s' % pyver)
         stats.append('Database version: %s' % dbver)
 
@@ -108,3 +113,33 @@ class action_stats(kernel.action.action):
             advdata.append([stat])
 
         return function.response(function.STATE_SUCCESS, str, advdata)
+
+
+class action_cron(kernel.action.action):
+
+    def execute(self, data):
+        start = int(time.time())
+
+        db = self.function.kernel.getDataPrimary()
+        db.updateConfig('lastcronstart', start)
+
+        periods = {'minute': 60, 'hourly': 3600, 'daily': 86400}
+        data = []
+
+        for period in periods:
+            last = int(db.loadConfig('lastcron%s' % period, 0))
+            if (last + periods[period]) <= start:
+                data.append(['Running %s cron' % period])
+
+                # Update last run time before starting in case
+                # it takes longer than 60 seconds and overlaps
+                # with the next cron run.
+                # Unless of course the long cron run in the
+                # 'minute' run, then we're screwed (and you
+                # should be beaten for writing that cron job)
+                db.updateConfig('lastcron%s' % period, start)
+                self.function.kernel.runJobs(period)
+
+        db.updateConfig('lastcronfinish', int(time.time()))
+
+        return function.response(function.STATE_SUCCESS, 'Run cron', data)
