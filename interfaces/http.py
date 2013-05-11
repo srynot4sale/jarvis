@@ -3,7 +3,6 @@ import interface
 import kernel
 import kernel.kernel
 import functions.function
-#import libs.bottle as bottle
 
 import BaseHTTPServer, json, urllib
 
