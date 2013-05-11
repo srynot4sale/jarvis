@@ -130,15 +130,23 @@ class data(kernel.service.service):
         '''
         self.execute(
             """
-            UPDATE
+            INSERT INTO
                 `config`
-            SET
-                `value` = %s
-            WHERE
-                `name` = %s
+            (
+                `name`,
+                `value`
+            )
+            VALUES
+            (
+                %s,
+                %s
+            )
+            ON DUPLICATE KEY
+            UPDATE
+                `value` = VALUES(`value`)
             """,
             [
-                str(value),
-                name
+                name,
+                str(value)
             ]
         )
