@@ -90,6 +90,7 @@ class action_stats(kernel.action.action):
         dbver  = self.function.kernel.getConfig('version')
         crons  = db.loadConfig('lastcronstart', 0)
         cronf  = db.loadConfig('lastcronfinish', 0)
+        cronl  = db.loadConfig('longestcron', 0)
         if crons != 0:
             d = datetime.datetime.fromtimestamp(float(crons))
             crons = d.strftime('%Y-%m-%d %H:%M')
@@ -105,6 +106,7 @@ class action_stats(kernel.action.action):
         stats.append('Jarvis uptime: %s' % uptime)
         stats.append('Last cron start: %s' % crons)
         stats.append('Last cron finish: %s' % cronf)
+        stats.append('Longest cron run (secs): %s' % cronl)
         stats.append('Python version: %s' % pyver)
         stats.append('Database version: %s' % dbver)
 
@@ -140,6 +142,12 @@ class action_cron(kernel.action.action):
                 db.updateConfig('lastcron%s' % period, start)
                 self.function.kernel.runJobs(period)
 
-        db.updateConfig('lastcronfinish', int(time.time()))
+        finish = int(time.time())
+        db.updateConfig('lastcronfinish', finish)
+
+        longest = int(db.loadConfig('longestcron', 0))
+        print finish - start
+        if longest < (finish - start):
+            db.updateConfig('longestcron', finish - start)
 
         return function.response(function.STATE_SUCCESS, 'Run cron', data)
