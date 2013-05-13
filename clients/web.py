@@ -1,8 +1,14 @@
-# Jarvis http interface
+# Jarvis http client
+# Runs on port 8080
+
+import os
+
 import libs.bottle as bottle
 
 BASEURL = ''
 SECRET = ''
+
+rootdir = os.path.dirname(os.path.realpath(__file__))
 
 @bottle.route('/')
 def index():
@@ -30,24 +36,18 @@ def index():
 
     '''
 
-
 @bottle.route('/static/<filename:path>')
 def send_static(filename):
-    return bottle.static_file(filename, root='/home/aaronb/code/jarvis/clients/web/static')
-
+    return bottle.static_file(filename, root=os.path.join(rootdir, 'web', 'static'))
 
 def setBaseUrl(baseurl):
     global BASEURL
     BASEURL = baseurl
 
-
 def setSecret(secret):
     global SECRET
     SECRET = secret
 
-
 def init():
     bottle.debug(True)
-    bottle.run(host='localhost', port=8080)
-
-
+    bottle.run(host='0.0.0.0', port=8080)
