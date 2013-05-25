@@ -37,7 +37,7 @@ Database tables will be installed on first run.
 
 Also requiring setup is the cron job, here is an example crontab:
 
-    * 0 0 0 0 jarvisuser cd /path/to/jarvis/checkout; ./cron.py;
+    * * * * * jarvisuser cd /path/to/jarvis/checkout; ./cron.py;
 
 
 Test suite can be run by evoking `nosetests` from the root jarvis directory.
