@@ -37,6 +37,7 @@ var api_call = function(url) {
     // Replace the first two spaces
     url = url.replace(' ', '/');
     url = url.replace(' ', '/');
+    url = escape(url);
 
     var baseurl = $('span.base_url').html();
 
