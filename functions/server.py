@@ -22,10 +22,10 @@ class serverfunc(function.function):
 class job_hourly(kernel.job.job):
 
     def execute(self):
-        weather = self.function.kernel.call('list', 'view', ['#weather']).data
+        weather = self.function.kernel.call('list', 'view', ['#weather'])
         dataids = []
-        if weather and len(weather):
-            for d in weather:
+        if weather and weather.state == function.STATE_SUCCESS:
+            for d in weather.data:
                 dataids.append(d[0])
 
         try:
@@ -59,7 +59,10 @@ class action_connect(kernel.action.action):
         welcome = 'Hi %s. Today is %s' % (user, date)
 
         weather = self._get_weather()
-        data = weather.data
+        if weather and weather.state == function.STATE_SUCCESS:
+            data = weather.data
+        else:
+            data = []
 
         today = self.function.kernel.call('list', 'view', ['today'])
         if today.state == function.STATE_SUCCESS:
