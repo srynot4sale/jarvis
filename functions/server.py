@@ -149,7 +149,6 @@ class action_cron(kernel.action.action):
         db.updateConfig('lastcronfinish', finish)
 
         longest = int(db.loadConfig('longestcron', 0))
-        print finish - start
         if longest < (finish - start):
             db.updateConfig('longestcron', finish - start)
 
