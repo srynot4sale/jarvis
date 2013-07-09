@@ -57,6 +57,7 @@ def badinput_test():
         'UNITTESTLISTBADHI\\',
         'UNITTESTLISTBAD/HI',
         'UNITTESTLISTBAD/HI/'
+        'UNITTESTLISTBAD#'
     ]
 
     # test each bad tag
@@ -249,3 +250,94 @@ def list_adddeletetags_test():
     empty2 = make_request('list view %s' % tag)
     assert empty2['state'] == 2
     empty2 = None
+
+
+def list_itemorder_basic_test():
+    '''
+    Check items appear in order added when displayed
+    '''
+    tag = 'UNITTESTLISTORDER'
+    listitem = 'test list item item#'
+
+    # check for empty lists first
+    list_empty(tag)
+
+    # add four new items
+    for i in range(0, 4):
+        newitem = make_request('list add %s %s' % (tag, '%s%d' % (listitem, i)))
+        assert newitem['state'] == 1
+        newitem = None
+
+    # check four items exist
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 4
+
+    # check they are in the same order we added them
+    e = 0
+    for i in range(0, 4):
+        assert exists['data'][e][0] == '%s%d' % (listitem, i)
+        e += 1
+
+    exists = None
+
+    list_empty(tag)
+
+
+def list_itemorder_multitag_test():
+    '''
+    Check items appear in order tags added when displayed
+    '''
+    tag = 'UNITTESTLISTORDERTAG'
+    tagalt = 'UNITTESTLISTORDERTAGALT'
+    listitem = 'test list item item#'
+
+    # check for empty lists first
+    list_empty(tag)
+    list_empty(tagalt)
+
+    # add item to alternate list first
+    newitem = make_request('list add %s %s' % (tagalt, '%s%d' % (listitem, 9)))
+    assert newitem['state'] == 1
+    newitem = None
+
+    exists = make_request('list view %s' % tagalt)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 1
+    altitemid = exists['data'][0][2]['Delete'].split(' ')[3]
+    exists = None
+
+    # add two new items to correct tag
+    for i in range(0, 2):
+        newitem = make_request('list add %s %s' % (tag, '%s%d' % (listitem, i)))
+        assert newitem['state'] == 1
+        newitem = None
+
+    # check two items exist
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 2
+    exists = None
+
+    # add tag to alternate item, adding it to the *end* of this list
+    newitem = make_request('list tag %s %s' % (tag, altitemid))
+    assert newitem['state'] == 1
+    newitem = None
+
+    # check three items exist
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 3
+
+    # check they are in the same order we added the tags
+    # this means that the alternate item should be last on the list
+    expect = [0, 1, 9]
+    e = 0
+    for i in expect:
+        assert exists['data'][e][0] == '%s%d' % (listitem, i)
+        e += 1
+
+    exists = None
+
+    list_empty(tag)
+    list_empty(tagalt)
