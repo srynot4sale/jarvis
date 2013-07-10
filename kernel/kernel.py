@@ -1,12 +1,31 @@
 ## Jarvis kernel
 import functions.function
+import application
+
+import tornado.ioloop
 
 class kernel(object):
 
+    # Base functionality
     _data = {}
     _function = {}
     _interface = {}
+
+    # Configuration dictionary
     _config = {}
+
+    # Tornado application instance
+    _application = None
+
+    # Tornado application settings
+    _appsettings = {
+        'xsrf_cookies': False,
+        'autoescape':   None
+    }
+
+    # Tornado application handler list
+    # Attach to a URI endpoint here
+    _handlers = []
 
 
     def __init__(self, config):
@@ -14,6 +33,15 @@ class kernel(object):
         self.log('Load configuration')
         for c in config:
             self.setConfig(c, config[c])
+
+
+    def start(self):
+        self.log('Initialise Tornado')
+        self._application = application.app(self)
+        self._application.listen(self.getConfig('interface_http_port'))
+
+        self.log('Start IOLoop')
+        tornado.ioloop.IOLoop.instance().start()
 
 
     def log(self, message):

@@ -4,7 +4,8 @@ import kernel
 import kernel.kernel
 import functions.function
 
-import BaseHTTPServer, json, urllib
+import tornado.web
+import json, urllib
 
 
 def init(k):
@@ -18,44 +19,34 @@ class http(interface.interface):
     def __init__(self, k):
         interface.interface.__init__(self, 'http')
         self.kernel = k
+        self.kernel.log('Setup HTTP interface')
+        self.kernel._handlers.append((r'/api/(.*)', handler, dict(server=self)))
 
 
-    def start(self):
-        self.kernel.log('Start serving HTTP interface')
-        port = self.kernel.getConfig('interface_http_port')
-        self.server = server(('', int(port)), handler, self.kernel)
-        self.server.serve_forever()
+class handler(tornado.web.RequestHandler):
+
+    def initialize(self, server):
+        self.server = server
 
 
-class server(BaseHTTPServer.HTTPServer):
-
-    kernel = None
-
-    def __init__(self, vars, handler, k):
-        self.kernel = k
-        BaseHTTPServer.HTTPServer.__init__(self, vars, handler)
-
-
-class handler(BaseHTTPServer.BaseHTTPRequestHandler):
-
-    def do_OPTIONS(self):
-        self.send_response(200, "ok")
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header("Access-Control-Allow-Headers", "X-Requested-With, Content-type, Secret")
-        self.send_header("Access-Control-Max-Age", "86400")
+    def options(self, path):
+        self.set_status(200)
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.set_header("Access-Control-Allow-Headers", "X-Requested-With, Content-type, Secret")
+        self.set_header("Access-Control-Max-Age", "86400")
 
 
-    def do_GET(self):
+    def get(self, path):
         output = None
         httpcode = 500
 
         try:
-            authentication = self.headers['secret'] if 'secret' in self.headers else None
+            authentication = self.request.headers['Secret'] if 'Secret' in self.request.headers else None
             if authentication != self.server.kernel.getConfig('secret'):
                 raise kernel.kernel.JarvisAuthException('Authentication failure')
 
-            relative = self.path.lstrip('/')
+            relative = path.lstrip('/')
             parts = relative.split('/')
 
             function = parts[0]
@@ -92,10 +83,10 @@ class handler(BaseHTTPServer.BaseHTTPRequestHandler):
             print 'EXCEPTION [%s]: %s' % (type(e).__name__, str(e))
             traceback.print_exc(file=sys.stdout)
 
-        self.send_response(httpcode)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
+        print 'API %s %s' % (httpcode, path)
+        self.set_status(httpcode)
+        self.set_header('Content-type', 'application/json')
+        self.set_header('Access-Control-Allow-Origin', '*')
 
         if output:
-            self.wfile.write(output)
+            self.write(output)

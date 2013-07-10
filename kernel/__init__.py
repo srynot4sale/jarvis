@@ -3,6 +3,7 @@ import data
 import functions
 import interfaces
 
+
 def init(config):
     ## Initialise jarvis kernel
     jarvis = kernel.kernel(config)
@@ -13,7 +14,10 @@ def init(config):
     ## Initialise functions
     jarvis.register('function', functions.init())
 
-    ## Boot up interfaces
+    ## Set up interfaces
     jarvis.register('interface', interfaces.init(jarvis))
+
+    ## Start IO Loop
+    jarvis.start()
 
     return jarvis

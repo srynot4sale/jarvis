@@ -18,6 +18,7 @@ Dependencies:
 - MySQL
 - requests - http://docs.python-requests.org/en/latest/
 - MySQLdb - http://mysql-python.sourceforge.net/MySQLdb.html
+- tornado - http://www.tornadoweb.org
 - nose - https://pypi.python.org/pypi/nose/
 
 

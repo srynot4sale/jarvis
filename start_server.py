@@ -18,4 +18,3 @@ import kernel
 import sys
 
 jarvis = kernel.init(config.config)
-jarvis.get('interface', 'http').start()
