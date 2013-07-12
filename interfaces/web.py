@@ -5,7 +5,7 @@ import kernel.kernel
 import functions.function
 
 import tornado.web
-import json, os, urllib
+import base64, json, os, urllib
 
 
 def init(k):
@@ -38,7 +38,34 @@ class handler(tornado.web.RequestHandler):
         self.server = server
 
 
+    def _authenticate(self):
+        # Check authorised header exists
+        if 'Authorization' not in self.request.headers:
+            return False
+
+        auth = self.request.headers['Authorization']
+
+        # Check it is well formed
+        if not auth.startswith('Basic '):
+            return False
+
+        # Remove 'Basic ' prefix
+        auth = auth[6:]
+
+        username = self.server.kernel.getConfig('web_username')
+        password = self.server.kernel.getConfig('web_password')
+
+        return base64.b64decode(auth) == ('%s:%s' % (username, password))
+
+
     def get(self):
+
+        # Check authentication details
+        if not self._authenticate():
+            self.set_status(401)
+            self.set_header('WWW-Authenticate', 'Basic realm="Jarvis Web Client"')
+            self.write('Please supply correct authentication details')
+            return
 
         BASEURL = self.server.kernel.getConfig('web_baseurl')
         BASEURL += 'api/'

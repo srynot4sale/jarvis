@@ -32,6 +32,8 @@ Config file's (config.py) expected content:
     config['username']              = 'My Name'
     config['secret']                = 'secrethash'
     config['web_baseurl']           = 'http://localhost:XXXX/'
+    config['web_username']          = 'myusername'
+    config['web_password']          = 'mypassword'
 
 
 Database tables will be installed on first run.
