@@ -8,7 +8,7 @@ via a REST interface.
 
 It's clients include:
 
-- HTTP: `python web.py` to run
+- HTTP: built-in, access at configured web_baseurl
 - Android: see https://github.com/srynot4sale/jarvis-android
 
 
@@ -16,8 +16,8 @@ Dependencies:
 
 - Python 2.5+
 - MySQL
-- requests - http://docs.python-requests.org/en/latest/
 - MySQLdb - http://mysql-python.sourceforge.net/MySQLdb.html
+- requests - http://docs.python-requests.org/en/latest/
 - tornado - http://www.tornadoweb.org
 - nose - https://pypi.python.org/pypi/nose/
 
