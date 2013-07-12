@@ -19,7 +19,7 @@ def make_request(request, altsecret = None):
 
     command = urllib.quote(request, '')
     uri = command.replace(urllib.quote(' '), '/', 2)
-    url = '%s%s' % (baseurl, uri)
+    url = baseurl + 'api/' + uri
 
     response = requests.get(url, headers={'secret': secret})
     return json.loads(response.text)
