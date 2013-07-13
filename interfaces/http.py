@@ -46,6 +46,8 @@ class handler(tornado.web.RequestHandler):
             if authentication != self.server.kernel.getConfig('secret'):
                 raise kernel.kernel.JarvisAuthException('Authentication failure')
 
+            self.server.kernel.debug(path, 'interface.http.handler.get')
+
             relative = path.lstrip('/')
             parts = relative.split('/')
 
@@ -62,6 +64,8 @@ class handler(tornado.web.RequestHandler):
             httpcode = result.getHTTPCode()
             output = json.dumps(resultbasic)
 
+            self.server.kernel.debug(resultbasic['message'], 'interface.http.handler.get')
+
         except kernel.kernel.JarvisException as e:
             httpcode = e.httpcode
             basic = {}
@@ -70,6 +74,8 @@ class handler(tornado.web.RequestHandler):
             basic['data'] = e.data
             output = json.dumps(basic)
 
+            self.server.kernel.debug(basic['message'], 'interface.http.handler.get')
+
         except Exception as e:
             httpcode = 500
             basic = {}
@@ -77,6 +83,8 @@ class handler(tornado.web.RequestHandler):
             basic['message'] = 'ERROR: Server panic'
             basic['data'] = []
             output = json.dumps(basic)
+
+            self.server.kernel.debug(basic['message'], 'interface.http.handler.get')
 
             # Print exception details to stdout
             import traceback, sys

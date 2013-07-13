@@ -48,6 +48,16 @@ class kernel(object):
         print 'MSG: %s' % message
 
 
+    def debug(self, message, source = None):
+        if not self.getConfig('debug'):
+            return
+
+        if source:
+            print 'DEBUG %s: %s' % (source, message)
+        else:
+            print 'DEBUG: %s' % message
+
+
     def register(self, type, items):
         self.log('Registering %ss' % type)
         citems = getattr(self, '_'+type)
@@ -108,7 +118,10 @@ class kernel(object):
 
 
     def getConfig(self, key):
-        return self._config[key]
+        if key in self._config:
+            return self._config[key]
+        else:
+            return None
 
 
     def getDataPrimary(self):
