@@ -10,8 +10,9 @@ import urllib
 def make_request(request, altsecret = None):
     baseurl = config.config['web_baseurl']
 
-    if 'io.net.nz' in baseurl:
-        raise Exception('Not on production!')
+    if 'is_production' in config.config:
+        if config.config['is_production'] == True:
+            raise Exception('Not on production!')
 
     secret  = config.config['secret']
     if altsecret:

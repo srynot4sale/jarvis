@@ -25,6 +25,7 @@ Dependencies:
 Config file's (config.py) expected content:
 
     config = {}
+    config['is_production']         = True
     config['debug']                 = False
     config['database_host']         = 'localhost'
     config['database_username']     = 'jarvis'
