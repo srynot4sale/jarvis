@@ -153,3 +153,17 @@ class action_cron(kernel.action.action):
             db.updateConfig('longestcron', finish - start)
 
         return function.response(function.STATE_SUCCESS, 'Run cron', data)
+
+
+class action_menu(kernel.action.action):
+
+    def execute(self, data):
+
+        message = 'Default menu items'
+        items = [
+            ['Home', 'server connect'],
+            ['Server', 'server default'],
+            ['List', 'list default']
+        ]
+
+        return function.response(function.STATE_SUCCESS, message, items)

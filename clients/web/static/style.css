@@ -1,51 +1,71 @@
+html, body {
+    padding: 0;
+    margin: 0;
+}
+
+html, body, input, textarea {
+    font-family: 'Armata', sans-serif;
+}
+
 body {
-    background-color: #050505;
-    color: #06d5c3;
+    background-color: #fff;
+    color: #444;
     font-size: small;
-    padding: 10px;
+}
+
+#container {
+    position: relative;
+}
+
+#input {
+    float: left;
+    width: 220px;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding-bottom: 20px;
 }
 
 #input input {
-    width: 6%;
-    margin-right: 1%;
     padding: 5px;
+    display: block;
+    margin: 10px;
 }
 
 #input .textbox {
-    width: 29%;
-    margin-right: 0;
+    width: 200px;
 }
 
 div#output {
-    border: 0;
-    font-family: "DejaVu Sans Mono";
-    margin-top: 10px;
+    margin-left: 220px;
+    border: none;
 }
 
 .response {
-    width: 50%;
-    border: 1px solid #06d5c3;
     margin: 0;
-    float: left;
-    zoom: 1;
 }
 
-.response ol,
-.response div,
 .response h3 {
-    margin: 5px;
+    background-color: #999;
+    color: #fff;
+    padding: 10px 20px;
+    margin: 0 0 10px;
+    font-size: 150%;
+    font-weight: normal;
 }
 
 .response h3 span.refresh {
     float: right;
 }
 
+.response ol,
+.response div {
+    margin: 10px 20px 10px;
+}
+
 .response .message {
-    background-color: #06d5c3;
-    color: #050505;
-    padding: 5px;
-    margin-right: 0;
-    margin-left: 0;
+    font-size: 150%;
+    padding: 10px 0;
 }
 
 .response > ol {
@@ -55,31 +75,35 @@ div#output {
 
 .response > ol > li {
     overflow: auto;
-    padding: 5px;
-    border-bottom: 1px dotted #06d5c3;
+    padding: 10px;
+    margin: 5px 0 0 0;
+    background-color: #efefef;
 }
 
 .response > ol > li:last-child {
     border-bottom: none;
 }
 
-.response span.expand {
-    float: left;
-    display: block;
-    padding-right: 10px;
+.response > ol > li.expands {
+    background-color: #dedede;
 }
 
-.response span.expand:hover {
-    background-color: #050505;
-    color: #06d5c3;
+.response > ol > li.hoveraction,
+.response > ol > li.expands:hover {
+    border: 1px solid #ccc;
+    padding: 9px;
 }
 
 .response ol ol {
-    display: none;
+    display: inline;
+    float: right;
     list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 .response ol ol li {
+    display: inline-block;
     float: left;
     padding: 0 5px;
 }
@@ -90,4 +114,58 @@ div#output {
 
 .action {
     cursor: pointer;
+}
+
+div.result {
+    background-color: #f00;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.error .message {
+    color: #f00;
+}
+
+span.menu {
+    display: block;
+    background-color: #666;
+    color: #dedede;
+    font-weight: bold;
+    font-size: 125%;
+    padding: 10px;
+    margin-top: 2px;
+    margin-left: 10px;
+}
+
+div#input-toggle {
+    display: none;
+}
+
+body.mobile div#output {
+    margin-left: 0;
+}
+
+body.mobile div#input {
+    float: none;
+    display: none;
+    width: 100%;
+}
+
+body.mobile #input .textbox {
+    width: 100%;
+    padding: 10px 0;
+    margin: 0 0 10px;
+}
+
+body.mobile #input span.menu {
+    margin-left: 0;
+}
+
+body.mobile #input-toggle {
+    display: block;
+    font-size: 125%;
+    text-align: center;
+    padding: 5px;
 }

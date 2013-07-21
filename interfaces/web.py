@@ -4,8 +4,11 @@ import kernel
 import kernel.kernel
 import functions.function
 
-import tornado.web
+import tornado.web, tornado.template
 import base64, json, os, urllib
+
+
+rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
 def init(k):
@@ -28,7 +31,6 @@ class statichandler(tornado.web.StaticFileHandler):
 
     def initialize(self, server):
         self.server = server
-        rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         self.root = os.path.join(rootdir, 'clients', 'web', 'static')
 
 
@@ -67,36 +69,15 @@ class handler(tornado.web.RequestHandler):
             self.write('Please supply correct authentication details')
             return
 
-        BASEURL = self.server.kernel.getConfig('web_baseurl')
-        BASEURL += 'api/'
+        baseurl = self.server.kernel.getConfig('web_baseurl') + 'api/'
+        secret  = self.server.kernel.getConfig('secret')
 
-        SECRET  = self.server.kernel.getConfig('secret')
+        root = os.path.join(rootdir, 'clients', 'web')
+        loader = tornado.template.Loader(root)
+        output = loader.load("template.html").generate(BASEURL=baseurl, SECRET=secret)
 
-        output = '''
-
-<html>
-<head>
-
-<title>Jarvis</title>
-
-<script src="/static/jquery-1.5.1.min.js"></script>
-<script src="/static/global.js"></script>
-
-<link rel="stylesheet" type="text/css" href="/static/style.css" />
-
-</head>
-<body>
-
-<span style="display: none;" class="base_url">'''+BASEURL+'''</span>
-<span style="display: none;" class="secret">'''+SECRET+'''</span>
-
-
-</body>
-</html>
-
-        '''
-
-        print 'WEB 200 /'
+        # Log message
+        self.server.kernel.log('WEB 200 /')
 
         if output:
             self.write(output)
