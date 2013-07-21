@@ -24,7 +24,7 @@ def authnegative_test():
     '''
     negative = make_request('server connect', 'badsecret')
     assert negative['state'] == 4
-    assert len(negative['data']) == 0
+    assert negative['data'] == [[[]]]
 
 def weather_test():
     '''
@@ -33,6 +33,24 @@ def weather_test():
     weather = make_request('server connect')
     assert weather['data'][0][0].startswith('Today')
     assert weather['data'][1][0].startswith('Tomorrow')
+
+def badpath_test():
+    '''
+    Test a non existant function or action fails correctly
+    '''
+    yes = make_request('server connect')
+    assert yes['state'] == 1
+    yes = None
+
+    nofunc = make_request('notreal connect')
+    assert nofunc['state'] == 2
+    assert nofunc['message'] == 'ERROR: Function does not exist'
+    nofunc = None
+
+    noact = make_request('server notreal')
+    assert noact['state'] == 2
+    assert noact['message'] == 'ERROR: Action does not exist'
+    noact = None
 
 def badinput_test():
     '''
@@ -44,7 +62,6 @@ def badinput_test():
         'UNITTESTLISTBAD\"\"HI',
         'UNITTESTLISTBAD\'',
         'UNITTESTLISTBAD\"',
-        'UNITTESTLISTBAD%20',
         'UNITTESTLISTBAD+SPACE',
         'UNITTESTLISTBAD%2fSPACE',
         'UNITTESTLISTBAD\0',

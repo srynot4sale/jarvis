@@ -71,7 +71,7 @@ class handler(tornado.web.RequestHandler):
             basic = {}
             basic['state'] = e.state
             basic['message'] = 'ERROR: %s' % e.message
-            basic['data'] = e.data
+            basic['data'] = [[e.data]]
             output = json.dumps(basic)
 
             self.server.kernel.debug(basic['message'], 'interface.http.handler.get')
