@@ -7,10 +7,10 @@ import requests
 import urllib
 
 
-def make_request(request, altsecret = None):
+def make_request(request, altsecret = None, prodok = False):
     baseurl = config.config['web_baseurl']
 
-    if 'is_production' in config.config:
+    if not prodok and 'is_production' in config.config:
         if config.config['is_production'] == True:
             raise Exception('Not on production!')
 
