@@ -174,7 +174,7 @@ def list_adddeletetags_test():
     exists = None
 
     # add second tag
-    newtag = make_request('list tag %s %s' % (tag2, existsid))
+    newtag = make_request('list tag %s %s' % (existsid, tag2))
     assert newtag['state'] == 1
     newtag = None
 
@@ -240,7 +240,7 @@ def list_adddeletetags_test():
     exists = None
 
     # add same tag again
-    newtag = make_request('list tag %s %s' % (tag, existsid))
+    newtag = make_request('list tag %s %s' % (existsid, tag))
     assert newtag['state'] == 1
     newtag = None
 
@@ -337,7 +337,7 @@ def list_itemorder_multitag_test():
     exists = None
 
     # add tag to alternate item, adding it to the *end* of this list
-    newitem = make_request('list tag %s %s' % (tag, altitemid))
+    newitem = make_request('list tag %s %s' % (altitemid, tag))
     assert newitem['state'] == 1
     newitem = None
 

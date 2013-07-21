@@ -247,11 +247,11 @@ class action_add(kernel.action.action):
 
 class action_tag(kernel.action.action):
 
-    usage = '$tag $itemid'
+    usage = '$itemid $tag'
 
     def execute(self, data):
-        tag     = data[0]
-        itemid  = data[1]
+        itemid  = data[0]
+        tag     = data[1]
 
         l = lstobj(self.function, tag)
 
