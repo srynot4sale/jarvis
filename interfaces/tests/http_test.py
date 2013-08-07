@@ -358,3 +358,18 @@ def list_itemorder_multitag_test():
 
     list_empty(tag)
     list_empty(tagalt)
+
+
+def list_missingtag_test():
+    '''
+    Test handling of empty tags
+    '''
+    newitem = make_request('list add  item')
+    assert newitem['state'] == 2
+    assert newitem['message'] == 'No tag specified'
+    newitem = None
+
+    newitem = make_request('list tag 1 ')
+    assert newitem['state'] == 2
+    assert newitem['message'] == 'No tag specified'
+    newitem = None

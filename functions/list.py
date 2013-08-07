@@ -228,6 +228,9 @@ class action_add(kernel.action.action):
         lstkey = data[0]
         newitem = ' '.join(data[1:])
 
+        if lstkey.strip() == '':
+            return function.response(function.STATE_FAILURE, 'No tag specified')
+
         if newitem.strip() == '':
             return function.response(function.STATE_FAILURE, 'No item to add')
 
@@ -258,6 +261,9 @@ class action_tag(kernel.action.action):
         itemdata = l.get(itemid)
         data = []
         data.append(['View list "%s"' % tag, "list view %s" % tag])
+
+        if tag.strip() == '':
+            return function.response(function.STATE_FAILURE, 'No tag specified')
 
         if not itemdata:
             resp = function.response(function.STATE_FAILURE, 'No item to tag "%s"' % tag)
