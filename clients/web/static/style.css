@@ -169,3 +169,63 @@ body.mobile #input-toggle {
     text-align: center;
     padding: 5px;
 }
+
+/**
+ * Dialog styling
+ */
+/* Overlay */
+#simplemodal-overlay {
+    background-color: #000;
+}
+
+/* Container */
+#simplemodal-container {
+    height: 360px;
+    width: 600px;
+    color: #bbb;
+    background-color: #333;
+    border: 4px solid #444;
+}
+
+#simplemodal-container .simplemodal-data {
+    padding: 0;
+}
+
+#simplemodal-container .simplemodal-data div {
+    padding: 1em;
+}
+
+#simplemodal-container .simplemodal-data label {
+    padding-right: 1em;
+}
+
+#simplemodal-container .simplemodal-data input,
+#simplemodal-container .simplemodal-data button {
+    padding: 0.5em;
+}
+
+#simplemodal-container .simplemodal-data button {
+    margin-left: 1em;
+}
+
+#simplemodal-container a {
+    color: #ddd;
+}
+
+#simplemodal-container a.modalCloseImg {
+    background: url(img/x.png) no-repeat;
+    width: 25px;
+    height: 29px;
+    display: inline;
+    z-index: 3200;
+    position: absolute;
+    top: -15px;
+    right: -16px;
+    cursor: pointer;
+}
+
+#simplemodal-container h2 {
+    background-color: #444;
+    margin: 0;
+    padding: 0.5em;
+}

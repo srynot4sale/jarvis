@@ -105,14 +105,55 @@ function jarvis_handle_result(result) {
     return res;
 }
 
+function jarvis_dialog(action, callback, params) {
+    console.log('function jarvis_dialog');
+
+    var dialog = $('<div class="dialog"></div>');
+    dialog.append($('<h2>'+action+'</h2>'));
+
+    for (var p in params) {
+        var param = params[p];
+        var nice = param.replace('%', '').replace('_', ' ');
+        var element = $('<div></div>');
+        element.append($('<label for="dialog-'+param+'">'+nice+'</label>'));
+        element.append($('<input type="text" id="dialog-'+param+'" name="'+param+'" />'));
+        dialog.append(element);
+    }
+
+    dialog.append('<button>Submit</button>');
+
+    $('button', dialog).click(function() {
+        for (var p in params) {
+            var param = params[p];
+            action = action.replace(param, $('input[name="'+param+'"]', dialog).val());
+        }
+
+        $.modal.close();
+        api_call(action, callback);
+    });
+
+    dialog.modal();
+}
 
 var api_call = function(action, callback) {
     console.log('function api_call '+action);
 
     // Replace the first two spaces
     url = action.replace(' ', '/').replace(' ', '/');
-    url = escape(url);
 
+    /**
+     * Check if this a dynamic call, e.g. needs input (look for a %xxx)
+     */
+    var dynamic = /\%[A-Za-z0-9_]+/g;
+    var dvars = url.match(dynamic);
+    if (dvars) {
+        jarvis_dialog(action, callback, dvars);
+        return false;
+    }
+
+    /**
+     * Prepare HTML
+     */
     var baseurl = $('body').data('baseurl');
 
     var exists = $('div.response');
@@ -212,7 +253,7 @@ var api_call = function(action, callback) {
     console.log('make json call to '+url);
     $.ajax({
         dataType: "json",
-        url: baseurl+url,
+        url: baseurl+escape(url),
         data: '',
         complete: callback,
         headers: {'secret': $('body').data('secret')}

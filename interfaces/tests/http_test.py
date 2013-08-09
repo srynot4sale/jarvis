@@ -373,3 +373,68 @@ def list_missingtag_test():
     assert newitem['state'] == 2
     assert newitem['message'] == 'No tag specified'
     newitem = None
+
+
+def list_move_test():
+    '''
+    Test the list move action
+    '''
+    tag_origin = 'UNITTESTORIGIN'
+    tag_dest = 'UNITTESTDESTINATION'
+    listitem = 'tagitem'
+
+    # check for empty lists first
+    list_empty(tag_origin)
+    list_empty(tag_dest)
+
+    # add new item with first tag
+    newitem = make_request('list add %s %s' % (tag_origin, listitem))
+    assert newitem['state'] == 1
+    newitem = None
+
+    # check new item exists
+    exists = make_request('list view %s' % tag_origin)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem
+    existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+    exists = None
+
+    # fail to move item from wrong tag
+    wrongtag = make_request('list move %s %s %s' % (existsid, 'UNITESTNONEXISTANTTAG', tag_dest))
+    assert wrongtag['state'] == 2
+    wrongtag = None
+
+    # move item to new tag
+    newtag = make_request('list move %s %s %s' % (existsid, tag_origin, tag_dest))
+    assert newtag['state'] == 1
+    newtag = None
+
+    # check item only shows once
+    exists = make_request('list view %s' % tag_dest)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem
+    exists = None
+
+    # check it no longer appears at old tag
+    old = make_request('list view %s' % (tag_origin))
+    assert old['state'] == 2
+    old = None
+
+    # delete list item
+    delete = make_request('list remove %s %s' % (tag_dest, existsid))
+    assert delete['state'] == 1
+    assert len(delete['data']) == 1
+    assert delete['data'][0][0] == 'View list "%s"' % tag_dest
+    delete = None
+
+    # check list is empty again
+    empty2 = make_request('list view %s' % tag_origin)
+    assert empty2['state'] == 2
+    empty2 = None
+
+    # check list is empty again
+    empty3 = make_request('list view %s' % tag_dest)
+    assert empty3['state'] == 2
+    empty3 = None

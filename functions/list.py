@@ -204,7 +204,12 @@ class action_view(kernel.action.action):
 
         data = []
         for item in items:
-            data.append([item['item'], None, {'Delete': 'list remove %s %s' % (lstkey, item['id'])}])
+            actions = {
+                'Delete':  'list remove %s %s' % (lstkey, item['id']),
+                'Move...': 'list move %s %s %%Replacement_tag' % (item['id'], lstkey),
+                'Tag...':  'list tag %s %%Tag' % (item['id'])
+            }
+            data.append([item['item'], None, actions])
 
         return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data)
 
@@ -276,6 +281,45 @@ class action_tag(kernel.action.action):
         data = []
         data.append(['View list "%s"' % tag, "list view %s" % tag])
         resp = function.response(function.STATE_SUCCESS, 'Adding "%s" to list "%s"' % (itemdata['item'], tag))
+        resp.data = data
+        resp.write = 1
+        return resp
+
+    def undo(self, list):
+        pass
+
+
+class action_move(kernel.action.action):
+
+    usage = '$itemid $currenttag $replacementtag'
+
+    def execute(self, data):
+        itemid = data[0]
+        oldtag = data[1]
+        newtag = data[2]
+
+        if oldtag.strip() == '':
+            return function.response(function.STATE_FAILURE, 'No old tag specified')
+
+        if newtag.strip() == '':
+            return function.response(function.STATE_FAILURE, 'No new tag specified')
+
+        l = lstobj(self.function, oldtag)
+        itemdata = l.get(itemid, oldtag)
+
+        if not itemdata:
+            resp = function.response(function.STATE_FAILURE, 'No item to move from tag "%s"' % oldtag)
+            resp.data = data
+            resp.write = 1
+            return resp
+
+        l.remove_tag(itemid, oldtag)
+        l.add_tag(itemid, newtag)
+
+        data = []
+        data.append(['View list "%s"' % newtag, "list view %s" % newtag])
+
+        resp = function.response(function.STATE_SUCCESS, 'Moved "%s" from "%s" to "%s"' % (itemdata['item'], oldtag, newtag))
         resp.data = data
         resp.write = 1
         return resp
