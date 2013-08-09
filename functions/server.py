@@ -60,7 +60,9 @@ class action_connect(kernel.action.action):
 
         weather = self._get_weather()
         if weather and weather.state == function.STATE_SUCCESS:
-            data = weather.data
+            data = []
+            for line in weather.data:
+                data.append(line[0:1])
         else:
             data = []
 
