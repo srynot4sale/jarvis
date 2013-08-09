@@ -197,21 +197,24 @@ class action_view(kernel.action.action):
 
         items = l.get_all()
 
+        actions = []
+        actions.append(["Add...", "list add %s %%List_item" % lstkey])
+
         if not len(items):
             data = []
             data.append(["List all lists", 'list list'])
-            return function.response(function.STATE_FAILURE, 'No items in list "%s"' % lstkey, data)
+            return function.response(function.STATE_FAILURE, 'No items in list "%s"' % lstkey, data, actions)
 
         data = []
         for item in items:
-            actions = {
+            item_actions = {
                 'Delete':  'list remove %s %s' % (lstkey, item['id']),
                 'Move...': 'list move %s %s %%Replacement_tag' % (item['id'], lstkey),
                 'Tag...':  'list tag %s %%Tag' % (item['id'])
             }
-            data.append([item['item'], None, actions])
+            data.append([item['item'], None, item_actions])
 
-        return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data)
+        return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data, actions)
 
 
 class action_list(kernel.action.action):

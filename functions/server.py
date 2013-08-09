@@ -71,7 +71,10 @@ class action_connect(kernel.action.action):
             data.append(['==== Today ====', 'list view today'])
             data += today.data
 
-        return function.response(function.STATE_SUCCESS, welcome, data)
+        actions = []
+        actions.append(["Add...", "list add today %%List_item"])
+
+        return function.response(function.STATE_SUCCESS, welcome, data, actions)
 
 
 class action_stats(kernel.action.action):

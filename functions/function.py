@@ -61,12 +61,14 @@ class response(object):
     state = None
     message = None
     data = None
+    actions = None
     write = 0
 
-    def __init__(self, state, message = '', data = None):
+    def __init__(self, state, message = '', data = None, actions = None):
         self.state = state
         self.message = message
         self.data = data
+        self.actions = actions
 
 
     def returnAdvanced(self):
@@ -74,6 +76,7 @@ class response(object):
         basic['state'] = self.state
         basic['message'] = self.message
         basic['data'] = self.data
+        basic['actions'] = self.actions
         basic['write'] = self.write
         return basic
 
