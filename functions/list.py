@@ -212,6 +212,14 @@ class action_view(kernel.action.action):
                 'Move...': 'list move %s %s %%Replacement_tag' % (item['id'], lstkey),
                 'Tag...':  'list tag %s %%Tag' % (item['id'])
             }
+
+            tags = l.get_tags(item['id'])
+            if tags:
+                for t in tags:
+                    if t['tag'] == lstkey:
+                        continue
+                    item_actions['[%s]' % t['tag']] = "list view %s" % t['tag']
+
             data.append([item['item'], None, item_actions])
 
         return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data, actions)
