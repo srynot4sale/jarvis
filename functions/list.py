@@ -266,33 +266,38 @@ class action_add(kernel.action.action):
 
 class action_tag(kernel.action.action):
 
-    usage = '$itemid $tag'
+    usage = '$itemid $tag [$tag2 $tag3...]'
 
     def execute(self, data):
         itemid  = data[0]
-        tag     = data[1]
+        tags    = data[1:]
 
-        l = lstobj(self.function, tag)
+        alldata = []
 
-        itemdata = l.get(itemid)
-        data = []
-        data.append(['View list "%s"' % tag, "list view %s" % tag])
+        for tag in tags:
+            if tag.strip() == '':
+                continue
 
-        if tag.strip() == '':
+            l = lstobj(self.function, tag)
+
+            itemdata = l.get(itemid)
+            data = []
+            data.append(['View list "%s"' % tag, "list view %s" % tag])
+            alldata.append(['View list "%s"' % tag, "list view %s" % tag])
+
+            if not itemdata:
+                resp = function.response(function.STATE_FAILURE, 'No item to tag "%s"' % tag)
+                resp.data = data
+                resp.write = 1
+                return resp
+
+            l.add_tag(itemid, tag)
+
+        if not alldata:
             return function.response(function.STATE_FAILURE, 'No tag specified')
 
-        if not itemdata:
-            resp = function.response(function.STATE_FAILURE, 'No item to tag "%s"' % tag)
-            resp.data = data
-            resp.write = 1
-            return resp
-
-        l.add_tag(itemid, tag)
-
-        data = []
-        data.append(['View list "%s"' % tag, "list view %s" % tag])
-        resp = function.response(function.STATE_SUCCESS, 'Adding "%s" to list "%s"' % (itemdata['item'], tag))
-        resp.data = data
+        resp = function.response(function.STATE_SUCCESS, 'Adding tag(s) to "%s"' % (itemdata['item']))
+        resp.data = alldata
         resp.write = 1
         return resp
 
