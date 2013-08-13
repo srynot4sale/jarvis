@@ -77,13 +77,18 @@ function jarvis_handle_result(result) {
     var res = {}
     res.success = false;
 
+    if (result.status != 200) {
+        res.result = 'SERVER FAILURE';
+        res.message = 'error response code ' + result.status;
+        return res;
+    }
+
     result = jQuery.parseJSON(result.responseText);
 
     if (!result) {
         res.result = 'SERVER FAILURE';
         res.message = 'No failure data available';
-    }
-    else {
+    } else {
         if (result['state'] != 1) {
             res.result = 'FAILURE';
         } else {
