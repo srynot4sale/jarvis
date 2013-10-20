@@ -72,7 +72,7 @@ class action_connect(kernel.action.action):
             data += today.data
 
         actions = []
-        actions.append(["Add...", "list add today %%List_item"])
+        actions.append(["Add...", "list add today %List_item"])
 
         return function.response(function.STATE_SUCCESS, welcome, data, actions)
 
