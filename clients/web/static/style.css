@@ -18,7 +18,10 @@ body {
 }
 
 #input {
-    float: left;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
     width: 220px;
     background-color: #444;
     color: #fff;
@@ -52,12 +55,20 @@ div#output {
     margin: 0 0 10px;
     font-size: 150%;
     font-weight: normal;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 220px;
 }
 
 .response h3 span.action {
     margin-top: 5px;
     float: right;
     font-size: 75%;
+}
+
+.response div.message {
+    margin-top: 50px;
 }
 
 .response ol,
@@ -110,6 +121,15 @@ div#output {
     padding: 0 5px;
 }
 
+.response span.metadata {
+    display: inline-block;
+    font-size: 75%;
+    margin-left: 5px;
+    padding: 3px 5px;
+    background-color: #aaa;
+    color: #fff;
+}
+
 .loading h3 {
     color: #fff;
 }
@@ -153,6 +173,11 @@ body.mobile div#input {
     float: none;
     display: none;
     width: 100%;
+    position: static;
+}
+
+body.mobile div#output .response h3 {
+    position: static;
 }
 
 body.mobile #input .textbox {

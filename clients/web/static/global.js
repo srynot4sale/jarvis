@@ -222,7 +222,16 @@ var api_call = function(action, callback) {
                     if (options) {
                         var olist = $('<ol class="options">');
                         for (var o in options) {
-                            var option = $('<li class="action">');
+                            // Check if option is metadata
+                            var ismetadata = o.match(/^\[(.*)\]$/);
+
+                            if (ismetadata) {
+                                var option = $('<span class="action">');
+                                o = o.substr(1, o.length - 2);
+                            } else {
+                                var option = $('<li class="action">');
+                            }
+
                             option.html(o);
                             option.attr('title', options[o]);
                             option.data('action', options[o]);
@@ -239,7 +248,12 @@ var api_call = function(action, callback) {
                                 }
                             );
 
-                            olist.append(option);
+                            if (ismetadata) {
+                                option.addClass('metadata');
+                                li.append(option);
+                            } else {
+                                olist.append(option);
+                            }
                         }
 
                         li.prepend(olist);
