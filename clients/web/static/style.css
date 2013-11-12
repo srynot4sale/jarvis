@@ -143,10 +143,11 @@ div.result {
     color: #fff;
     font-weight: bold;
     padding: 10px;
-    margin-top: 20px;
+    margin-top: 70px;
 }
 
-.error .message {
+#output .error .message {
+    margin-top: 10px;
     color: #f00;
 }
 
