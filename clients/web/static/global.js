@@ -72,16 +72,14 @@ $(function() {
 });
 
 
+/**
+ * Parse request results and return a consistent
+ * Javascript object
+ */
 function jarvis_handle_result(result) {
-    console.log('check data');
+    console.log('jarvis_handle_result()');
     var res = {}
     res.success = false;
-
-    if (result.status != 200) {
-        res.result = 'SERVER FAILURE';
-        res.message = 'error response code ' + result.status;
-        return res;
-    }
 
     result = jQuery.parseJSON(result.responseText);
 
@@ -114,8 +112,12 @@ function jarvis_handle_result(result) {
     return res;
 }
 
+
+/**
+ * Display a dialog requesting data
+ */
 function jarvis_dialog(action, callback, params) {
-    console.log('function jarvis_dialog');
+    console.log('jarvis_dialog()');
 
     var dialog = $('<div class="dialog"></div>');
     var title = action;
@@ -149,8 +151,12 @@ function jarvis_dialog(action, callback, params) {
     dialog.modal();
 }
 
+
+/**
+ * Make an API call
+ */
 var api_call = function(action, callback) {
-    console.log('function api_call '+action);
+    console.log('api_call('+action+')');
 
     // Replace the first two spaces
     url = action.replace(' ', '/').replace(' ', '/');
@@ -192,6 +198,7 @@ var api_call = function(action, callback) {
 
     output.append(render);
 
+    // If no callback function defined, then display normally
     if (callback === undefined) {
         var callback = function(result) {
             console.log('default callback');
@@ -217,6 +224,7 @@ var api_call = function(action, callback) {
                     }
                 }
 
+                // List item actions (or options)
                 if (res.data[line].length > 2) {
                     var options = res.data[line][2];
                     if (options) {
@@ -263,6 +271,7 @@ var api_call = function(action, callback) {
                 list.append(li);
             }
 
+            // Page actions
             if (res.actions) {
                 for (var action in res.actions) {
                     var span = $('<span>'+res.actions[action][0]+'</span>');
@@ -291,7 +300,7 @@ var api_call = function(action, callback) {
         }
     }
 
-    console.log('make json call to '+url);
+    console.log('json call to "'+url+'"');
     $.ajax({
         dataType: "json",
         url: baseurl+escape(url),
