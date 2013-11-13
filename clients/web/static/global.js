@@ -107,6 +107,10 @@ function jarvis_handle_result(result) {
         if (result['actions']) {
             res.actions = result['actions'];
         }
+
+        if (result['notification']) {
+            res.notification = result['notification'];
+        }
     }
 
     return res;
@@ -289,8 +293,18 @@ var api_call = function(action, callback) {
             render.removeClass('loading');
 
             if (res.result) {
-                  render.append($('<div class="result">').html(res.result));
-                  render.addClass('error');
+                render.append($('<div class="result">').html(res.result));
+                render.addClass('error');
+            }
+
+            if (res.notification) {
+                var notification = $('<div class="notification">').html(res.notification);
+                notification.on('click', function() {
+                    $('#output .response').removeClass('notice');
+                    $(this).remove();
+                });
+                render.append(notification);
+                render.addClass('notice');
             }
 
             var message = $('<div class="message">').html(res.message);

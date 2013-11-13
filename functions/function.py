@@ -62,6 +62,7 @@ class response(object):
     message = None
     data = None
     actions = None
+    notification = None
     write = 0
 
     def __init__(self, state, message = '', data = None, actions = None):
@@ -78,6 +79,8 @@ class response(object):
         basic['data'] = self.data
         basic['actions'] = self.actions
         basic['write'] = self.write
+        if self.notification:
+            basic['notification'] = self.notification
         return basic
 
 
@@ -95,6 +98,13 @@ class response(object):
             return HTTPCODE_AUTHERR
 
         return HTTPCODE_PANIC
+
+
+def redirect(action, redirect, notification = None):
+    response = action.function.kernel.call(redirect[0], redirect[1], redirect[2])
+    response.notification = notification
+    response.write = 1
+    return response
 
 
 class action_help(kernel.action.action):

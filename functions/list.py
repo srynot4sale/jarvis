@@ -253,12 +253,7 @@ class action_add(kernel.action.action):
         l = lstobj(self.function, lstkey)
         l.add_new(newitem)
 
-        data = []
-        data.append(["View list", "list view %s" % lstkey])
-        resp = function.response(function.STATE_SUCCESS, 'Adding "%s" to list "%s"' % (newitem, lstkey))
-        resp.data = data
-        resp.write = 1
-        return resp
+        return function.redirect(self, ('list', 'view', [lstkey]), 'Added "%s" to list "%s"' % (newitem, lstkey))
 
     def undo(self, list):
         pass
@@ -272,7 +267,7 @@ class action_tag(kernel.action.action):
         itemid  = data[0]
         tags    = data[1:]
 
-        alldata = []
+        added = []
 
         for tag in tags:
             if tag.strip() == '':
@@ -283,7 +278,7 @@ class action_tag(kernel.action.action):
             itemdata = l.get(itemid)
             data = []
             data.append(['View list "%s"' % tag, "list view %s" % tag])
-            alldata.append(['View list "%s"' % tag, "list view %s" % tag])
+            added.append(tag)
 
             if not itemdata:
                 resp = function.response(function.STATE_FAILURE, 'No item to tag "%s"' % tag)
@@ -293,13 +288,15 @@ class action_tag(kernel.action.action):
 
             l.add_tag(itemid, tag)
 
-        if not alldata:
+        if not added:
             return function.response(function.STATE_FAILURE, 'No tag specified')
 
-        resp = function.response(function.STATE_SUCCESS, 'Adding tag(s) to "%s"' % (itemdata['item']))
-        resp.data = alldata
-        resp.write = 1
-        return resp
+        if len(added) > 1:
+            alltags = '", "'.join(added)
+            message = 'Added tags "%s" to "%s"' % (alltags, itemdata['item'])
+        else:
+            message = 'Added tag "%s" to "%s"' % (added[0], itemdata['item'])
+        return function.redirect(self, ('list', 'view', [added[0]]), message)
 
     def undo(self, list):
         pass
@@ -324,21 +321,12 @@ class action_move(kernel.action.action):
         itemdata = l.get(itemid, oldtag)
 
         if not itemdata:
-            resp = function.response(function.STATE_FAILURE, 'No item to move from tag "%s"' % oldtag)
-            resp.data = data
-            resp.write = 1
-            return resp
+            return function.response(function.STATE_FAILURE, 'No item to move from tag "%s"' % oldtag)
 
         l.remove_tag(itemid, oldtag)
         l.add_tag(itemid, newtag)
 
-        data = []
-        data.append(['View list "%s"' % newtag, "list view %s" % newtag])
-
-        resp = function.response(function.STATE_SUCCESS, 'Moved "%s" from "%s" to "%s"' % (itemdata['item'], oldtag, newtag))
-        resp.data = data
-        resp.write = 1
-        return resp
+        return function.redirect(self, ('list', 'view', [newtag]), 'Moved "%s" from "%s" to "%s"' % (itemdata['item'], oldtag, newtag))
 
     def undo(self, list):
         pass
