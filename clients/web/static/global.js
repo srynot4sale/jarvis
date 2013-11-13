@@ -214,7 +214,12 @@ var api_call = function(action, callback) {
             var list = $('<ol>');
             for (line in res.data) {
                 var item = res.data[line][0];
-                var li = $('<li>').html(item);
+                var li = $('<li>');
+
+                // Make links clickable
+                var html = item.replace(/(https?:\/\/[^ ]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>");
+
+                li.html(html);
 
                 if (res.data[line].length > 1) {
                     var action = res.data[line][1];
