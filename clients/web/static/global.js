@@ -235,12 +235,12 @@ var api_call = function(action, callback) {
 
                             if (ismetadata) {
                                 var option = $('<span class="action">');
-                                o = o.substr(1, o.length - 2);
+                                option.html(o.substr(1, o.length - 2));
                             } else {
                                 var option = $('<li class="action">');
+                                option.html(o);
                             }
 
-                            option.html(o);
                             option.attr('title', options[o]);
                             option.data('action', options[o]);
                             option.click(function() {
