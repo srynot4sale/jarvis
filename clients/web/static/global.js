@@ -236,8 +236,20 @@ var api_call = function(action, callback) {
                 // List item actions (or options)
                 if (res.data[line].length > 2) {
                     var options = res.data[line][2];
+                    var metacontainer = false;
                     if (options) {
                         var olist = $('<ol class="options">');
+                        olist.hover(undefined, function() {
+                            $(this).hide();
+                        });
+
+                        var olistcontainer = $('<div class="optioncontainer">');
+                        var olisttoggle = $('<span class="optiontoggle">^</span>');
+                        olisttoggle.hover(function() {
+                            $('ol.options').hide();
+                            $('ol.options', $(this).parent()).show();
+                        });
+
                         for (var o in options) {
                             // Check if option is metadata
                             var ismetadata = o.match(/^\[(.*)\]$/);
@@ -258,22 +270,30 @@ var api_call = function(action, callback) {
 
                             option.hover(
                                 function() {
-                                    $(this).parent().parent().addClass('hoveraction');
+                                    $(this).parent().closest('li').addClass('hoveraction');
                                 },
                                 function() {
-                                    $(this).parent().parent().removeClass('hoveraction');
+                                    $(this).parent().closest('li').removeClass('hoveraction');
                                 }
                             );
 
                             if (ismetadata) {
                                 option.addClass('metadata');
-                                li.append(option);
+
+                                if (!metacontainer) {
+                                    var metacontainer = $('<div>').addClass('metadata');
+                                    li.append(metacontainer);
+                                }
+
+                                metacontainer.append(option);
                             } else {
                                 olist.append(option);
                             }
                         }
 
-                        li.prepend(olist);
+                        olistcontainer.prepend(olist);
+                        olistcontainer.prepend(olisttoggle);
+                        li.prepend(olistcontainer);
                     }
                 }
 

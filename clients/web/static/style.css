@@ -60,6 +60,7 @@ div#output {
     right: 0;
     left: 220px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
 }
 
 .response h3 span.action {
@@ -72,8 +73,8 @@ div#output {
     margin-top: 60px;
 }
 
-.response ol,
-.response div {
+.response > ol,
+.response > div {
     margin: 10px 20px 10px;
 }
 
@@ -88,7 +89,7 @@ div#output {
 }
 
 .response > ol > li {
-    overflow: auto;
+    overflow: visible;
     padding: 10px;
     margin: 5px 0 0 0;
     background-color: #efefef;
@@ -108,18 +109,42 @@ div#output {
     padding: 9px;
 }
 
-.response ol ol {
-    display: inline;
+.response ol li div.optioncontainer {
     float: right;
+    display: inline-block;
+    position: relative;
+    overflow: visible;
+    z-index: 1;
+}
+
+.response ol li span.optiontoggle {
+    padding: 0 5px;
+    cursor: pointer;
+}
+
+.response ol ol {
+    display: none;
+    position: absolute;
+    right: 5px;
+    top: -30px;
     list-style-type: none;
     margin: 0;
-    padding: 0;
+    padding: 0 2px;
+    border: 1px solid #ccc;
+    background-color: #dedede;
+    white-space: nowrap;
 }
 
 .response ol ol li {
     display: inline-block;
-    float: left;
     padding: 0 5px;
+    margin: 4px 2px;
+}
+
+.response div.metadata {
+    float: right;
+    margin: 0;
+    text-align: right;
 }
 
 .response span.metadata {
