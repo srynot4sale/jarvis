@@ -438,3 +438,57 @@ def list_move_test():
     empty3 = make_request('list view %s' % tag_dest)
     assert empty3['state'] == 2
     empty3 = None
+
+
+def list_multipletagview_test():
+    '''
+    Test the list view with multiple tags
+    '''
+    tag_one = 'UNITTESTTAG1'
+    tag_two = 'UNITTESTTAG2'
+    listitem = 'tagitemtwotags'
+    listitemsingle = 'tagitemonetag'
+
+    # check for empty lists first
+    list_empty(tag_one)
+    list_empty(tag_two)
+
+    # add new item with first tag
+    newitem = make_request('list add %s %s' % (tag_one, listitem))
+    assert newitem['state'] == 1
+    itemid = newitem['data'][0][2]['Delete'].split(' ')[3]
+    newitem = None
+
+    # add new item with first tag
+    newitem = make_request('list add %s %s' % (tag_one, listitemsingle))
+    assert newitem['state'] == 1
+    newitem = None
+
+    # add new item with second tag
+    newitem = make_request('list add %s %s' % (tag_two, listitemsingle))
+    assert newitem['state'] == 1
+    newitem = None
+
+    # add second tag to first item
+    newitem = make_request('list tag %s %s' % (itemid, tag_two))
+    assert newitem['state'] == 1
+    newitem = None
+
+    # check two items in first tag
+    exists = make_request('list view %s' % tag_one)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 2
+    exists = None
+
+    # check one item in second tag
+    exists = make_request('list view %s' % tag_two)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 2
+    exists = None
+
+    # check one item when loading both tags!
+    exists = make_request('list view %s %s' % (tag_one, tag_two))
+    assert exists['state'] == 1
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem
+    exists = None

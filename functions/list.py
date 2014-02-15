@@ -44,32 +44,53 @@ class lstfunc(function.function):
 class lstobj(object):
 
     func = None
-    name = None
+    tags = None
     records = []
 
-    def __init__(self, func, name):
+    def __init__(self, func, tags):
+
+        if not isinstance(tags, list):
+            tags = [tags]
+
         self.func = func
-        self.name = name
+        self.tags = tags
 
     def _load(self):
+        """
+        Load all list items that have specific tags
+        """
         datasource = self.func.get_data_source()
+        params = []
+
         sql = """
             SELECT DISTINCT
                 i.*
             FROM
                 function_list_items i
-            INNER JOIN
-                function_list_tags t
-             ON t.list_item_id = i.id
-            WHERE
-                t.tag = %s
-            AND t.deleted IS NULL
-            AND i.deleted IS NULL
-            ORDER BY
-                t.id
         """
-        data = [self.name]
-        self.records = datasource.get_records(sql, data)
+
+        # Add a section for each tag
+        count = 0
+        for tag in self.tags:
+
+            sql += " INNER JOIN\n"
+            sql += "     function_list_tags t%d\n" % count
+            sql += "  ON t%d.list_item_id = i.id\n" % count
+            sql += " AND t%d.tag = " % count
+            sql += "%s\n"
+            sql += " AND t%d.deleted IS NULL\n" % count
+
+            params.append(tag)
+            count += 1
+
+        sql += """
+            WHERE
+                i.deleted IS NULL
+            ORDER BY
+                t0.id
+        """
+
+        self.records = datasource.get_records(sql, params)
 
     def get_all(self):
         self._load()
@@ -135,20 +156,25 @@ class lstobj(object):
         data = [newitem]
         itemid = datasource.execute(sql, data).lastrowid
 
-        self.add_tag(itemid, self.name)
+        self.add_tag(itemid, self.tags)
 
-    def add_tag(self, itemid, tag):
+    def add_tag(self, itemid, tags):
+        if not isinstance(tags, list):
+            tags = [tags]
+
         datasource = self.func.get_data_source()
 
-        sql = """
-            INSERT INTO
-                function_list_tags
-                (list_item_id, tag, added, deleted)
-            VALUES
-                (%s, %s, NOW(), NULL)
-        """
-        data = [itemid, tag]
-        datasource.execute(sql, data)
+        for tag in tags:
+            sql = """
+                INSERT INTO
+                    function_list_tags
+                    (list_item_id, tag, added, deleted)
+                VALUES
+                    (%s, %s, NOW(), NULL)
+            """
+            data = [itemid, tag]
+            datasource.execute(sql, data)
+
         self._load()
 
     def remove_tag(self, itemid, tag):
@@ -189,40 +215,64 @@ class lstobj(object):
 
 class action_view(kernel.action.action):
 
-    usage = '$listkey'
+    usage = '$listkey [$listkey ...]'
 
-    def execute(self, data):
-        lstkey = data[0]
-        l = lstobj(self.function, lstkey)
+    def execute(self, tags):
+        # tags in this case is a list of all the tags supplied
+        # tagstr is the tags imploded around whitespace
+        tagstr = ' '.join(tags)
+        l = lstobj(self.function, tags)
 
         items = l.get_all()
 
         actions = []
-        actions.append(["Add...", "list add %s %%List_item" % lstkey])
+        actions.append(["Add...", "list add %s %%List_item" % tags[0]])
+        if len(tags) > 1:
+            for tag in tags:
+                actions.append(["List \"%s\"" % tag, 'list view %s' % tag])
 
         if not len(items):
             data = []
             data.append(["List all lists", 'list list'])
-            return function.response(function.STATE_FAILURE, 'No items in list "%s"' % lstkey, data, actions)
+
+            if len(tags) > 1:
+                for tag in tags:
+                    data.append(["List \"%s\"" % tag, 'list view %s' % tag])
+
+            return function.response(function.STATE_FAILURE, 'No items in list "%s"' % tagstr, data, actions)
 
         data = []
         for item in items:
-            item_actions = {
-                'Delete':  'list remove %s %s' % (lstkey, item['id']),
-                'Move...': 'list move %s %s %%Replacement_tag' % (item['id'], lstkey),
-                'Tag...':  'list tag %s %%Tag' % (item['id'])
-            }
+            #####
+            ## Prep actions for each item
+            item_actions = {'Delete':  'list remove %s %s' % (tags[0], item['id'])}
 
-            tags = l.get_tags(item['id'])
-            if tags:
-                for t in tags:
-                    if t['tag'] == lstkey:
+            # Only show move action if we are not showing multiple tags
+            if len(tags) == 1:
+                item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
+
+            item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
+
+            #####
+            ## Prep tags for each item
+            itemtags = l.get_tags(item['id'])
+            if itemtags:
+                itemtagstr = []
+                for t in itemtags:
+                    itemtagstr.append(t['tag'])
+                    if t['tag'] in tags:
                         continue
                     item_actions['[%s]' % t['tag']] = "list view %s" % t['tag']
 
-            data.append([item['item'], None, item_actions])
+            #####
+            ## Prep meta info
+            item_meta = {'id': item['id']}
 
-        return function.response(function.STATE_SUCCESS, 'List "%s" contents' % lstkey, data, actions)
+            #####
+            ## Append item to the list
+            data.append([item['item'], None, item_actions, item_meta])
+
+        return function.response(function.STATE_SUCCESS, 'List "%s" contents' % tagstr, data, actions)
 
 
 class action_list(kernel.action.action):
