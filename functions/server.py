@@ -26,7 +26,7 @@ class job_hourly(kernel.job.job):
         dataids = []
         if weather and weather.state == function.STATE_SUCCESS:
             for d in weather.data:
-                dataids.append(d[0])
+                dataids.append(d[3]['id'])
 
         try:
             r = urllib.urlopen('http://www.metservice.com/publicData/localForecastWellington')
