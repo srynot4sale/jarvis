@@ -93,8 +93,24 @@ class kernel(object):
         if act == None:
             raise JarvisException('Action does not exist', action)
 
-        # Run action
         act.function = func
+
+        # Log action (unless we're supposed to skip)
+        if not act.do_not_log:
+
+            datasource = self.get('data', 'primary')
+            sql = """
+                INSERT INTO
+                    kernel_action_log
+                    (function, action, data, timecalled)
+                VALUES
+                    (%s, %s, %s, NOW())
+            """
+            data_str = None if not data else ' '.join(str(x) for x in data)
+            params = [function, action, data_str]
+            datasource.execute(sql, params)
+
+        # Run action
         return act().execute(data)
 
 

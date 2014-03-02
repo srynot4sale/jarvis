@@ -1,6 +1,6 @@
 import data
 
-database_version = 6
+database_version = 7
 
 def check(data):
     '''
@@ -194,6 +194,28 @@ def run(data):
             [
                 'lastcron'
             ]
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    version = 7
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `kernel_action_log` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `function` varchar(255)  NOT NULL,
+                `action` varchar(255) NOT NULL,
+                `data` text DEFAULT NULL,
+                `timecalled` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `function` (`function`),
+                KEY `action` (`action`),
+                KEY `timecalled` (`timecalled`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
         )
 
         set_version(data, version)

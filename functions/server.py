@@ -127,6 +127,9 @@ class action_stats(kernel.action.action):
 
 class action_cron(kernel.action.action):
 
+    # Do not log calls to this action as it'll fill up the DB!
+    do_not_log = True
+
     def execute(self, data):
         start = int(time.time())
 
