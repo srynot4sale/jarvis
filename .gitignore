@@ -3,3 +3,4 @@
 *.pyc
 docs/
 config*
+clients/config_cli.py
