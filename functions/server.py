@@ -55,7 +55,7 @@ class action_connect(kernel.action.action):
 
     def execute(self, data):
         user = self.function.kernel.getConfig('username')
-        date = datetime.datetime.today().strftime('%A %B %d, %Y')
+        date = self.function.kernel.inClientTimezone(datetime.datetime.now()).strftime('%A %B %d, %Y')
         welcome = 'Hi %s. Today is %s' % (user, date)
 
         weather = self._get_weather()
@@ -99,9 +99,9 @@ class action_stats(kernel.action.action):
 
         fmt = '%Y-%m-%d %H:%M:%S %Z%z'
         server_timezone = tzlocal.get_localzone()
-        client_timezone = pytz.timezone(self.function.kernel.getConfig('timezone'))
-        server_time = server_timezone.localize(datetime.datetime.now())
-        client_time = server_time.astimezone(client_timezone)
+        now = datetime.datetime.now()
+        server_time = server_timezone.localize(now)
+        client_time = self.function.kernel.inClientTimezone(now)
 
         # Cron stuff
         crons  = db.loadConfig('lastcronstart', 0)
@@ -109,11 +109,11 @@ class action_stats(kernel.action.action):
         cronl  = db.loadConfig('longestcron', 0)
         if crons != 0:
             d = datetime.datetime.fromtimestamp(float(crons))
-            crons = d.strftime('%Y-%m-%d %H:%M')
+            crons = self.function.kernel.inClientTimezone(d)
 
         if cronf != 0:
             d = datetime.datetime.fromtimestamp(float(cronf))
-            cronf = d.strftime('%Y-%m-%d %H:%M')
+            cronf = self.function.kernel.inClientTimezone(d)
 
         stats = []
         stats.append('Daemon PID: %d' % pid)
@@ -122,8 +122,8 @@ class action_stats(kernel.action.action):
         stats.append('Jarvis uptime: %s' % uptime)
         stats.append('Server time: %s' % server_time.strftime(fmt))
         stats.append('Client time: %s' % client_time.strftime(fmt))
-        stats.append('Last cron start: %s' % crons)
-        stats.append('Last cron finish: %s' % cronf)
+        stats.append('Last cron start: %s' % crons.strftime(fmt))
+        stats.append('Last cron finish: %s' % cronf.strftime(fmt))
         stats.append('Longest cron run (secs): %s' % cronl)
         stats.append('Python version: %s' % pyver)
         stats.append('Database version: %s' % dbver)

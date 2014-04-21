@@ -2,7 +2,7 @@
 import functions.function
 import application
 
-import tornado.ioloop
+import pytz, tornado.ioloop
 
 class kernel(object):
 
@@ -145,6 +145,12 @@ class kernel(object):
         Get primary data interface
         '''
         return self.get('data', 'primary')
+
+
+    def inClientTimezone(self, dt):
+        client_timezone = self.getConfig('timezone')
+        return pytz.timezone(client_timezone).localize(dt)
+
 
 
 class JarvisException(Exception):
