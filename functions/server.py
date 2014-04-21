@@ -4,7 +4,7 @@ import kernel
 import kernel.action
 import kernel.job
 
-import datetime, json, os, platform, re, socket, time, urllib
+import datetime, json, os, platform, pytz, re, socket, time, tzlocal, urllib
 
 
 
@@ -96,6 +96,14 @@ class action_stats(kernel.action.action):
         uptime = self._call_ps('etime')
         pyver  = platform.release()
         dbver  = self.function.kernel.getConfig('version')
+
+        fmt = '%Y-%m-%d %H:%M:%S %Z%z'
+        server_timezone = tzlocal.get_localzone()
+        client_timezone = pytz.timezone(self.function.kernel.getConfig('timezone'))
+        server_time = server_timezone.localize(datetime.datetime.now())
+        client_time = server_time.astimezone(client_timezone)
+
+        # Cron stuff
         crons  = db.loadConfig('lastcronstart', 0)
         cronf  = db.loadConfig('lastcronfinish', 0)
         cronl  = db.loadConfig('longestcron', 0)
@@ -112,6 +120,8 @@ class action_stats(kernel.action.action):
         stats.append('Jarvis CPU usage: %s' % cpuuse)
         stats.append('Jarvis memory usage: %s' % memuse)
         stats.append('Jarvis uptime: %s' % uptime)
+        stats.append('Server time: %s' % server_time.strftime(fmt))
+        stats.append('Client time: %s' % client_time.strftime(fmt))
         stats.append('Last cron start: %s' % crons)
         stats.append('Last cron finish: %s' % cronf)
         stats.append('Longest cron run (secs): %s' % cronl)

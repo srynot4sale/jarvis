@@ -19,6 +19,8 @@ Dependencies:
 - MySQLdb - http://mysql-python.sourceforge.net/MySQLdb.html
 - requests - http://docs.python-requests.org/en/latest/
 - tornado - http://www.tornadoweb.org
+- pytz - http://pytz.sourceforget.net
+- tzlocal - http://github.com/regebro/tzlocal
 - nose - https://pypi.python.org/pypi/nose/
 
 
@@ -36,6 +38,7 @@ Config file's (config.py) expected content:
     config['web_baseurl']           = 'http://localhost:XXXX/'
     config['web_username']          = 'myusername'
     config['web_password']          = 'mypassword'
+    config['timezone']              = 'Pacific/Auckland'
 
 
 Database tables will be installed on first run.
