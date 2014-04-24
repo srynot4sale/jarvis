@@ -2,7 +2,7 @@
 import functions.function
 import application
 
-import pytz, tornado.ioloop
+import pytz, tornado.ioloop, tzlocal
 
 class kernel(object):
 
@@ -148,8 +148,10 @@ class kernel(object):
 
 
     def inClientTimezone(self, dt):
-        client_timezone = self.getConfig('timezone')
-        return pytz.timezone(client_timezone).localize(dt)
+        client_timezone = pytz.timezone(self.getConfig('timezone'))
+        server_timezone = tzlocal.get_localzone()
+        dt = server_timezone.localize(dt)
+        return dt.astimezone(client_timezone)
 
 
 
