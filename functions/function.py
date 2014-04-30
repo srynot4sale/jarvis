@@ -101,7 +101,7 @@ class response(object):
 
 
 def redirect(action, redirect, notification = None):
-    response = action.function.kernel.call(redirect[0], redirect[1], redirect[2])
+    response = action.function.kernel.call(redirect[0], redirect[1], redirect[2] if len(redirect) > 2 else [])
     response.notification = notification
     response.write = 1
     return response
