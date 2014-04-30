@@ -181,7 +181,9 @@ class action_menu(kernel.action.action):
         items = [
             ['Home', 'server connect'],
             ['Server', 'server default'],
-            ['List', 'list default']
+            ['List', 'list default'],
+            ['Logs', 'log view'],
+            ['Log Add', 'log add %Log_entry']
         ]
 
         return function.response(function.STATE_SUCCESS, message, items)

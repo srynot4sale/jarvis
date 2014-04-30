@@ -1,6 +1,6 @@
 import data
 
-database_version = 7
+database_version = 8
 
 def check(data):
     '''
@@ -221,5 +221,23 @@ def run(data):
         set_version(data, version)
 
     data.kernel.setConfig('version', version)
+
+    version = 8
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `function_log_entries` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `entrytime` datetime NOT NULL,
+                `description` text NOT NULL,
+                `deleted` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `entrytime` (`entrytime`),
+                KEY `deleted` (`deleted`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
+        )
+
+        set_version(data, version)
 
 # Remember to update the database_version variable at the top of this file
