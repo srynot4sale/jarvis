@@ -128,7 +128,7 @@ class action_view(kernel.action.action):
             item_actions    = {'Delete':  'log remove %s' % (item.id)}
             item_meta       = {'id': item.id}
 
-            item_time       = self.function.kernel.inClientTimezone(item.entrytime)
+            item_time       = self.function.kernel.inClientTimezone(item.entrytime).strftime('%y/%m/%d %I:%M%P')
             item_text       = "%s - %s" % (item_time, item.description)
 
             data.append([item_text, None, item_actions, item_meta])
