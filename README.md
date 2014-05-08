@@ -10,6 +10,7 @@ It's clients include:
 
 - HTTP: built-in, access at configured web_baseurl
 - Android: see https://bitbucket.org/srynot4sale/jarvis-android
+- CLI: ./clients/cli.py
 
 
 Dependencies:
