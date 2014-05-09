@@ -63,6 +63,7 @@ class response(object):
     data = None
     actions = None
     notification = None
+    redirected = None
     write = 0
 
     def __init__(self, state, message = '', data = None, actions = None):
@@ -81,6 +82,8 @@ class response(object):
         basic['write'] = self.write
         if self.notification:
             basic['notification'] = self.notification
+        if self.redirected:
+            basic['redirected'] = self.redirected
         return basic
 
 
@@ -101,7 +104,11 @@ class response(object):
 
 
 def redirect(action, redirect, notification = None):
+    '''
+    Redirect to another request, and return it's output along with a notification
+    '''
     response = action.function.kernel.call(redirect[0], redirect[1], redirect[2] if len(redirect) > 2 else [])
+    response.redirected = '%s %s %s' % (redirect[0], redirect[1], (' '.join(redirect[2])))
     response.notification = notification
     response.write = 1
     return response

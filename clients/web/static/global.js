@@ -111,6 +111,10 @@ function jarvis_handle_result(result) {
         if (result['notification']) {
             res.notification = result['notification'];
         }
+
+        if (result['redirected']) {
+            res.redirected = result['redirected'];
+        }
     }
 
     return res;
@@ -157,6 +161,20 @@ function jarvis_dialog(action, callback, params) {
 
 
 /**
+ * Update title bar
+ */
+function jarvis_update_title(title) {
+    var header = $('div.response h3')
+    var refresh = $('<a class="refresh action" title="Refresh">'+title+'</a>');
+    refresh.click(function() {
+        api_call(title);
+    });
+
+    header.html(refresh);
+}
+
+
+/**
  * Make an API call
  */
 var api_call = function(action, callback) {
@@ -192,15 +210,12 @@ var api_call = function(action, callback) {
     render.addClass('loading');
 
     var header = $('<h3>');
-    var refresh = $('<a class="refresh action" title="Refresh">'+action+'</a>');
-    refresh.click(function() {
-        api_call(action);
-    });
-
-    header.append(refresh);
     render.append(header);
-
     output.append(render);
+
+    jarvis_update_title(action);
+
+    var title = action;
 
     // If no callback function defined, then display normally
     if (callback === undefined) {
@@ -209,7 +224,13 @@ var api_call = function(action, callback) {
             input.val('');
 
             var res = jarvis_handle_result(result);
+
             res.url = url;
+            if (res.redirected) {
+                res.action = res.redirected;
+            } else {
+                res.action = title;
+            }
 
             var list = $('<ol>');
             for (line in res.data) {
@@ -336,6 +357,8 @@ var api_call = function(action, callback) {
 
             render.append(message);
             render.append(list);
+
+            jarvis_update_title(res.action);
         }
     }
 
