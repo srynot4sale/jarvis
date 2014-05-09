@@ -41,4 +41,12 @@ if conf_required != conf_set and not conf_required.issubset(conf_set):
 ## Initialise Jarvis kernel
 import kernel
 
-jarvis = kernel.init(config.config)
+if '--test' in sys.argv:
+    # Make sure production flag not set, or false
+    if 'is_production' not in config.config or not config.config['is_production']:
+        config.config.update(config.config_test)
+        config.config['test_mode'] = True
+        print('')
+        print('Running Jarvis in test mode!')
+
+system = kernel.init(config.config)

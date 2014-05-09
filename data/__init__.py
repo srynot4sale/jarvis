@@ -19,6 +19,19 @@ class data(kernel.service.service):
         '''
         self.kernel = jarvis
         self._connect()
+
+        # If we are in test mode, drop all tables and rerun upgrades
+        if self.kernel.isTestMode():
+            self.kernel.log('Dropping all tables')
+            tables = self.get_records("""
+                SELECT table_name
+                FROM information_schema.tables
+                WHERE table_schema = %s;
+            """, [self.kernel.getConfig('database_username')])
+
+            for table in tables:
+                self.execute("DROP TABLE %s" % table['table_name'])
+
         self._check_version()
 
 

@@ -154,6 +154,13 @@ class kernel(object):
         return dt.astimezone(client_timezone)
 
 
+    def isTestMode(self):
+        '''
+        Return True if server running in test mode
+        '''
+        return bool(self.getConfig('test_mode'))
+
+
 
 class JarvisException(Exception):
     state = functions.function.STATE_FAILURE
