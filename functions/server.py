@@ -90,6 +90,7 @@ class action_stats(kernel.action.action):
         str = 'Current Jarvis server stats:'
 
         db = self.function.kernel.getDataPrimary()
+        url    = self.function.kernel.getConfig('web_baseurl')
         pid    = os.getpid()
         cpuuse = '%s%%' % self._call_ps('pcpu')
         memuse = '%skb' % self._call_ps('rss')
@@ -116,6 +117,7 @@ class action_stats(kernel.action.action):
             cronf = self.function.kernel.inClientTimezone(d)
 
         stats = []
+        stats.append('Server URL: %s' % url)
         stats.append('Daemon PID: %d' % pid)
         stats.append('Jarvis CPU usage: %s' % cpuuse)
         stats.append('Jarvis memory usage: %s' % memuse)
