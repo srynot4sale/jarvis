@@ -252,6 +252,7 @@ class action_view(kernel.action.action):
                 item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
 
             item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
+            item_actions['Edit...'] = 'list update %s %s %%New_description' % (tags[0], item['id'])
 
             #####
             ## Prep tags for each item
@@ -425,23 +426,25 @@ class action_remove(action_delete):
 
 class action_update(kernel.action.action):
 
-    usage = '$listkey $updateid $item'
+    usage = '$tag $updateid $item'
 
     def execute(self, data):
-        lstkey = data[0]
+        tag    = data[0]
         itemid = data[1]
         item   = ' '.join(data[2:])
 
         if item.strip() == '':
-            return function.response(function.STATE_FAILURE, 'No item to add')
+            return function.response(function.STATE_FAILURE, 'No new item content')
 
-        l = lstobj(self.function, lstkey)
+        l = lstobj(self.function, tag)
         l.update(itemid, item)
 
-        return function.response(function.STATE_SUCCESS, 'Updating item to "%s" to "<a href="/list/view/%s">%s</a>"' % (item, lstkey, lstkey))
+        return function.redirect(self, ('list', 'view', [tag]), 'Updated item "%s" to "%s"' % (itemid, item))
 
-    def undo(self, list):
-        pass
+
+class action_edit(action_update):
+
+    usage = '(alias of "list update")'
 
 
 class action_find(kernel.action.action):
