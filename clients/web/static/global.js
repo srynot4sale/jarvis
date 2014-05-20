@@ -165,12 +165,13 @@ function jarvis_dialog(action, callback, params) {
  */
 function jarvis_update_title(title) {
     var header = $('div.response h3')
-    var refresh = $('<a class="refresh action" title="Refresh">'+title+'</a>');
+    var refresh = $('<a class="refresh action title" title="Refresh">'+title+'</a>');
     refresh.click(function() {
         api_call(title);
     });
 
-    header.html(refresh);
+    $('a.title', header).remove();
+    header.prepend(refresh);
 }
 
 
