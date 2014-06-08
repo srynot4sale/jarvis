@@ -1,6 +1,7 @@
-*.swp
-*.swo
 *.pyc
-docs/
-config*
+*.swo
+*.swp
 clients/config_cli.py
+config*
+docs/
+env/

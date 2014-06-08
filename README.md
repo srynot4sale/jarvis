@@ -8,7 +8,7 @@ via a REST interface.
 
 It's clients include:
 
-- HTTP: built-in, access at configured web_baseurl
+- HTTP: built-in, access at configured baseurl in config
 - Android: see https://bitbucket.org/srynot4sale/jarvis-android
 - CLI: ./clients/cli.py
 
@@ -17,12 +17,30 @@ Dependencies:
 
 - Python 2.5+
 - MySQL
-- MySQLdb - http://mysql-python.sourceforge.net/MySQLdb.html
-- requests - http://docs.python-requests.org/en/latest/
-- tornado - http://www.tornadoweb.org
-- pytz - http://pytz.sourceforget.net
-- tzlocal - http://github.com/regebro/tzlocal
-- nose - https://pypi.python.org/pypi/nose/
+- MySQL dev libraries
+- Virtualenv
+
+
+Installation:
+
+    # Setup virtualenv for this project
+    cd ~/code/jarvis-src
+    virtualenv env
+
+    # Active this virtual environment (do before running jarvis)
+    source env/bin/activate
+
+    # Install requirements
+    pip install -r requirements.txt
+
+    # Create config file (see below)
+
+    # Set up cron (see below)
+
+    # Create database
+
+    # Run it for the first time!
+    python start_server.py
 
 
 Config file's (config.py) expected content:
