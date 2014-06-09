@@ -33,9 +33,14 @@ Installation:
     # Install requirements
     pip install -r requirements.txt
 
-    # Create config file (see below)
+    # Create config file
+    cp example_config.py config.py
 
-    # Set up cron (see below)
+    # Edit config file
+    vim config.py
+
+    # Set up cron (fix user and pathname)
+    echo "* * * * * jarvisuser cd /path/to/jarvis/checkout; ./cron.py;" >> /etc/cron.d/jarvis
 
     # Create database
 
@@ -43,50 +48,6 @@ Installation:
     python start_server.py
 
 
-Config file's (config.py) expected content:
-
-    config = {}
-
-    # Mandatory on production sites, prevent tests running
-    # and potentially wiping all your data
-    config['is_production']         = True
-
-    # Optional, when set to True displays debugging data
-    config['debug']                 = False
-
-    # Database configuration. DB username is used as dbname
-    config['database_host']         = 'localhost'
-    config['database_username']     = 'jarvis'
-    config['database_password']     = 'password'
-
-    # Port to run server on
-    config['interface_http_port']   = 'XXXX'
-
-    # Passphrase for connecting to server
-    config['secret']                = 'secrethash'
-
-    # Timezone you'd prefer times displayed as in clients
-    config['timezone']              = 'Pacific/Auckland'
-
-    # Name that Jarvis will refer to you by
-    config['username']              = 'My Name'
-
-    # URL the web client is accessible at. Normally would be
-    # those hostname/ip of server and the port defined earlier.
-    # However, could be different if you are running the server
-    # behind a proxy, e.g. apache for HTTPS
-    config['web_baseurl']           = 'http://localhost:XXXX/'
-
-    # Set the username/password for using the web client
-    config['web_username']          = 'myusername'
-    config['web_password']          = 'mypassword'
-
-
 Database tables will be installed on first run.
-
-Also requiring setup is the cron job, here is an example crontab:
-
-    * * * * * jarvisuser cd /path/to/jarvis/checkout; ./cron.py;
-
 
 Test suite can be run by evoking `nosetests` from the root jarvis directory.

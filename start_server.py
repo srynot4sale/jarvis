@@ -4,18 +4,6 @@ import pkg_resources
 from pkg_resources import DistributionNotFound, VersionConflict
 import sys
 
-#
-# config.py is expected to contain:
-#
-# config = {}
-# config['database_host']         = 'localhost'
-# config['database_username']     = 'jarvis'
-# config['database_password']     = 'password'
-# config['interface_http_port']   = 'XXXX'
-# config['username']              = 'My Name'
-# config['secret']                = 'secrethash'
-#
-
 ## Check dependencies
 with open('requirements.txt') as dependencies:
     try:
@@ -34,6 +22,19 @@ with open('requirements.txt') as dependencies:
         print('\t%s' % e)
         print('')
         sys.exit('Dependency error')
+
+## Check config
+import config_example
+conf_required   = set(config_example.config)
+conf_set        = set(config.config)
+if conf_required != conf_set and not conf_required.issubset(conf_set):
+    print('ERROR: some config variables appear to be missing')
+    print('All config variables uncommented in config_example.py are requred.')
+    print('')
+    print('Mising config entries: %s' % ', '.join(conf_required.difference(conf_set)))
+    print('')
+    sys.exit('Configuration error')
+
 
 ## Initialise Jarvis kernel
 import kernel
