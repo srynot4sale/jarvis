@@ -184,6 +184,7 @@ class action_menu(kernel.action.action):
             ['Home', 'server connect'],
             ['Server', 'server default'],
             ['List', 'list default'],
+            ['Habits', 'habit view'],
             ['Logs', 'log view'],
             ['Log Add', 'log add %Log_entry']
         ]

@@ -209,6 +209,22 @@ div#input-toggle {
     display: none;
 }
 
+span.item_failure {
+    display: inline-block;
+    background-color: #f00;
+    color: #fff;
+    padding: 1px 5px;
+    margin-right: 5px;
+}
+
+span.item_success {
+    display: inline-block;
+    background-color: #32cd32;
+    color: #fff;
+    padding: 1px 5px;
+    margin-right: 5px;
+}
+
 
 /**
  * Mobile specific
