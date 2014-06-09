@@ -17,7 +17,7 @@ Dependencies:
 
 - Python 2.5+
 - MySQL
-- MySQL dev libraries
+- MySQL / Python dev libraries (for mysqldb-python) (apt-get install libmysqlh-dev python-dev)
 - Virtualenv
 
 
