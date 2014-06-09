@@ -327,6 +327,7 @@ var api_call = function(action, callback) {
                 for (var action in res.actions) {
                     var span = $('<span>'+res.actions[action][0]+'</span>');
                     span.addClass('action');
+                    span.attr('title', res.actions[action][1]);
                     span.data('action', res.actions[action][1]);
                     span.click(function() {
                         api_call($(this).data('action'));

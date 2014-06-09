@@ -67,6 +67,7 @@ div#output {
     margin-top: 5px;
     float: right;
     font-size: 75%;
+    margin-left: 15px;
 }
 
 .response div.message {
