@@ -5,6 +5,15 @@ $(function() {
      */
 
     /**
+     * Handle "back" events
+     */
+    window.addEventListener("popstate", function(e) {
+        if (e.state && e.state.title) {
+            api_call(e.state.title);
+        }
+    });
+
+    /**
      * Check if user is on a small screen
      */
     if ($(document).width() < 600) {
@@ -163,7 +172,7 @@ function jarvis_dialog(action, callback, params) {
 /**
  * Update title bar
  */
-function jarvis_update_title(title) {
+function jarvis_update_title(title, status = '') {
     var header = $('div.response h3')
     var refresh = $('<a class="refresh action title" title="Refresh">'+title+'</a>');
     refresh.click(function() {
@@ -172,6 +181,24 @@ function jarvis_update_title(title) {
 
     $('a.title', header).remove();
     header.prepend(refresh);
+
+    // If response received:
+    if (status == 'complete') {
+        // Update title bar
+        document.title = 'Jarvis - '+title;
+
+        // Update URL
+        // (check for support of history API)
+        if (!!(window.history && history.pushState)) {
+            var baseurl = $('body').data('baseurl');
+            var url = baseurl + '#/' + title.replace(' ', '/').replace(' ', '/');
+
+            // If same as current URL, do not re-add
+            if (url != location.href) {
+                history.pushState({'title': title}, null, url);
+            }
+        }
+    }
 }
 
 
@@ -360,14 +387,14 @@ var api_call = function(action, callback) {
             render.append(message);
             render.append(list);
 
-            jarvis_update_title(res.action);
+            jarvis_update_title(res.action, 'complete');
         }
     }
 
     console.log('json call to "'+url+'"');
     $.ajax({
         dataType: "json",
-        url: baseurl+escape(url),
+        url: baseurl+'api/'+escape(url),
         data: '',
         complete: callback,
         headers: {'secret': $('body').data('secret')}

@@ -70,7 +70,7 @@ class handler(tornado.web.RequestHandler):
             self.write('Please supply correct authentication details')
             return
 
-        baseurl = self.server.kernel.getConfig('web_baseurl') + 'api/'
+        baseurl = self.server.kernel.getConfig('web_baseurl')
         secret  = self.server.kernel.getConfig('secret')
 
         root = os.path.join(rootdir, 'clients', 'web')
