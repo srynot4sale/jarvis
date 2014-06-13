@@ -176,7 +176,13 @@ class action_update(kernel.action.action):
             note = "Failed to update habit!"
             return function.response(function.STATE_FAILURE, note)
 
-        return function.redirect(self, ('habit', 'view', [date]), 'Updated habit entry for "%s"' % date)
+        if date == self.function.date_today():
+            redirect = ('habit', 'view')
+            date = 'today'
+        else:
+            redirect = ('habit', 'view', [date])
+
+        return function.redirect(self, redirect, 'Updated habit entry for %s' % date)
 
 
 class action_default(action_view):
