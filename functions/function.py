@@ -107,12 +107,10 @@ def redirect(action, redirect, notification = None):
     '''
     Redirect to another request, and return it's output along with a notification
     '''
-    if len(redirect) < 3:
-        redirect = list(redirect)
-        redirect.append([])
-
-    response = action.function.kernel.call(redirect[0], redirect[1], redirect[2])
-    response.redirected = '%s %s %s' % (redirect[0], redirect[1], (' '.join(redirect[2])))
+    response = action.function.kernel.call(redirect[0], redirect[1], redirect[2] if len(redirect) > 2 else [])
+    response.redirected = '%s %s' % (redirect[0], redirect[1])
+    if len(redirect) > 2:
+        response.redirected += ' %s' % (' '.join(redirect[2]))
     response.notification = notification
     response.write = 1
     return response
