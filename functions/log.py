@@ -54,7 +54,7 @@ class logs(function.function):
             AND deleted IS NULL
         """
 
-        result = datasource.get_record(sql, (entryid))
+        result = datasource.get_record(sql, [entryid])
         if not result:
             return None
         return log(result)
@@ -87,7 +87,7 @@ class logs(function.function):
             WHERE
                 id = %s
         """
-        datasource.execute(sql, (entryid))
+        datasource.execute(sql, [entryid])
 
         return entry
 
