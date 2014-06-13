@@ -145,11 +145,9 @@ class action_overview(kernel.action.action):
 
                 item_text += u'<span class="item_%s" title="%s">%s</span>' % (state, d, icon)
 
-
-            item_actions = {}
             item_text += ' %s' % item[0]
 
-            data.append([item_text, None, item_actions])
+            data.append([item_text, None])
 
         note = 'Summary of habits over last 7 days'
 
