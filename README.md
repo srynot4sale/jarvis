@@ -9,7 +9,7 @@ via a REST interface.
 It's clients include:
 
 - HTTP: built-in, access at configured baseurl in config
-- Android: see https://bitbucket.org/srynot4sale/jarvis-android
+- Android: see https://github.com/srynot4sale/jarvis-android
 - CLI: ./clients/cli.py
 
 
