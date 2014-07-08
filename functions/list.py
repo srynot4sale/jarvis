@@ -282,6 +282,10 @@ class action_list(kernel.action.action):
         lists = self.function.get_all_lists()
         data = []
         for ls in lists:
+            # Ignore lists that begin with a hash, these are system lists
+            if ls['listname'].startswith('#'):
+                continue
+
             data.append([ls['listname'], 'list view %s' % ls['listname']])
 
         return function.response(function.STATE_SUCCESS, 'Lists available', data)
