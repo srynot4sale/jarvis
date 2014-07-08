@@ -14,6 +14,16 @@ $(function() {
     });
 
     /**
+     * Handle "hash change" events
+     */
+    window.addEventListener("hashchange", function(e) {
+        apicall = jarvis_get_apicall_from_url();
+        if (apicall) {
+            api_call(apicall);
+        }
+    });
+
+    /**
      * Check if user is on a small screen
      */
     if ($(document).width() < 600) {
@@ -76,9 +86,35 @@ $(function() {
     input.append(textbox);
     textbox.focus();
 
-    api_call('server connect');
+
+    var default_apicall = 'server connect';
+
+    /**
+     * Check if the url indicates a specific action
+     */
+    url_apicall = jarvis_get_apicall_from_url();
+    if (url_apicall) {
+        default_apicall = url_apicall;
+    }
+
+    api_call(default_apicall);
 
 });
+
+
+
+/**
+ * Parse hash in URL and retrieve an API call
+ */
+function jarvis_get_apicall_from_url() {
+    if (!window.location.hash || window.location.hash.substr(0, 2) != '#/') {
+        return false;
+    }
+
+    default_apicall = window.location.hash.substr(2);
+    return default_apicall.replace('/', ' ').replace('/', ' ');
+}
+
 
 
 /**
