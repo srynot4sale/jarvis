@@ -61,14 +61,14 @@ $(function() {
             return;
         }
 
+        var menu = $('<ul class="menu"></ul>');
         for (var i in res.data) {
-            var menu = $('<span class="menu action" data-call="'+res.data[i][1]+'">'+res.data[i][0]+'</span>');
-            menu.click(function() {
-                api_call($(this).data('call'));
-            });
-
-            input.append(menu);
+            var menuitem = $('<li></li>');
+            var menulink = jarvis_build_internal_link({path: res.data[i][1], text: res.data[i][0]});
+            menu.append(menuitem.append(menulink));
         }
+
+        input.append(menu);
     });
 
     /**
@@ -115,6 +115,37 @@ function jarvis_get_apicall_from_url() {
     return default_apicall.replace('/', ' ').replace('/', ' ');
 }
 
+
+/**
+ * Generate URL from an API call
+ */
+function jarvis_get_url_from_apicall(apicall) {
+    var baseurl = $('body').data('baseurl');
+    return baseurl + '#/' + apicall.replace(' ', '/').replace(' ', '/');
+}
+
+/**
+ * Return internal "link" markup
+ */
+function jarvis_build_internal_link(config) {
+    if (!config.text) {
+        config.text = config.path;
+    }
+
+    var link = $('<a>');
+    link.addClass('internal-link action');
+    link.attr('href', jarvis_get_url_from_apicall(config.path));
+    link.attr('title', config.path);
+    link.data('call', config.path);
+    link.html(config.text);
+    link.click(function(e) {
+        e.preventDefault();
+        $(this).blur();
+        api_call($(this).data('call'));
+    });
+
+    return link;
+}
 
 
 /**
@@ -210,12 +241,11 @@ function jarvis_dialog(action, callback, params) {
  */
 function jarvis_update_title(title, status = '') {
     var header = $('div.response h3')
-    var refresh = $('<a class="refresh action title" title="Refresh">'+title+'</a>');
-    refresh.click(function() {
-        api_call(title);
-    });
+    var refresh = jarvis_build_internal_link({path: title, text: title});
+    refresh.addClass('refresh title');
+    refresh.attr('title', 'Refresh');
 
-    $('a.title', header).remove();
+    $('.title', header).remove();
     header.prepend(refresh);
 
     // If response received:
@@ -226,8 +256,7 @@ function jarvis_update_title(title, status = '') {
         // Update URL
         // (check for support of history API)
         if (!!(window.history && history.pushState)) {
-            var baseurl = $('body').data('baseurl');
-            var url = baseurl + '#/' + title.replace(' ', '/').replace(' ', '/');
+            var url = jarvis_get_url_from_apicall(title);
 
             // If same as current URL, do not re-add
             if (url != location.href) {
@@ -340,18 +369,15 @@ var api_call = function(action, callback) {
                             var ismetadata = o.match(/^\[(.*)\]$/);
 
                             if (ismetadata) {
-                                var option = $('<span class="action">');
-                                option.html(o.substr(1, o.length - 2));
+                                var optiontext = o.substr(1, o.length - 2);
                             } else {
-                                var option = $('<li class="action">');
-                                option.html(o);
+                                var optiontext = o;
                             }
+                            var option = jarvis_build_internal_link({path: options[o], text: optiontext});
 
-                            option.attr('title', options[o]);
-                            option.data('action', options[o]);
-                            option.click(function() {
-                                api_call($(this).data('action'));
-                            });
+                            if (!ismetadata) {
+                                var option = $('<li>').append(option);
+                            }
 
                             option.hover(
                                 function() {
@@ -388,15 +414,9 @@ var api_call = function(action, callback) {
             // Page actions
             if (res.actions) {
                 for (var action in res.actions) {
-                    var span = $('<span>'+res.actions[action][0]+'</span>');
-                    span.addClass('action');
-                    span.attr('title', res.actions[action][1]);
-                    span.data('action', res.actions[action][1]);
-                    span.click(function() {
-                        api_call($(this).data('action'));
-                    });
-
-                    header.append(span);
+                    var a = jarvis_build_internal_link({path: res.actions[action][1], text: res.actions[action][0]});
+                    a.addClass('pageaction');
+                    header.append(a);
                 }
             }
 
