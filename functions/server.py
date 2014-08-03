@@ -186,7 +186,8 @@ class action_menu(kernel.action.action):
             ['List', 'list default'],
             ['Habits', 'habit view'],
             ['Logs', 'log view'],
-            ['Log Add', 'log add %Log_entry']
+            ['Log Add', 'log add %Log_entry'],
+            ['To Sort', 'list view tosort']
         ]
 
         return function.response(function.STATE_SUCCESS, message, items)
