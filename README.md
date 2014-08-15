@@ -27,7 +27,7 @@ Installation:
     cd ~/code/jarvis-src
     virtualenv env
 
-    # Active this virtual environment (do before running jarvis)
+    # Activate this virtual environment (do before running jarvis)
     source env/bin/activate
 
     # Install requirements
