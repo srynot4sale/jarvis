@@ -1,3 +1,5 @@
+#! env/bin/python
+
 import config
 
 import pkg_resources
