@@ -205,7 +205,7 @@ function jarvis_dialog(action, callback, params) {
 
     var dialog = $('<div class="dialog"></div>');
     var title = action;
-    var form = $('<form>');
+    var form = $('<form accept-charset="utf-8"></form>');
 
     for (var p in params) {
         var param = params[p];
@@ -452,7 +452,7 @@ var api_call = function(action, callback) {
     console.log('json call to "'+url+'"');
     $.ajax({
         dataType: "json",
-        url: baseurl+'api/'+escape(url),
+        url: baseurl+'api/'+encodeURI(url),
         data: '',
         complete: callback,
         headers: {'secret': $('body').data('secret')}
