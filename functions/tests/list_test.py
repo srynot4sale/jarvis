@@ -518,3 +518,52 @@ def list_addmoveitem_test():
     assert moved['state'] == STATE_SUCCESS
     assert len(moved['data']) == 1
     assert moved['data'][0][0] == listitem
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_list_test():
+    '''
+    Test list list function to make sure correct result is given
+
+    !Tests: list_add
+    !Tests: list_list
+    '''
+
+    tag1 = 'testtag1'
+    tag2 = 'testtag2'
+    systemtag = '#testing'
+
+    listitem = 'test list item'
+
+    # Add new item
+    newitem = make_request('list add %s %s' % (tag1, listitem))
+    assert newitem['state'] == STATE_SUCCESS
+    newitem = None
+
+    # Check length of list
+    testlist = make_request('list list')
+    assert testlist['state'] == STATE_SUCCESS
+    assert len(testlist['data']) == 1
+    testlist = None
+
+    # Add system list item
+    newitem = make_request('list add %s %s' % (systemtag, listitem))
+    assert newitem['state'] == STATE_SUCCESS
+    newitem = None
+
+    # Check that system item isn't included in list_list
+    testlist = make_request('list list')
+    assert testlist['state'] == STATE_SUCCESS
+    assert len(testlist['data']) == 1
+    testlist = None
+
+    # Add new item
+    newitem = make_request('list add %s %s' % (tag2, listitem))
+    assert newitem['state'] == STATE_SUCCESS
+    newitem = None
+
+    # Check length of list
+    testlist = make_request('list list')
+    assert testlist['state'] == STATE_SUCCESS
+    assert len(testlist['data']) == 2
+    testlist = None
