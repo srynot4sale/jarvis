@@ -125,7 +125,7 @@ class kernel(object):
                 VALUES
                     (%s, %s, %s, NOW())
             """
-            data_str = None if not data else ' '.join(str(x) for x in data)
+            data_str = None if not data else ' '.join(unicode(x) for x in data)
             params = [function, action, data_str]
             datasource.execute(sql, params)
 
