@@ -1,5 +1,7 @@
 import logging, os.path, re, subprocess, time
 
+import clients.http
+
 ## Test suite setup and teardown functionality
 log = logging.getLogger(__name__)
 
@@ -23,7 +25,7 @@ def setup_function():
             break
         try:
             tries += 1
-            make_request('server menu')
+            clients.http.make_request('server menu')
             log.info('Server up after %d tries' % tries)
             break
         except:
