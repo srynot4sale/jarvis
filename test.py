@@ -37,6 +37,8 @@ def test_coverage():
         if not match.strip():
             continue
         match = re.search('functions/([a-z0-9]+)\.py\:class action_([a-z0-9_]+)\(', match)
+        if not match:
+            continue
         function = match.group(1)
         action = match.group(2)
 
