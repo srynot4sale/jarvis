@@ -567,3 +567,14 @@ def list_list_test():
     assert testlist['state'] == STATE_SUCCESS
     assert len(testlist['data']) == 2
     testlist = None
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_default_test():
+    '''
+    Test the default list action returns successfully
+
+    !Tests: list_default
+    '''
+    default = make_request('list default')
+    assert default['state'] == STATE_SUCCESS
