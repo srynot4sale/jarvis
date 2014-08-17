@@ -2,7 +2,7 @@
 import functions.function
 import application
 
-import pytz, tornado.ioloop, tzlocal
+import pytz, signal, time, tornado.ioloop, tzlocal
 
 class kernel(object):
 
@@ -39,6 +39,25 @@ class kernel(object):
         self.log('Initialise Tornado')
         self._application = application.app(self)
         self._application.listen(self.getConfig('interface_http_port'))
+
+        def sig_handler(sig, frame):
+            tornado.ioloop.IOLoop.instance().add_callback(shutdown)
+
+        def shutdown():
+            io_loop = tornado.ioloop.IOLoop.instance()
+            deadline = time.time() + 3
+
+            def stop_loop():
+                now = time.time()
+                if now < deadline and (io_loop._callbacks or io_loop._timeouts):
+                    io_loop.add_timeout(now + 1, stop_loop)
+                else:
+                    io_loop.stop()
+
+            stop_loop()
+
+        signal.signal(signal.SIGTERM, sig_handler)
+        signal.signal(signal.SIGINT, sig_handler)
 
         self.log('Start IOLoop')
         tornado.ioloop.IOLoop.instance().start()
