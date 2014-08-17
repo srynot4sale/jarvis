@@ -49,7 +49,8 @@ def test_coverage():
             continue
 
         try:
-            tests = subprocess.check_output(["""grep -RE -o 'def %s_%s(_[a-z0-9_]+_|_)test\(' %s""" % (function, action, testfile)], shell=True)
+            res = """grep -RE -o '^\s*\!Tests\:\s+%s_%s$' %s""" % (function, action, testfile)
+            tests = subprocess.check_output([res], shell=True)
             count = len(tests.strip().split('\n'))
         except:
             count = 0

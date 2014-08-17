@@ -19,9 +19,12 @@ def list_empty(tag):
 
 
 @with_setup(test.setup_function, test.teardown_function)
-def badinput_test():
+def list_add_weirdtag_test():
     '''
-    Test bad list item and tag data
+    Test adding a list item with weird characters in tag
+
+    !Tests: list_add
+    !Tests: list_view
     '''
     good = 'test'
     bad = [
@@ -76,20 +79,17 @@ def badinput_test():
         assert empty2['state'] == STATE_FAILURE
         empty2 = None
 
+
 @with_setup(test.setup_function, test.teardown_function)
 def list_adddeleteitem_test():
     '''
     Test adding and deleting list items
+
+    !Tests: list_add
+    !Tests: list_delete
     '''
     tag = 'UNITTESTLIST'
     listitem = 'test list item'
-
-    # check for empty list first
-    list_empty(tag)
-    empty = make_request('list view %s' % tag)
-    assert empty['state'] == STATE_FAILURE
-    assert empty['write'] == False
-    empty = None
 
     # add new item
     newitem = make_request('list add %s %s' % (tag, listitem))
@@ -116,18 +116,19 @@ def list_adddeleteitem_test():
     assert empty2['state'] == STATE_FAILURE
     empty2 = None
 
+
 @with_setup(test.setup_function, test.teardown_function)
-def list_adddeletetags_test():
+def list_addremovetags_test():
     '''
     Test adding and removing tags from list items
+
+    !Tests: list_add
+    !Tests: list_tag
+    !Tests: list_remove
     '''
     tag = 'UNITTESTTAG1'
     tag2 = 'UNITTESTTAG2'
     listitem = 'test list tag item'
-
-    # check for empty lists first
-    list_empty(tag)
-    list_empty(tag2)
 
     # add new item with first tag
     newitem = make_request('list add %s %s' % (tag, listitem))
@@ -183,17 +184,20 @@ def list_adddeletetags_test():
     assert empty2['state'] == STATE_FAILURE
     empty2 = None
 
+
 @with_setup(test.setup_function, test.teardown_function)
-def list_adddeletetags_test():
+def list_addmultipletags_test():
     '''
     Check adding the same tag twice to a list item doesn't make
     it appear twice, or need to be deleted twice
+
+    !Tests: list_add
+    !Tests: list_tag
+    !Tests: list_view
+    !Tests: list_remove
     '''
     tag = 'UNITTESTTAGSDOUBLEUP'
     listitem = 'test list tag item'
-
-    # check for empty lists first
-    list_empty(tag)
 
     # add new item with first tag
     newitem = make_request('list add %s %s' % (tag, listitem))
@@ -242,12 +246,11 @@ def list_adddeletetags_test():
 def list_itemorder_basic_test():
     '''
     Check items appear in order added when displayed
+
+    !Tests: list_view
     '''
     tag = 'UNITTESTLISTORDER'
     listitem = 'test list item item#'
-
-    # check for empty lists first
-    list_empty(tag)
 
     # add four new items
     for i in range(0, 4):
@@ -268,13 +271,14 @@ def list_itemorder_basic_test():
 
     exists = None
 
-    list_empty(tag)
-
 
 @with_setup(test.setup_function, test.teardown_function)
 def list_itemorder_multitag_test():
     '''
-    Check items appear in order tags added when displayed
+    Check items appear in order tag's were added when displayed
+
+    !Tests: list_tag
+    !Tests: list_view
     '''
     tag = 'UNITTESTLISTORDERTAG'
     tagalt = 'UNITTESTLISTORDERTAGALT'
@@ -327,14 +331,14 @@ def list_itemorder_multitag_test():
 
     exists = None
 
-    list_empty(tag)
-    list_empty(tagalt)
-
 
 @with_setup(test.setup_function, test.teardown_function)
 def list_missingtag_test():
     '''
     Test handling of empty tags
+
+    !Tests: list_add
+    !Tests: list_tag
     '''
     newitem = make_request('list add  item')
     assert newitem['state'] == STATE_FAILURE
@@ -351,6 +355,8 @@ def list_missingtag_test():
 def list_move_test():
     '''
     Test the list move action
+
+    !Tests: list_move
     '''
     tag_origin = 'UNITTESTORIGIN'
     tag_dest = 'UNITTESTDESTINATION'
@@ -417,6 +423,8 @@ def list_move_test():
 def list_multipletagview_test():
     '''
     Test the list view with multiple tags
+
+    !Tests: list_view
     '''
     tag_one = 'UNITTESTTAG1'
     tag_two = 'UNITTESTTAG2'
@@ -467,10 +475,14 @@ def list_multipletagview_test():
     assert exists['data'][0][0] == listitem
     exists = None
 
+
 @with_setup(test.setup_function, test.teardown_function)
 def list_addmoveitem_test():
     '''
     Test adding and moving list items
+
+    !Tests: list_add
+    !Tests: list_move
     '''
     tag1 = 'TestTag1'
     tag2 = 'TestTag2'
