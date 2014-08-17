@@ -33,33 +33,41 @@ def setup_function():
 
 def teardown_function():
     log.info('Run teardown')
+
+    # Kill server test instance
     server.kill()
 
 
 ## Test coverage
 def test_coverage():
-    matches = subprocess.check_output(["""grep -RE -o 'class action_(.*)\(' functions/ | grep -vi test"""], shell=True)
+    # Search for classes starting with action_ in the functions subdir
+    matches = subprocess.check_output(["""grep -RE -o 'class action_(.*)\(.*\)' functions/ | grep -vi test"""], shell=True)
     for match in matches.split('\n'):
         if not match.strip():
             continue
-        match = re.search('functions/([a-z0-9]+)\.py\:class action_([a-z0-9_]+)\(', match)
+        # Now pull out the function, action and a parentclass
+        match = re.search('functions/([a-z0-9]+)\.py\:class action_([a-z0-9_]+)\((.*)\)', match)
         if not match:
             continue
         function = match.group(1)
         action = match.group(2)
+        parentclass = match.group(3)[7:] if match.group(3)[0:7] == 'action_' else None
 
+        # We expect this action's tests to be in the following location
         testfile = 'functions/tests/%s_test.py' % function
         if not os.path.isfile(testfile):
-            print('%s %s - No test file exists! Expecting %s' % (function, action, testfile))
-            continue
-
-        try:
-            res = """grep -RE -o '^\s*\!Tests\:\s+%s_%s$' %s""" % (function, action, testfile)
-            tests = subprocess.check_output([res], shell=True)
-            count = len(tests.strip().split('\n'))
-        except:
             count = 0
+        else:
+            try:
+                # In the file, search for the magic string "Tests: $function_$action"
+                res = """grep -RE -o '^\s*\!Tests\:\s+%s_%s$' %s""" % (function, action, testfile)
+                tests = subprocess.check_output([res], shell=True)
+                count = len(tests.strip().split('\n'))
+            except:
+                count = 0
 
+        if parentclass:
+            action += ' (%s)' % parentclass
         print('%s %s - %d tests' % (function, action, count))
 
 
