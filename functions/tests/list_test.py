@@ -18,25 +18,25 @@ def badinput_test():
     '''
     Test bad list item and tag data
     '''
-    good = 'UNITTESTLISTBAD'
+    good = 'test'
     bad = [
-        'UNITTESTLISTBAD\'BAD\'HI',
-        'UNITTESTLISTBAD\"\"HI',
-        'UNITTESTLISTBAD\'',
-        'UNITTESTLISTBAD\"',
-        'UNITTESTLISTBAD+SPACE',
-        'UNITTESTLISTBAD%2fSPACE',
-        'UNITTESTLISTBAD\0',
-        'UNITTESTLISTBAD\0BAD',
-        'UNITTESTLISTBAD\nNEWLINE',
-        'UNITTESTLISTBAD\n',
-        'UNITTESTLISTBAD\n\r',
-        'UNITTESTLISTBAD\r\n',
-        'UNITTESTLISTBAD\\HI',
-        'UNITTESTLISTBADHI\\',
-        'UNITTESTLISTBAD/HI',
-        'UNITTESTLISTBAD/HI/'
-        'UNITTESTLISTBAD#'
+        'test\'BAD\'HI',
+        'test\"\"HI',
+        'test\'',
+        'test\"',
+        'test+SPACE',
+        'test%2fSPACE',
+        'test\0',
+        'test\0BAD',
+        'test\nNEWLINE',
+        'test\n',
+        'test\n\r',
+        'test\r\n',
+        'test\\HI',
+        'testHI\\',
+        'test/HI',
+        'test/HI/'
+        'test#'
     ]
 
     # test each bad tag
