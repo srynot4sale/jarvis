@@ -118,13 +118,13 @@ def list_adddeleteitem_test():
 
 
 @with_setup(test.setup_function, test.teardown_function)
-def list_addremovetags_test():
+def list_adddeletetags_test():
     '''
     Test adding and removing tags from list items
 
     !Tests: list_add
     !Tests: list_tag
-    !Tests: list_remove
+    !Tests: list_delete
     '''
     tag = 'UNITTESTTAG1'
     tag2 = 'UNITTESTTAG2'
@@ -160,7 +160,7 @@ def list_addremovetags_test():
     exists = None
 
     # delete list item
-    delete = make_request('list remove %s %s' % (tag, existsid))
+    delete = make_request('list delete %s %s' % (tag, existsid))
     assert delete['state'] == STATE_SUCCESS
     assert len(delete['data']) == 2
     assert delete['data'][0][0] == 'View list "%s"' % tag
@@ -168,11 +168,11 @@ def list_addremovetags_test():
     delete = None
 
     # already deleted
-    delete = make_request('list remove %s %s' % (tag, existsid))
+    delete = make_request('list delete %s %s' % (tag, existsid))
     assert delete['state'] == STATE_FAILURE
     delete = None
 
-    delete = make_request('list remove %s %s' % (tag2, existsid))
+    delete = make_request('list delete %s %s' % (tag2, existsid))
     assert delete['state'] == STATE_SUCCESS
     assert len(delete['data']) == 1
     delete = None
@@ -194,7 +194,7 @@ def list_addmultipletags_test():
     !Tests: list_add
     !Tests: list_tag
     !Tests: list_view
-    !Tests: list_remove
+    !Tests: list_delete
     '''
     tag = 'UNITTESTTAGSDOUBLEUP'
     listitem = 'test list tag item'
@@ -225,14 +225,14 @@ def list_addmultipletags_test():
     exists = None
 
     # delete list item
-    delete = make_request('list remove %s %s' % (tag, existsid))
+    delete = make_request('list delete %s %s' % (tag, existsid))
     assert delete['state'] == STATE_SUCCESS
     assert len(delete['data']) == 1
     assert delete['data'][0][0] == 'View list "%s"' % tag
     delete = None
 
     # check it no longer appears
-    delete = make_request('list remove %s %s' % (tag, existsid))
+    delete = make_request('list delete %s %s' % (tag, existsid))
     assert delete['state'] == STATE_FAILURE
     delete = None
 
@@ -402,7 +402,7 @@ def list_move_test():
     old = None
 
     # delete list item
-    delete = make_request('list remove %s %s' % (tag_dest, existsid))
+    delete = make_request('list delete %s %s' % (tag_dest, existsid))
     assert delete['state'] == STATE_SUCCESS
     assert len(delete['data']) == 1
     assert delete['data'][0][0] == 'View list "%s"' % tag_dest
