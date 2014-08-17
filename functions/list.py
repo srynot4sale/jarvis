@@ -451,15 +451,5 @@ class action_edit(action_update):
     usage = '(alias of "list update")'
 
 
-class action_find(kernel.action.action):
-
-    usage = '$listkey $itemtofind'
-
-    def execute(self, data):
-        lstkey = data[0]
-        finditem = data[1]
-        l = listobj
-
-
 class action_default(action_list):
     pass
