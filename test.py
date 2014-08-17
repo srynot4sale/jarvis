@@ -7,7 +7,8 @@ server = None
 def setup_function():
     global server
     log.info('Run setup')
-    server = subprocess.Popen(["python", "start_server.py", "--test"])
+    null = open('/dev/null', 'w')
+    server = subprocess.Popen(["python", "start_server.py", "--test"], stdout=null, stderr=null)
 
     tries = 0
     sleep = 0.1
