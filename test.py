@@ -7,9 +7,14 @@ server = None
 def setup_function():
     global server
     log.info('Run setup')
+
+    # Open file descriptor for /dev/null so we can pipe stdout and sterr to it
     null = open('/dev/null', 'w')
+
+    # Open test instance of server, which resets database on load
     server = subprocess.Popen(["python", "start_server.py", "--test"], stdout=null, stderr=null)
 
+    # The server takes a while to come up, so we'll hit it a few times until we get a proper response
     tries = 0
     sleep = 0.1
     while 1:
@@ -18,7 +23,7 @@ def setup_function():
             break
         try:
             tries += 1
-            make_request('server connect')
+            make_request('server menu')
             log.info('Server up after %d tries' % tries)
             break
         except:
