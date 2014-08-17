@@ -205,6 +205,7 @@ function jarvis_dialog(action, callback, params) {
 
     var dialog = $('<div class="dialog"></div>');
     var title = action;
+    var form = $('<form>');
 
     for (var p in params) {
         var param = params[p];
@@ -212,17 +213,18 @@ function jarvis_dialog(action, callback, params) {
         var element = $('<div></div>');
         element.append($('<label for="dialog-'+param+'">'+nice+'</label>'));
         element.append($('<input type="text" id="dialog-'+param+'" name="'+param+'" />'));
-        dialog.append(element);
+        form.append(element);
 
         // Remove element from dialog title
         title = title.replace(param, '');
     }
 
-    dialog.prepend($('<h2>'+title+'</h2>'));
+    form.prepend($('<h2>'+title+'</h2>'));
 
-    dialog.append('<button>Submit</button>');
+    form.append('<input class="bob" type="submit" value="Submit" />');
+    dialog.append(form);
 
-    $('button', dialog).click(function() {
+    $('.bob', dialog).click(function() {
         for (var p in params) {
             var param = params[p];
             action = action.replace(param, $('input[name="'+param+'"]', dialog).val());
