@@ -578,3 +578,43 @@ def list_default_test():
     '''
     default = make_request('list default')
     assert default['state'] == STATE_SUCCESS
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_update_test():
+    '''
+    Test updating of a list item
+
+    !Tests: list_update
+    !Tests: list_add
+    !Tests: list_view
+    '''
+
+    tag = 'testlist'
+    listitem = 'test list item'
+    listitemupdate = 'updated list item'
+
+    # Add new item
+    newitem = make_request('list add %s %s' % (tag, listitem))
+    assert newitem['state'] == STATE_SUCCESS
+    newitem = None
+
+    # Make sure item exist with the correct name
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem
+    itemid = exists['data'][0][3]['id']
+    exist = None
+
+    # Update item
+    update = make_request('list update %s %s %s' % (tag, itemid, listitemupdate))
+    assert update['state'] == STATE_SUCCESS
+    assert update['write'] == True
+
+    # Check item has been updated
+    check = make_request('list view %s' % tag)
+    assert check['state'] == STATE_SUCCESS
+    assert len(check['data']) == 1
+    assert check['data'][0][0] == listitemupdate
+    check = None
