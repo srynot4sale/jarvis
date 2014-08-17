@@ -461,3 +461,47 @@ def list_multipletagview_test():
     assert len(exists['data']) == 1
     assert exists['data'][0][0] == listitem
     exists = None
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_addmoveitem_test():
+    '''
+    Test adding and moving list items
+    '''
+    tag1 = 'TestTag1'
+    tag2 = 'TestTag2'
+    listitem = 'test list item'
+
+    # check for empty lists first
+    list_empty(tag1)
+    list_empty(tag2)
+
+    # Add new item
+    newitem = make_request('list add %s %s' % (tag1, listitem))
+    assert newitem['state'] == 1
+    assert newitem['write'] == 1
+    newitem = None
+
+    # check new item exists
+    exists = make_request('list view %s' % tag1)
+    assert exists['state'] == 1
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem
+    exists_delete = exists['data'][0][2]['Delete']
+    itemid = exists['data'][0][3]['id']
+    exists = None
+
+    # Move new item
+    move = make_request('list move %s %s %s' % (itemid, tag1, tag2))
+    assert move['state'] == 1
+    assert len(move['data']) == 1
+    assert move['data'][0][0] == listitem
+
+    # Check to see if tag1 list is empty
+    empty = make_request('list view %s' % tag1)
+    assert empty['state'] == 2
+
+    # Make sure item is in list 2
+    moved = make_request('list view %s' % tag2)
+    assert moved['state'] == 1
+    assert len(moved['data']) == 1
+    assert moved['data'][0][0] == listitem
