@@ -488,10 +488,6 @@ def list_addmoveitem_test():
     tag2 = 'TestTag2'
     listitem = 'test list item'
 
-    # check for empty lists first
-    list_empty(tag1)
-    list_empty(tag2)
-
     # Add new item
     newitem = make_request('list add %s %s' % (tag1, listitem))
     assert newitem['state'] == STATE_SUCCESS
