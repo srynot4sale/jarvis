@@ -212,6 +212,13 @@ class lstobj(object):
         datasource.execute(sql, data)
         self._load()
 
+    def count(self):
+        """
+        Count all list items that have specific tags
+        """
+        self._load()
+        return len(self.records)
+
 
 class action_view(kernel.action.action):
 
@@ -286,7 +293,12 @@ class action_list(kernel.action.action):
             if ls['listname'].startswith('#'):
                 continue
 
-            data.append([ls['listname'], 'list view %s' % ls['listname']])
+            # Get the length of each list
+            l = lstobj(self.function, ls['listname'])
+
+            listdesc = '%s (%d)' % (ls['listname'], l.count())
+
+            data.append([listdesc, 'list view %s' % ls['listname']])
 
         return function.response(function.STATE_SUCCESS, 'Lists available', data)
 
