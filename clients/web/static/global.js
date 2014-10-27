@@ -209,14 +209,24 @@ function jarvis_dialog(action, callback, params) {
 
     for (var p in params) {
         var param = params[p];
+        var original_param = param;
+        var value = '';
+
+        // Split out the value
+        if (param.indexOf('{{') != -1) {
+            value = param.substr(param.indexOf('{{'));
+            value = value.substr(2, value.length - 4);
+            param = param.substr(0, param.indexOf('{{'));
+        }
+
         var nice = param.replace('%', '').replace('_', ' ');
         var element = $('<div></div>');
         element.append($('<label for="dialog-'+param+'">'+nice+'</label>'));
-        element.append($('<input type="text" id="dialog-'+param+'" name="'+param+'" />'));
+        element.append($('<input type="text" id="dialog-'+param+'" name="'+param+'" value="'+value+'" />'));
         form.append(element);
 
         // Remove element from dialog title
-        title = title.replace(param, '');
+        title = title.replace(original_param, '');
     }
 
     form.prepend($('<h2>'+title+'</h2>'));
@@ -227,7 +237,11 @@ function jarvis_dialog(action, callback, params) {
     $('.bob', dialog).click(function() {
         for (var p in params) {
             var param = params[p];
-            action = action.replace(param, $('input[name="'+param+'"]', dialog).val());
+            var original_param = param;
+            if (param.indexOf('{{') != -1) {
+                param = param.substr(0, param.indexOf('{{'));
+            }
+            action = action.replace(original_param, $('input[name="'+param+'"]', dialog).val());
         }
 
         $.modal.close();
@@ -281,7 +295,7 @@ var api_call = function(action, callback) {
     /**
      * Check if this a dynamic call, e.g. needs input (look for a %xxx)
      */
-    var dynamic = /\%[A-Za-z0-9_]+/g;
+    var dynamic = /\%[A-Za-z0-9_]+(\{\{.*\}\})?/g;
     var dvars = url.match(dynamic);
     if (dvars) {
         jarvis_dialog(action, callback, dvars);
