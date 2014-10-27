@@ -66,6 +66,10 @@ class action_connect(kernel.action.action):
         else:
             data = []
 
+        tosort = self.function.kernel.call('list', 'view', ['tosort'])
+        if tosort.state == function.STATE_SUCCESS:
+            data.append(['==== To-Sort (%d) ====' % len(tosort.data), 'list view tosort'])
+
         today = self.function.kernel.call('list', 'view', ['today'])
         if today.state == function.STATE_SUCCESS:
             data.append(['==== Today ====', 'list view today'])
