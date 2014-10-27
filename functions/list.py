@@ -212,6 +212,13 @@ class lstobj(object):
         datasource.execute(sql, data)
         self._load()
 
+    def count(self):
+        """
+        Count all list items that have specific tags
+        """
+        self._load()
+        return len(self.records)
+
 
 class action_view(kernel.action.action):
 
@@ -252,7 +259,7 @@ class action_view(kernel.action.action):
                 item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
 
             item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
-            item_actions['Edit...'] = 'list update %s %s %%New_description' % (tags[0], item['id'])
+            item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], item['item'])
 
             #####
             ## Prep tags for each item
@@ -286,7 +293,12 @@ class action_list(kernel.action.action):
             if ls['listname'].startswith('#'):
                 continue
 
-            data.append([ls['listname'], 'list view %s' % ls['listname']])
+            # Get the length of each list
+            l = lstobj(self.function, ls['listname'])
+
+            listdesc = '%s (%d)' % (ls['listname'], l.count())
+
+            data.append([listdesc, 'list view %s' % ls['listname']])
 
         return function.response(function.STATE_SUCCESS, 'Lists available', data)
 
@@ -449,16 +461,6 @@ class action_update(kernel.action.action):
 class action_edit(action_update):
 
     usage = '(alias of "list update")'
-
-
-class action_find(kernel.action.action):
-
-    usage = '$listkey $itemtofind'
-
-    def execute(self, data):
-        lstkey = data[0]
-        finditem = data[1]
-        l = listobj
 
 
 class action_default(action_list):
