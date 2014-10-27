@@ -252,7 +252,7 @@ class action_view(kernel.action.action):
                 item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
 
             item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
-            item_actions['Edit...'] = 'list update %s %s %%New_description' % (tags[0], item['id'])
+            item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], item['item'])
 
             #####
             ## Prep tags for each item
