@@ -154,8 +154,9 @@ class action_add(kernel.action.action):
             return function.response(function.STATE_FAILURE, 'No log entry specified')
 
         l = self.function.add(description)
+        item_time = self.function.kernel.inClientTimezone(l.entrytime).strftime('%y/%m/%d %I:%M%P')
 
-        return function.redirect(self, ('log', 'view'), 'Added log entry "%s" with timestamp "%s"' % (l.description, l.entrytime))
+        return function.redirect(self, ('log', 'view'), 'Added log entry "%s" with timestamp "%s"' % (l.description, item_time))
 
 
 class action_remove(kernel.action.action):

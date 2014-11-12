@@ -618,3 +618,40 @@ def list_update_test():
     assert len(check['data']) == 1
     assert check['data'][0][0] == listitemupdate
     check = None
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_unicode_test():
+    '''
+    Test adding of items that include unicode characters
+
+    !Tests: list_add
+    '''
+
+    tag = 'testlist'
+    listitem1 = 'test \xc2 100'
+    listitem2 = 'This is a \xe2 test \xe2'
+
+    # Add first item
+    newitem = make_request('list add %s %s' % (tag, listitem1))
+    assert newitem['state'] == STATE_SUCCESS
+    newitem = None
+
+    # Make sure item exist with the correct name
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem1
+    exist = None
+
+    # Add first item
+    newitem = make_request('list add %s %s' % (tag, listitem2))
+    assert newitem['state'] == STATE_SUCCESS
+    newitem = None
+
+    # Make sure item exist with the correct name
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitem2
+    exist = None

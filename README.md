@@ -51,3 +51,5 @@ Installation:
 Database tables will be installed on first run.
 
 Test suite can be run by evoking `nosetests` from the root jarvis directory.
+
+Test coverage can be checked by running `python test.py`.
