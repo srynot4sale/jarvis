@@ -466,7 +466,7 @@ var api_call = function(action, callback) {
     console.log('json call to "'+url+'"');
     $.ajax({
         dataType: "json",
-        url: baseurl+'api/'+encodeURI(url),
+        url: baseurl+'api/'+encodeURIComponent(url),
         data: '',
         complete: callback,
         headers: {'secret': $('body').data('secret')}
