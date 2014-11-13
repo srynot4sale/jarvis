@@ -621,6 +621,123 @@ def list_update_test():
 
 
 @with_setup(test.setup_function, test.teardown_function)
+def list_update_missing_test():
+    '''
+    Update non-existant list item
+
+    !Tests: list_update
+    '''
+    tag = 'notreal'
+    itemid = 3444455
+    listitemupdate = 'This item doesn\'t exist'
+
+    # Update item
+    update = make_request('list update %s %s %s' % (tag, itemid, listitemupdate))
+    assert update['state'] == STATE_FAILURE
+    assert update['write'] == True
+    assert len(update['data']) == 1
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_update_order_test():
+    '''
+    Test order of list doesn't change when updating a list item
+
+    !Tests: list_update
+    !Tests: list_add
+    !Tests: list_view
+    '''
+
+    tag = 'testlist'
+    listitem = 'test list item'
+    listitemupdate = 'updated list item'
+
+    # Add 3 new items
+    for i in range(1, 4):
+        newitem = make_request('list add %s %s%d' % (tag, listitem, i))
+        assert newitem['state'] == STATE_SUCCESS
+        newitem = None
+
+    # Make sure item exist with the correct name
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 3
+    assert exists['data'][1][0] == '%s%d' % (listitem, 2)
+    itemid = exists['data'][1][3]['id']
+    exist = None
+
+    # Update item
+    update = make_request('list update %s %s %s' % (tag, itemid, listitemupdate))
+    assert update['state'] == STATE_SUCCESS
+    assert update['write'] == True
+
+    # Check item has been updated and remains in same place
+    check = make_request('list view %s' % tag)
+    assert check['state'] == STATE_SUCCESS
+    assert len(check['data']) == 3
+    assert check['data'][1][0] == listitemupdate
+    check = None
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_update_version_test():
+    '''
+    Test list item versions saved when updating
+
+    !Tests: list_update
+    !Tests: list_add
+    !Tests: list_view
+    !Tests: list_history
+    '''
+
+    tag = 'testlist'
+    listitems = [
+        'test list item original',
+        'test list item first edit',
+        'test list item second edit',
+        'test list item third edit',
+        'test list item final',
+    ]
+
+    # Add new item
+    item = make_request('list add %s %s' % (tag, listitems[0]))
+    assert item['state'] == STATE_SUCCESS
+    item = None
+
+    # Make sure item exists
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 1
+    itemid = exists['data'][0][3]['id']
+    exist = None
+
+    # Update item a few times
+    for listitem in listitems[1:]:
+        item = make_request('list update %s %s %s' % (tag, itemid, listitem))
+        assert item['state'] == STATE_SUCCESS
+        item = None
+
+    # Make sure item exists with the latest name
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 1
+    assert exists['data'][0][0] == listitems[4]
+    exist = None
+
+    # Check for item update history
+    check = make_request('list history %s' % itemid)
+    assert check['state'] == STATE_SUCCESS
+    assert len(check['data']) == 4
+
+    i = 3
+    for listitem in listitems[0:-1]:
+        assert check['data'][i][0] == listitem
+        i -= 1
+
+    check = None
+
+
+@with_setup(test.setup_function, test.teardown_function)
 def list_unicode_test():
     '''
     Test adding of items that include unicode characters

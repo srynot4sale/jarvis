@@ -193,22 +193,32 @@ class lstobj(object):
         datasource.execute(sql, data)
         self._load()
 
-    def update(self, itemid, item):
+    def update(self, olditem, item):
         datasource = self.func.get_data_source()
+
+        # Save old version in versions table
+        sql = """
+            INSERT INTO
+                function_list_items_versions
+                (id, item, archived)
+            VALUES
+                (%s, %s, NOW())
+        """
+        data = [olditem['id'], olditem['item']]
+        datasource.execute(sql, data)
 
         # Update item
         sql = """
             UPDATE
                 function_list_items
             SET
-                added = NOW(),
                 item  = %s
             WHERE
                 id = %s
             LIMIT
                 1
         """
-        data = [item, itemid]
+        data = [item, olditem['id']]
         datasource.execute(sql, data)
         self._load()
 
@@ -219,6 +229,46 @@ class lstobj(object):
         self._load()
         return len(self.records)
 
+    def get_versions(self, itemid):
+        datasource = self.func.get_data_source()
+
+        sql = """
+            SELECT
+                i.*
+            FROM
+                function_list_items_versions i
+            WHERE
+                i.id = %s
+            ORDER BY
+                i.aid DESC
+        """
+
+        params = [itemid]
+        return datasource.get_records(sql, params)
+
+    def get_old_tags(self, itemversionid):
+        datasource = self.func.get_data_source()
+
+        sql = """
+            SELECT
+                t.tag
+            FROM
+                function_list_tags t
+            INNER JOIN
+                function_list_items_versions i
+             ON t.list_item_id = i.id
+            WHERE
+                i.aid = %s
+            AND (
+                t.deleted IS NULL
+             OR t.deleted > i.archived
+                )
+            AND t.added < i.archived
+            ORDER BY
+                t.id
+        """
+        data = [itemversionid]
+        return datasource.get_records(sql, data)
 
 class action_view(kernel.action.action):
 
@@ -258,6 +308,7 @@ class action_view(kernel.action.action):
             if len(tags) == 1:
                 item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
 
+            item_actions['History...'] = 'list history %s' % (item['id'])
             item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
             item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], item['item'])
 
@@ -453,7 +504,16 @@ class action_update(kernel.action.action):
             return function.response(function.STATE_FAILURE, 'No new item content')
 
         l = lstobj(self.function, tag)
-        l.update(itemid, item)
+        itemdata = l.get(itemid, tag)
+
+        if not itemdata:
+            data = [['View list "%s"' % tag, "list view %s" % tag]]
+            resp = function.response(function.STATE_FAILURE, 'No item to update to "%s" in list "%s"' % (item, tag))
+            resp.data = data
+            resp.write = 1
+            return resp
+
+        l.update(itemdata, item)
 
         return function.redirect(self, ('list', 'view', [tag]), 'Updated item "%s" to "%s"' % (itemid, item))
 
@@ -461,6 +521,52 @@ class action_update(kernel.action.action):
 class action_edit(action_update):
 
     usage = '(alias of "list update")'
+
+
+class action_history(kernel.action.action):
+
+    usage = '$itemid'
+
+    def execute(self, data):
+        itemid = data[0]
+        l = lstobj(self.function, None)
+        itemdata = l.get(itemid, None)
+
+        if not itemdata:
+            resp = function.response(function.STATE_FAILURE, 'No item to with id "%s"' % (itemid))
+            resp.write = 1
+            return resp
+
+        items = l.get_versions(itemid)
+
+        if not len(items):
+            data = []
+            tags = l.get_tags(itemid)
+            if tags:
+                for t in tags:
+                    data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
+            return function.response(function.STATE_SUCCESS, 'No previous versions of item "%s"' % (itemid), data)
+
+        data = []
+        for item in items:
+            item_actions = {}
+            #####
+            ## Prep tags for each item
+            itemtags = l.get_old_tags(item['aid'])
+            if itemtags:
+                itemtagstr = []
+                for t in itemtags:
+                    itemtagstr.append(t['tag'])
+                    item_actions['[%s]' % t['tag']] = "list view %s" % t['tag']
+
+            if not len(item_actions):
+                item_actions = None
+
+            #####
+            ## Append item to the list
+            data.append([item['item'], None, item_actions])
+
+        return function.response(function.STATE_SUCCESS, 'List previous versions of "%s" with id "%s"' % (itemdata['item'], itemdata['id']), data)
 
 
 class action_default(action_list):
