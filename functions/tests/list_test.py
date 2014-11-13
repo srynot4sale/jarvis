@@ -621,6 +621,47 @@ def list_update_test():
 
 
 @with_setup(test.setup_function, test.teardown_function)
+def list_update_order_test():
+    '''
+    Test order of list doesn't change when updating a list item
+
+    !Tests: list_update
+    !Tests: list_add
+    !Tests: list_view
+    '''
+
+    tag = 'testlist'
+    listitem = 'test list item'
+    listitemupdate = 'updated list item'
+
+    # Add 3 new items
+    for i in range(1, 4):
+        newitem = make_request('list add %s %s%d' % (tag, listitem, i))
+        assert newitem['state'] == STATE_SUCCESS
+        newitem = None
+
+    # Make sure item exist with the correct name
+    exists = make_request('list view %s' % tag)
+    assert exists['state'] == STATE_SUCCESS
+    assert len(exists['data']) == 3
+    assert exists['data'][1][0] == '%s%d' % (listitem, 2)
+    itemid = exists['data'][1][3]['id']
+    exist = None
+
+    # Update item
+    update = make_request('list update %s %s %s' % (tag, itemid, listitemupdate))
+    assert update['state'] == STATE_SUCCESS
+    assert update['write'] == True
+
+    # Check item has been updated and remains in same place
+    check = make_request('list view %s' % tag)
+    assert check['state'] == STATE_SUCCESS
+    assert len(check['data']) == 3
+    assert check['data'][1][0] == listitemupdate
+    check = None
+
+
+@with_setup(test.setup_function, test.teardown_function)
 def list_unicode_test():
     '''
     Test adding of items that include unicode characters
