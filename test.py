@@ -18,9 +18,9 @@ def setup_function():
 
     # The server takes a while to come up, so we'll hit it a few times until we get a proper response
     tries = 0
-    sleep = 0.1
+    sleep = 0.5
     while 1:
-        if tries > 20:
+        if tries > 10:
             log.info('Exceeded 20 tries')
             break
         try:
