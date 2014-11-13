@@ -1,6 +1,6 @@
 import data
 
-database_version = 8
+database_version = 9
 
 def check(data):
     '''
@@ -235,6 +235,26 @@ def run(data):
                 KEY `entrytime` (`entrytime`),
                 KEY `deleted` (`deleted`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
+        )
+
+        set_version(data, version)
+
+    version = 9
+    if current < version:
+        data.execute(
+            """
+            ALTER TABLE `config` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+            """
+        )
+        data.execute(
+            """
+            ALTER TABLE `function_calendar_events` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+            """
+        )
+        data.execute(
+            """
+            ALTER TABLE `function_list_items` ENGINE = InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
             """
         )
 
