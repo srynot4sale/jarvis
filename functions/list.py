@@ -506,9 +506,15 @@ class action_update(kernel.action.action):
         l = lstobj(self.function, tag)
         itemdata = l.get(itemid, tag)
 
-        if not itemdata:
+        if not itemdata or item == itemdata['item']:
+
+            if not itemdata:
+                errstr = 'No item to update to "%s" in list "%s"' % (item, tag)
+            else:
+                errstr = 'No change made to "%s" so not updated' % (itemdata['item'])
+
             data = [['View list "%s"' % tag, "list view %s" % tag]]
-            resp = function.response(function.STATE_FAILURE, 'No item to update to "%s" in list "%s"' % (item, tag))
+            resp = function.response(function.STATE_FAILURE, errstr)
             resp.data = data
             resp.write = 1
             return resp
