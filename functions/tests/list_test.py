@@ -49,12 +49,6 @@ def list_add_weirdtag_test():
 
     # test each bad tag
     for b in bad:
-        # check for empty list first
-        list_empty(b)
-        empty = make_request('list view %s' % b)
-        assert empty['state'] == STATE_FAILURE
-        empty = None
-
         newitem = make_request('list add %s %s' % (b, good))
         assert newitem['state'] == STATE_SUCCESS
         newitem = None
@@ -78,6 +72,8 @@ def list_add_weirdtag_test():
         empty2 = make_request('list view %s' % b)
         assert empty2['state'] == STATE_FAILURE
         empty2 = None
+
+        list_empty(b)
 
 
 @with_setup(test.setup_function, test.teardown_function)
