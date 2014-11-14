@@ -1,21 +1,17 @@
-import logging, os.path, re, subprocess, tempfile, time
+import logging, os.path, re, subprocess, time
 
-import clients.http
+from clients.http import make_nonprod_request as make_request
 
 ## Test suite setup and teardown functionality
 log = logging.getLogger(__name__)
-
-# Open file descriptor for a unique temp file so we can pipe stdout and sterr to it
-serveroutput, serveroutput_path = tempfile.mkstemp(suffix='.log', prefix='jarvis_test_output_', text=True)
 
 server = None
 def setup_function():
     global server
     log.info('Run setup')
-    log.info('Server output piped to %s' % serveroutput_path)
 
     # Open test instance of server, which resets database on load
-    server = subprocess.Popen(["python", "start_server.py", "--test"], stdout=serveroutput, stderr=subprocess.STDOUT)
+    server = subprocess.Popen(["python", "start_server.py", "--test"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # The server takes a while to come up, so we'll hit it a few times until we get a proper response
     tries = 0
@@ -26,7 +22,7 @@ def setup_function():
             break
         try:
             tries += 1
-            clients.http.make_request('server menu')
+            make_request('server menu')
             log.info('Server up after %d tries' % tries)
             break
         except:
@@ -37,8 +33,12 @@ def setup_function():
 def teardown_function():
     log.info('Run teardown')
 
-    # Kill server test instance
-    server.kill()
+    # Terminate server test instance
+    server.terminate()
+
+    # Run nosetests with "-s" flag to see this server output
+    for i in server.communicate():
+        print i.replace('\\\n', '\n')
 
 
 ## Test coverage
