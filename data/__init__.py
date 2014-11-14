@@ -47,7 +47,8 @@ class data(kernel.service.service):
             db = username,
             user = username,
             passwd = password,
-            cursorclass = MySQLdb.cursors.DictCursor
+            cursorclass = MySQLdb.cursors.DictCursor,
+            charset='utf8'
         )
 
 
