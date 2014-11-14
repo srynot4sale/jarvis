@@ -308,7 +308,7 @@ class action_view(kernel.action.action):
             if len(tags) == 1:
                 item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
 
-            item_actions['History...'] = 'list history %s' % (item['id'])
+            item_actions['History'] = 'list history %s' % (item['id'])
             item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
             item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], item['item'])
 
