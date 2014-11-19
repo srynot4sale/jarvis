@@ -68,6 +68,10 @@ div#output {
     z-index: 10000;
 }
 
+body.notprod .response h3 {
+    background-color: #f90;
+}
+
 .response h3 a {
     color: #fff;
 }
