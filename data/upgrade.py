@@ -1,6 +1,6 @@
 import data
 
-database_version = 10
+database_version = 11
 
 def check(data):
     '''
@@ -276,6 +276,27 @@ def run(data):
                 PRIMARY KEY (`aid`),
                 KEY `item` (`item`),
                 KEY `archived` (`archived`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    version = 11
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `function_location_logs` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `name` varchar(255) NOT NULL,
+                `time` datetime DEFAULT NULL,
+                `place` varchar(255) NOT NULL,
+                `reporter` varchar(255) NOT NULL,
+                PRIMARY KEY (`id`),
+                KEY `name` (`name`),
+                KEY `time` (`time`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
             """
         )
