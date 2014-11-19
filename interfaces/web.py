@@ -73,9 +73,12 @@ class handler(tornado.web.RequestHandler):
         baseurl = self.server.kernel.getConfig('web_baseurl')
         secret  = self.server.kernel.getConfig('secret')
 
+        # Add 'notprod' css class when not running in production mode
+        classes = 'prod' if self.server.kernel.getConfig('is_production') else 'notprod'
+
         root = os.path.join(rootdir, 'clients', 'web')
         loader = tornado.template.Loader(root)
-        output = loader.load("template.html").generate(BASEURL=baseurl, SECRET=secret)
+        output = loader.load("template.html").generate(BASEURL=baseurl, SECRET=secret, BODYCLASSES=classes)
 
         # Log message
         self.server.kernel.log('WEB 200 /')
