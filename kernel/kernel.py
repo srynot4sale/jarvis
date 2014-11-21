@@ -87,6 +87,10 @@ class kernel(object):
             citems[iname] = item
             self.log('"%s" %s registered' % (iname, type))
 
+            # Run setup (if item has a setup method)
+            if hasattr(item, 'setup'):
+                item.setup()
+
 
     def get(self, type, key = None):
         citems = getattr(self, '_'+type)
