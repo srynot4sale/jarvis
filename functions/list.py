@@ -296,7 +296,7 @@ class action_view(kernel.action.action):
                 for tag in tags:
                     data.append(["List \"%s\"" % tag, 'list view %s' % tag])
 
-            return function.response(function.STATE_FAILURE, 'No items in list "%s"' % tagstr, data, actions)
+            return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, data, actions)
 
         data = []
         for item in items:
