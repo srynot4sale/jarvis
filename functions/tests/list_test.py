@@ -11,7 +11,7 @@ STATE_AUTHERR = 4       # Response failed due to authentication error
 # Reset a list by deleting all items
 def list_empty(tag):
     exist = make_request('list view %s' % tag)
-    if exist['state'] == STATE_FAILURE:
+    if exist['message'] != 'List "%s" contents' % tag:
         return
 
     for item in exist['data']:
@@ -70,7 +70,7 @@ def list_add_weirdtag_test():
 
         # check list is empty again
         empty2 = make_request('list view %s' % b)
-        assert empty2['state'] == STATE_FAILURE
+        assert empty2['message'].startswith('No items in list')
         empty2 = None
 
         list_empty(b)
@@ -104,12 +104,11 @@ def list_adddeleteitem_test():
     # delete list item
     delete = make_request(exists_delete)
     assert delete['state'] == STATE_SUCCESS
-    assert delete['write'] == True
     delete = None
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag)
-    assert empty2['state'] == STATE_FAILURE
+    assert empty2['message'].startswith('No items in list')
     empty2 = None
 
 
@@ -170,14 +169,15 @@ def list_adddeletetags_test():
 
     delete = make_request('list delete %s %s' % (tag2, existsid))
     assert delete['state'] == STATE_SUCCESS
-    assert len(delete['data']) == 1
+    print delete
+    assert 'redirected' in delete
     delete = None
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag)
-    assert empty2['state'] == STATE_FAILURE
+    assert empty2['message'].startswith('No items in list')
     empty2 = make_request('list view %s' % tag2)
-    assert empty2['state'] == STATE_FAILURE
+    assert empty2['message'].startswith('No items in list')
     empty2 = None
 
 
@@ -223,8 +223,7 @@ def list_addmultipletags_test():
     # delete list item
     delete = make_request('list delete %s %s' % (tag, existsid))
     assert delete['state'] == STATE_SUCCESS
-    assert len(delete['data']) == 1
-    assert delete['data'][0][0] == 'View list "%s"' % tag
+    assert 'redirected' in delete
     delete = None
 
     # check it no longer appears
@@ -234,7 +233,7 @@ def list_addmultipletags_test():
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag)
-    assert empty2['state'] == STATE_FAILURE
+    assert empty2['message'].startswith('No items in list')
     empty2 = None
 
 
@@ -394,24 +393,23 @@ def list_move_test():
 
     # check it no longer appears at old tag
     old = make_request('list view %s' % (tag_origin))
-    assert old['state'] == STATE_FAILURE
+    assert old['message'].startswith('No items in list')
     old = None
 
     # delete list item
     delete = make_request('list delete %s %s' % (tag_dest, existsid))
     assert delete['state'] == STATE_SUCCESS
-    assert len(delete['data']) == 1
-    assert delete['data'][0][0] == 'View list "%s"' % tag_dest
+    assert 'redirected' in delete
     delete = None
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag_origin)
-    assert empty2['state'] == STATE_FAILURE
+    assert empty2['message'].startswith('No items in list')
     empty2 = None
 
     # check list is empty again
     empty3 = make_request('list view %s' % tag_dest)
-    assert empty3['state'] == STATE_FAILURE
+    assert empty3['message'].startswith('No items in list')
     empty3 = None
 
 
@@ -495,7 +493,6 @@ def list_addmoveitem_test():
     assert exists['state'] == STATE_SUCCESS
     assert len(exists['data']) == 1
     assert exists['data'][0][0] == listitem
-    exists_delete = exists['data'][0][2]['Delete']
     itemid = exists['data'][0][3]['id']
     exists = None
 
@@ -507,7 +504,8 @@ def list_addmoveitem_test():
 
     # Check to see if tag1 list is empty
     empty = make_request('list view %s' % tag1)
-    assert empty['state'] == STATE_FAILURE
+    assert empty['state'] == STATE_SUCCESS
+    assert empty['message'].startswith('No items in list')
 
     # Make sure item is in list 2
     moved = make_request('list view %s' % tag2)
