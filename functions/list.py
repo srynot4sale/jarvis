@@ -473,13 +473,18 @@ class action_delete(kernel.action.action):
         l.remove_tag(itemid, lstkey)
 
         tags = l.get_tags(itemid)
-        if tags:
-            for t in tags:
-                data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
+        for t in tags:
+            data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
 
-        resp = function.response(function.STATE_SUCCESS, 'Deleting "%s" from "%s"' % (itemdata['item'], lstkey))
-        resp.data = data
-        resp.write = 1
+        resp_text = 'Deleting "%s" from "%s"' % (itemdata['item'], lstkey)
+
+        if len(tags):
+            resp = function.response(function.STATE_SUCCESS, resp_text, lstkey)
+            resp.data = data
+            resp.write = 1
+        else:
+            resp = function.redirect(self, ('list', 'view', [lstkey]), resp_text)
+
         return resp
 
     def undo(self, list):
