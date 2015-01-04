@@ -270,6 +270,7 @@ class lstobj(object):
         data = [itemversionid]
         return datasource.get_records(sql, data)
 
+
 class action_view(kernel.action.action):
 
     usage = '$listkey [$listkey ...]'
@@ -289,14 +290,8 @@ class action_view(kernel.action.action):
                 actions.append(["List \"%s\"" % tag, 'list view %s' % tag])
 
         if not len(items):
-            data = []
-            data.append(["List all lists", 'list list'])
-
-            if len(tags) > 1:
-                for tag in tags:
-                    data.append(["List \"%s\"" % tag, 'list view %s' % tag])
-
-            return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, data, actions)
+            actions.append(["List all lists", 'list list'])
+            return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, [], actions)
 
         data = []
         for item in items:
@@ -551,12 +546,12 @@ class action_history(kernel.action.action):
         items = l.get_versions(itemid)
 
         if not len(items):
-            data = []
+            actions = []
             tags = l.get_tags(itemid)
             if tags:
                 for t in tags:
-                    data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
-            return function.response(function.STATE_SUCCESS, 'No previous versions of item "%s"' % (itemid), data)
+                    actions.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
+            return function.response(function.STATE_SUCCESS, 'No previous versions of item "%s"' % (itemid), [], actions)
 
         data = []
         for item in items:
