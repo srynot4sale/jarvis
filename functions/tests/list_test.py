@@ -70,7 +70,7 @@ def list_add_weirdtag_test():
 
         # check list is empty again
         empty2 = make_request('list view %s' % b)
-        assert empty2['message'].startswith('No items in list')
+        assert len(empty2['data']) == 0
         empty2 = None
 
         list_empty(b)
@@ -108,7 +108,7 @@ def list_adddeleteitem_test():
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag)
-    assert empty2['message'].startswith('No items in list')
+    assert len(empty2['data']) == 0
     empty2 = None
 
 
@@ -157,9 +157,6 @@ def list_adddeletetags_test():
     # delete list item
     delete = make_request('list delete %s %s' % (tag, existsid))
     assert delete['state'] == STATE_SUCCESS
-    assert len(delete['data']) == 2
-    assert delete['data'][0][0] == 'View list "%s"' % tag
-    assert delete['data'][1][0] == 'View list "%s"' % tag2
     delete = None
 
     # already deleted
@@ -169,15 +166,14 @@ def list_adddeletetags_test():
 
     delete = make_request('list delete %s %s' % (tag2, existsid))
     assert delete['state'] == STATE_SUCCESS
-    print delete
     assert 'redirected' in delete
     delete = None
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag)
-    assert empty2['message'].startswith('No items in list')
+    assert len(empty2['data']) == 0
     empty2 = make_request('list view %s' % tag2)
-    assert empty2['message'].startswith('No items in list')
+    assert len(empty2['data']) == 0
     empty2 = None
 
 
@@ -233,7 +229,7 @@ def list_addmultipletags_test():
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag)
-    assert empty2['message'].startswith('No items in list')
+    assert len(empty2['data']) == 0
     empty2 = None
 
 
@@ -393,7 +389,7 @@ def list_move_test():
 
     # check it no longer appears at old tag
     old = make_request('list view %s' % (tag_origin))
-    assert old['message'].startswith('No items in list')
+    assert len(old['data']) == 0
     old = None
 
     # delete list item
@@ -404,12 +400,12 @@ def list_move_test():
 
     # check list is empty again
     empty2 = make_request('list view %s' % tag_origin)
-    assert empty2['message'].startswith('No items in list')
+    assert len(empty2['data']) == 0
     empty2 = None
 
     # check list is empty again
     empty3 = make_request('list view %s' % tag_dest)
-    assert empty3['message'].startswith('No items in list')
+    assert len(empty3['data']) == 0
     empty3 = None
 
 
@@ -505,7 +501,7 @@ def list_addmoveitem_test():
     # Check to see if tag1 list is empty
     empty = make_request('list view %s' % tag1)
     assert empty['state'] == STATE_SUCCESS
-    assert empty['message'].startswith('No items in list')
+    assert len(empty['data']) == 0
 
     # Make sure item is in list 2
     moved = make_request('list view %s' % tag2)
@@ -665,8 +661,7 @@ def list_update_unchanged_test():
     # Check item has no history
     check = make_request('list history %s' % itemid)
     assert check['state'] == STATE_SUCCESS
-    assert len(check['data']) == 1
-    assert check['data'][0][0] != listitem
+    assert len(check['data']) == 0
     check = None
 
 
