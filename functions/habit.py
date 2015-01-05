@@ -24,7 +24,7 @@ class habits(function.function):
         return self.kernel.inClientTimezone(date).strftime('%Y%m%d')
 
     def states(self, date):
-        s = self.kernel.call('list', 'view', ['#habits_%s' % date])
+        s = self.kernel.call('list', 'view', ['!habits_%s' % date])
 
         states = {}
         if s.state == function.STATE_SUCCESS:
@@ -56,11 +56,11 @@ class action_view(kernel.action.action):
 
         today = date == self.function.date_today()
 
-        h = self.function.kernel.call('list', 'view', ['#habits'])
+        h = self.function.kernel.call('list', 'view', ['!habits'])
 
         actions = [
                 ("Habit overview", "habit overview"),
-                ("Add new habit...", "list add #habits %Habit_name"),
+                ("Add new habit...", "list add !habits %Habit_name"),
                 ('Previous', 'habit view %s' % self.function.date_previous(date)),
         ]
 
@@ -108,7 +108,7 @@ class action_overview(kernel.action.action):
         else:
             date = data[0]
 
-        h = self.function.kernel.call('list', 'view', ['#habits'])
+        h = self.function.kernel.call('list', 'view', ['!habits'])
 
         data = []
         if h.state != function.STATE_SUCCESS:
@@ -168,9 +168,9 @@ class action_update(kernel.action.action):
         current = self.function.state(date, habitid)
 
         if current == None:
-            result = self.function.kernel.call('list', 'add', ['#habits_%s' % date, '%s|%s' % (habitid, status)])
+            result = self.function.kernel.call('list', 'add', ['!habits_%s' % date, '%s|%s' % (habitid, status)])
         else:
-            result = self.function.kernel.call('list', 'update', ['#habits_%s' % date, current['id'], '%s|%s' % (habitid, status)])
+            result = self.function.kernel.call('list', 'update', ['!habits_%s' % date, current['id'], '%s|%s' % (habitid, status)])
 
         if result.state != function.STATE_SUCCESS:
             note = "Failed to update habit!"
