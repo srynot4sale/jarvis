@@ -22,7 +22,7 @@ class serverfunc(function.function):
 class job_hourly(kernel.job.job):
 
     def execute(self):
-        weather = self.function.kernel.call('list', 'view', ['#weather'])
+        weather = self.function.kernel.call('list', 'view', ['!weather'])
         dataids = []
         if weather and weather.state == function.STATE_SUCCESS:
             for d in weather.data:
@@ -43,15 +43,15 @@ class job_hourly(kernel.job.job):
             daystr = '%s: %s-%s&deg;C %s' % daydata
 
             if len(dataids):
-                self.function.kernel.call('list', 'update', ['#weather', dataids.pop(0), daystr])
+                self.function.kernel.call('list', 'update', ['!weather', dataids.pop(0), daystr])
             else:
-                self.function.kernel.call('list', 'add', ['#weather', daystr])
+                self.function.kernel.call('list', 'add', ['!weather', daystr])
 
 
 class action_connect(kernel.action.action):
 
     def _get_weather(self):
-        return self.function.kernel.call('list', 'view', ['#weather'])
+        return self.function.kernel.call('list', 'view', ['!weather'])
 
     def execute(self, data):
         user = self.function.kernel.getConfig('username')

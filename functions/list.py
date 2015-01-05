@@ -49,11 +49,15 @@ class lstobj(object):
 
     def __init__(self, func, tags):
 
+        self.func = func
+
         if not isinstance(tags, list):
             tags = [tags]
 
-        self.func = func
-        self.tags = tags
+        self.tags = []
+        for tag in tags:
+            self.tags.append(normalise_tag(tag))
+
 
     def _load(self):
         """
@@ -121,7 +125,7 @@ class lstobj(object):
 
         data = [itemid]
         if tag:
-            data.append(tag)
+            data.append(normalise_tag(tag))
 
         return datasource.get_record(sql, data)
 
@@ -172,7 +176,7 @@ class lstobj(object):
                 VALUES
                     (%s, %s, NOW(), NULL)
             """
-            data = [itemid, tag]
+            data = [itemid, normalise_tag(tag)]
             datasource.execute(sql, data)
 
         self._load()
@@ -189,7 +193,7 @@ class lstobj(object):
                 list_item_id = %s
             AND tag = %s
         """
-        data = [itemid, tag]
+        data = [itemid, normalise_tag(tag)]
         datasource.execute(sql, data)
         self._load()
 
@@ -271,6 +275,16 @@ class lstobj(object):
         return datasource.get_records(sql, data)
 
 
+def normalise_tag(tag):
+    '''
+    Strip all non-alphanumeric characters and convert to lowercase
+    '''
+    def okchar(char):
+        return char.isalnum() or char == '!'
+
+    return filter(okchar, str(tag).lower())
+
+
 class action_view(kernel.action.action):
 
     usage = '$listkey [$listkey ...]'
@@ -336,7 +350,7 @@ class action_list(kernel.action.action):
         data = []
         for ls in lists:
             # Ignore lists that begin with a hash, these are system lists
-            if ls['listname'].startswith('#'):
+            if ls['listname'].startswith('!'):
                 continue
 
             # Get the length of each list

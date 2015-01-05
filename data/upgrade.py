@@ -1,6 +1,6 @@
 import data
 
-database_version = 11
+database_version = 12
 
 def check(data):
     '''
@@ -298,6 +298,19 @@ def run(data):
                 KEY `name` (`name`),
                 KEY `time` (`time`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    # Change from # prefix for system tags to !
+    version = 12
+    if current < version:
+        data.execute(
+            """
+            UPDATE `function_list_tags` SET `tag` = CONCAT('!', SUBSTR(`tag`, 2)) WHERE SUBSTR(`tag`, 1, 1) = '#'
             """
         )
 

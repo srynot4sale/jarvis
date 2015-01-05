@@ -521,7 +521,7 @@ def list_list_test():
 
     tag1 = 'testtag1'
     tag2 = 'testtag2'
-    systemtag = '#testing'
+    systemtag = '!testing'
 
     listitem = 'test list item'
 
@@ -799,3 +799,17 @@ def list_unicode_test():
     assert len(exists['data']) == 1
     assert exists['data'][0][0] == listitem2
     exist = None
+
+
+@with_setup(test.setup_function, test.teardown_function)
+def list_normalise_tags_test():
+    import functions.list
+    assert functions.list.normalise_tag('tag') == 'tag'
+    assert functions.list.normalise_tag('Tag') == 'tag'
+    assert functions.list.normalise_tag('#tag') == 'tag'
+    assert functions.list.normalise_tag(' tag ') == 'tag'
+    assert functions.list.normalise_tag('ta-g') == 'tag'
+    assert functions.list.normalise_tag('tag3') == 'tag3'
+    assert functions.list.normalise_tag('TAG4') == 'tag4'
+    assert functions.list.normalise_tag('t a g t a g') == 'tagtag'
+    assert functions.list.normalise_tag('!tag') == '!tag'
