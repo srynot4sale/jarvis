@@ -23,10 +23,10 @@ It's clients include:
 
     # Setup virtualenv for this project
     cd ~/code/jarvis-src
-    virtualenv env
+    virtualenv .
 
     # Activate this virtual environment (do before running jarvis)
-    source env/bin/activate
+    source bin/activate
 
     # Install requirements
     pip install -r requirements.txt

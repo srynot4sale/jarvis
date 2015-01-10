@@ -3,7 +3,13 @@
 *.pyc
 *.swo
 *.swp
+bin/
+build/
 clients/config_cli.py
 config.py*
 docs/
-env/
+include/
+lib/
+local/
+man/
+share/
