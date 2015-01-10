@@ -57,4 +57,5 @@ Testing:
 Test suite can be run by evoking `nosetests` from the root jarvis directory.
 
 Test coverage can be calculated by invoking the following:
+
     nosetests --with-coverage --cover-package=clients,data,functions,interfaces,kernel
