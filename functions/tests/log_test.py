@@ -1,10 +1,7 @@
-import test
 import datetime
 
-STATE_SUCCESS = 1       # Response completed succesfully
-STATE_FAILURE = 2       # Response failed due to user error
-STATE_PANIC   = 3       # Response failed due to system error
-STATE_AUTHERR = 4       # Response failed due to authentication error
+import test
+import functions.function
 
 
 class log_testcase(test.jarvis_testcase):
@@ -19,12 +16,12 @@ class log_testcase(test.jarvis_testcase):
 
         # Check log is empty
         empty = self.http_request('log view')
-        assert empty['state'] == STATE_FAILURE
+        assert empty['state'] == functions.function.STATE_FAILURE
         empty = None
 
         # Insert new item
         newitem = self.http_request('log add %s' % logcontent)
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         message = newitem['notification']
         newitem = None
 
@@ -36,7 +33,7 @@ class log_testcase(test.jarvis_testcase):
 
         # check new item exists
         exists = self.http_request('log view')
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == expected
         exists = None

@@ -1,9 +1,5 @@
 import test
-
-STATE_SUCCESS = 1       # Response completed succesfully
-STATE_FAILURE = 2       # Response failed due to user error
-STATE_PANIC   = 3       # Response failed due to system error
-STATE_AUTHERR = 4       # Response failed due to authentication error
+import functions.function
 
 
 class list_testcase(test.jarvis_testcase):
@@ -50,12 +46,12 @@ class list_testcase(test.jarvis_testcase):
         # test each bad tag
         for b in bad:
             newitem = self.http_request('list add %s %s' % (b, good))
-            assert newitem['state'] == STATE_SUCCESS
+            assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
             # check new item exists
             exists = self.http_request('list view %s' % b)
-            assert exists['state'] == STATE_SUCCESS
+            assert exists['state'] == functions.function.STATE_SUCCESS
             assert len(exists['data']) == 1
             if exists['data'][0][0] != good:
                 raise Exception(b)
@@ -65,7 +61,7 @@ class list_testcase(test.jarvis_testcase):
 
             # delete list item
             delete = self.http_request(exists_delete)
-            assert delete['state'] == STATE_SUCCESS
+            assert delete['state'] == functions.function.STATE_SUCCESS
             delete = None
 
             # check list is empty again
@@ -88,13 +84,13 @@ class list_testcase(test.jarvis_testcase):
 
         # add new item
         newitem = self.http_request('list add %s %s' % (tag, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         assert newitem['write'] == True
         newitem = None
 
         # check new item exists
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         exists_delete = exists['data'][0][2]['Delete']
@@ -102,7 +98,7 @@ class list_testcase(test.jarvis_testcase):
 
         # delete list item
         delete = self.http_request(exists_delete)
-        assert delete['state'] == STATE_SUCCESS
+        assert delete['state'] == functions.function.STATE_SUCCESS
         delete = None
 
         # check list is empty again
@@ -125,12 +121,12 @@ class list_testcase(test.jarvis_testcase):
 
         # add new item with first tag
         newitem = self.http_request('list add %s %s' % (tag, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # check new item exists
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         existsid = exists['data'][0][2]['Delete'].split(' ')[3]
@@ -138,32 +134,32 @@ class list_testcase(test.jarvis_testcase):
 
         # add second tag
         newtag = self.http_request('list tag %s %s' % (existsid, tag2))
-        assert newtag['state'] == STATE_SUCCESS
+        assert newtag['state'] == functions.function.STATE_SUCCESS
         newtag = None
 
         # check new item exists
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         exists = self.http_request('list view %s' % tag2)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         exists = None
 
         # delete list item
         delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == STATE_SUCCESS
+        assert delete['state'] == functions.function.STATE_SUCCESS
         delete = None
 
         # already deleted
         delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == STATE_FAILURE
+        assert delete['state'] == functions.function.STATE_FAILURE
         delete = None
 
         delete = self.http_request('list delete %s %s' % (tag2, existsid))
-        assert delete['state'] == STATE_SUCCESS
+        assert delete['state'] == functions.function.STATE_SUCCESS
         assert 'redirected' in delete
         delete = None
 
@@ -190,12 +186,12 @@ class list_testcase(test.jarvis_testcase):
 
         # add new item with first tag
         newitem = self.http_request('list add %s %s' % (tag, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # check new item exists
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         existsid = exists['data'][0][2]['Delete'].split(' ')[3]
@@ -203,25 +199,25 @@ class list_testcase(test.jarvis_testcase):
 
         # add same tag again
         newtag = self.http_request('list tag %s %s' % (existsid, tag))
-        assert newtag['state'] == STATE_SUCCESS
+        assert newtag['state'] == functions.function.STATE_SUCCESS
         newtag = None
 
         # check item only shows once
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         exists = None
 
         # delete list item
         delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == STATE_SUCCESS
+        assert delete['state'] == functions.function.STATE_SUCCESS
         assert 'redirected' in delete
         delete = None
 
         # check it no longer appears
         delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == STATE_FAILURE
+        assert delete['state'] == functions.function.STATE_FAILURE
         delete = None
 
         # check list is empty again
@@ -242,12 +238,12 @@ class list_testcase(test.jarvis_testcase):
         # add four new items
         for i in range(0, 4):
             newitem = self.http_request('list add %s %s' % (tag, '%s%d' % (listitem, i)))
-            assert newitem['state'] == STATE_SUCCESS
+            assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
         # check four items exist
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 4
 
         # check they are in the same order we added them
@@ -276,11 +272,11 @@ class list_testcase(test.jarvis_testcase):
 
         # add item to alternate list first
         newitem = self.http_request('list add %s %s' % (tagalt, '%s%d' % (listitem, 9)))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         exists = self.http_request('list view %s' % tagalt)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         altitemid = exists['data'][0][2]['Delete'].split(' ')[3]
         exists = None
@@ -288,23 +284,23 @@ class list_testcase(test.jarvis_testcase):
         # add two new items to correct tag
         for i in range(0, 2):
             newitem = self.http_request('list add %s %s' % (tag, '%s%d' % (listitem, i)))
-            assert newitem['state'] == STATE_SUCCESS
+            assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
         # check two items exist
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 2
         exists = None
 
         # add tag to alternate item, adding it to the *end* of this list
         newitem = self.http_request('list tag %s %s' % (altitemid, tag))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # check three items exist
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 3
 
         # check they are in the same order we added the tags
@@ -326,12 +322,12 @@ class list_testcase(test.jarvis_testcase):
         !Tests: list_tag
         '''
         newitem = self.http_request('list add  item')
-        assert newitem['state'] == STATE_FAILURE
+        assert newitem['state'] == functions.function.STATE_FAILURE
         assert newitem['message'] == 'No tag specified'
         newitem = None
 
         newitem = self.http_request('list tag 1 ')
-        assert newitem['state'] == STATE_FAILURE
+        assert newitem['state'] == functions.function.STATE_FAILURE
         assert newitem['message'] == 'No tag specified'
         newitem = None
 
@@ -352,12 +348,12 @@ class list_testcase(test.jarvis_testcase):
 
         # add new item with first tag
         newitem = self.http_request('list add %s %s' % (tag_origin, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # check new item exists
         exists = self.http_request('list view %s' % tag_origin)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         existsid = exists['data'][0][2]['Delete'].split(' ')[3]
@@ -365,17 +361,17 @@ class list_testcase(test.jarvis_testcase):
 
         # fail to move item from wrong tag
         wrongtag = self.http_request('list move %s %s %s' % (existsid, 'UNITESTNONEXISTANTTAG', tag_dest))
-        assert wrongtag['state'] == STATE_FAILURE
+        assert wrongtag['state'] == functions.function.STATE_FAILURE
         wrongtag = None
 
         # move item to new tag
         newtag = self.http_request('list move %s %s %s' % (existsid, tag_origin, tag_dest))
-        assert newtag['state'] == STATE_SUCCESS
+        assert newtag['state'] == functions.function.STATE_SUCCESS
         newtag = None
 
         # check item only shows once
         exists = self.http_request('list view %s' % tag_dest)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         exists = None
@@ -387,7 +383,7 @@ class list_testcase(test.jarvis_testcase):
 
         # delete list item
         delete = self.http_request('list delete %s %s' % (tag_dest, existsid))
-        assert delete['state'] == STATE_SUCCESS
+        assert delete['state'] == functions.function.STATE_SUCCESS
         assert 'redirected' in delete
         delete = None
 
@@ -419,40 +415,40 @@ class list_testcase(test.jarvis_testcase):
 
         # add new item with first tag
         newitem = self.http_request('list add %s %s' % (tag_one, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         itemid = newitem['data'][0][2]['Delete'].split(' ')[3]
         newitem = None
 
         # add new item with first tag
         newitem = self.http_request('list add %s %s' % (tag_one, listitemsingle))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # add new item with second tag
         newitem = self.http_request('list add %s %s' % (tag_two, listitemsingle))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # add second tag to first item
         newitem = self.http_request('list tag %s %s' % (itemid, tag_two))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # check two items in first tag
         exists = self.http_request('list view %s' % tag_one)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 2
         exists = None
 
         # check one item in second tag
         exists = self.http_request('list view %s' % tag_two)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 2
         exists = None
 
         # check one item when loading both tags!
         exists = self.http_request('list view %s %s' % (tag_one, tag_two))
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         exists = None
@@ -471,13 +467,13 @@ class list_testcase(test.jarvis_testcase):
 
         # Add new item
         newitem = self.http_request('list add %s %s' % (tag1, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         assert newitem['write'] == True
         newitem = None
 
         # check new item exists
         exists = self.http_request('list view %s' % tag1)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         itemid = exists['data'][0][3]['id']
@@ -485,18 +481,18 @@ class list_testcase(test.jarvis_testcase):
 
         # Move new item
         move = self.http_request('list move %s %s %s' % (itemid, tag1, tag2))
-        assert move['state'] == STATE_SUCCESS
+        assert move['state'] == functions.function.STATE_SUCCESS
         assert len(move['data']) == 1
         assert move['data'][0][0] == listitem
 
         # Check to see if tag1 list is empty
         empty = self.http_request('list view %s' % tag1)
-        assert empty['state'] == STATE_SUCCESS
+        assert empty['state'] == functions.function.STATE_SUCCESS
         assert len(empty['data']) == 0
 
         # Make sure item is in list 2
         moved = self.http_request('list view %s' % tag2)
-        assert moved['state'] == STATE_SUCCESS
+        assert moved['state'] == functions.function.STATE_SUCCESS
         assert len(moved['data']) == 1
         assert moved['data'][0][0] == listitem
 
@@ -517,34 +513,34 @@ class list_testcase(test.jarvis_testcase):
 
         # Add new item
         newitem = self.http_request('list add %s %s' % (tag1, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Check length of list
         testlist = self.http_request('list list')
-        assert testlist['state'] == STATE_SUCCESS
+        assert testlist['state'] == functions.function.STATE_SUCCESS
         assert len(testlist['data']) == 1
         testlist = None
 
         # Add system list item
         newitem = self.http_request('list add %s %s' % (systemtag, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Check that system item isn't included in list_list
         testlist = self.http_request('list list')
-        assert testlist['state'] == STATE_SUCCESS
+        assert testlist['state'] == functions.function.STATE_SUCCESS
         assert len(testlist['data']) == 1
         testlist = None
 
         # Add new item
         newitem = self.http_request('list add %s %s' % (tag2, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Check length of list
         testlist = self.http_request('list list')
-        assert testlist['state'] == STATE_SUCCESS
+        assert testlist['state'] == functions.function.STATE_SUCCESS
         assert len(testlist['data']) == 2
         testlist = None
 
@@ -556,7 +552,7 @@ class list_testcase(test.jarvis_testcase):
         !Tests: list_default
         '''
         default = self.http_request('list default')
-        assert default['state'] == STATE_SUCCESS
+        assert default['state'] == functions.function.STATE_SUCCESS
 
 
     def list_update_test(self):
@@ -574,12 +570,12 @@ class list_testcase(test.jarvis_testcase):
 
         # Add new item
         newitem = self.http_request('list add %s %s' % (tag, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Make sure item exist with the correct name
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
         itemid = exists['data'][0][3]['id']
@@ -587,12 +583,12 @@ class list_testcase(test.jarvis_testcase):
 
         # Update item
         update = self.http_request('list update %s %s %s' % (tag, itemid, listitemupdate))
-        assert update['state'] == STATE_SUCCESS
+        assert update['state'] == functions.function.STATE_SUCCESS
         assert update['write'] == True
 
         # Check item has been updated
         check = self.http_request('list view %s' % tag)
-        assert check['state'] == STATE_SUCCESS
+        assert check['state'] == functions.function.STATE_SUCCESS
         assert len(check['data']) == 1
         assert check['data'][0][0] == listitemupdate
         check = None
@@ -610,7 +606,7 @@ class list_testcase(test.jarvis_testcase):
 
         # Update item
         update = self.http_request('list update %s %s %s' % (tag, itemid, listitemupdate))
-        assert update['state'] == STATE_FAILURE
+        assert update['state'] == functions.function.STATE_FAILURE
         assert update['write'] == True
         assert len(update['data']) == 1
 
@@ -630,23 +626,23 @@ class list_testcase(test.jarvis_testcase):
 
         # Add new item
         newitem = self.http_request('list add %s %s' % (tag, listitem))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Make sure item exist with the correct name
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         itemid = exists['data'][0][3]['id']
         exist = None
 
         # Update item with same text
         update = self.http_request('list update %s %s %s' % (tag, itemid, listitem))
-        assert update['state'] == STATE_FAILURE
+        assert update['state'] == functions.function.STATE_FAILURE
         assert update['write'] == True
 
         # Check item has no history
         check = self.http_request('list history %s' % itemid)
-        assert check['state'] == STATE_SUCCESS
+        assert check['state'] == functions.function.STATE_SUCCESS
         assert len(check['data']) == 0
         check = None
 
@@ -667,12 +663,12 @@ class list_testcase(test.jarvis_testcase):
         # Add 3 new items
         for i in range(1, 4):
             newitem = self.http_request('list add %s %s%d' % (tag, listitem, i))
-            assert newitem['state'] == STATE_SUCCESS
+            assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
         # Make sure item exist with the correct name
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 3
         assert exists['data'][1][0] == '%s%d' % (listitem, 2)
         itemid = exists['data'][1][3]['id']
@@ -680,12 +676,12 @@ class list_testcase(test.jarvis_testcase):
 
         # Update item
         update = self.http_request('list update %s %s %s' % (tag, itemid, listitemupdate))
-        assert update['state'] == STATE_SUCCESS
+        assert update['state'] == functions.function.STATE_SUCCESS
         assert update['write'] == True
 
         # Check item has been updated and remains in same place
         check = self.http_request('list view %s' % tag)
-        assert check['state'] == STATE_SUCCESS
+        assert check['state'] == functions.function.STATE_SUCCESS
         assert len(check['data']) == 3
         assert check['data'][1][0] == listitemupdate
         check = None
@@ -712,12 +708,12 @@ class list_testcase(test.jarvis_testcase):
 
         # Add new item
         item = self.http_request('list add %s %s' % (tag, listitems[0]))
-        assert item['state'] == STATE_SUCCESS
+        assert item['state'] == functions.function.STATE_SUCCESS
         item = None
 
         # Make sure item exists
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         itemid = exists['data'][0][3]['id']
         exist = None
@@ -725,19 +721,19 @@ class list_testcase(test.jarvis_testcase):
         # Update item a few times
         for listitem in listitems[1:]:
             item = self.http_request('list update %s %s %s' % (tag, itemid, listitem))
-            assert item['state'] == STATE_SUCCESS
+            assert item['state'] == functions.function.STATE_SUCCESS
             item = None
 
         # Make sure item exists with the latest name
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitems[4]
         exist = None
 
         # Check for item update history
         check = self.http_request('list history %s' % itemid)
-        assert check['state'] == STATE_SUCCESS
+        assert check['state'] == functions.function.STATE_SUCCESS
         assert len(check['data']) == 4
 
         i = 3
@@ -761,24 +757,24 @@ class list_testcase(test.jarvis_testcase):
 
         # Add first item
         newitem = self.http_request('list add %s %s' % (tag, listitem1))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Make sure item exist with the correct name
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem1
         exist = None
 
         # Add first item
         newitem = self.http_request('list add %s %s' % (tag, listitem2))
-        assert newitem['state'] == STATE_SUCCESS
+        assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # Make sure item exist with the correct name
         exists = self.http_request('list view %s' % tag)
-        assert exists['state'] == STATE_SUCCESS
+        assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem2
         exist = None
