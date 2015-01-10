@@ -1,19 +1,16 @@
-Jarvis is a very simple personal assistant. It's probably not
-much use to anyone but me at the moment!
+# Jarvis
 
+Jarvis is a very simple personal assistant. It's probably not much use to anyone but me at the moment!
 
-
-Jarvis is a Python daemon which communicates with it's clients
-via a REST interface.
+Jarvis is a Python daemon which communicates with it's clients via a REST interface.
 
 It's clients include:
 
 - HTTP: built-in, access at configured baseurl in config
 - Android: see https://github.com/srynot4sale/jarvis-android
-- CLI: ./clients/cli.py
 
 
-Dependencies:
+## Dependencies:
 
 - Python 2.5+
 - MySQL
@@ -22,7 +19,7 @@ Dependencies:
 - Virtualenv
 
 
-Installation:
+## Installation:
 
     # Setup virtualenv for this project
     cd ~/code/jarvis-src
@@ -52,7 +49,7 @@ Installation:
 Database tables will be installed on first run.
 
 
-Testing:
+## Testing:
 
 Test suite can be run by evoking `nosetests` from the root jarvis directory.
 
