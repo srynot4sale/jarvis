@@ -17,7 +17,7 @@ def init(config):
     ## Set up interfaces
     jarvis.register('interface', interfaces.init(jarvis))
 
-    ## Start IO Loop
-    jarvis.start()
+    ## Finish setup
+    jarvis.setup()
 
     return jarvis

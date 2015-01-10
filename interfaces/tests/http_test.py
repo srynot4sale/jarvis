@@ -1,39 +1,44 @@
-from clients.http import make_nonprod_request as make_request
-from nose.tools import with_setup
 import test
 
-@with_setup(test.setup_function, test.teardown_function)
-def authpositive_test():
-    '''
-    Check a positive auth works
-    '''
-    positive = make_request('server connect')
-    assert positive['state'] == 1
+STATE_SUCCESS = 1       # Response completed succesfully
+STATE_FAILURE = 2       # Response failed due to user error
+STATE_PANIC   = 3       # Response failed due to system error
+STATE_AUTHERR = 4       # Response failed due to authentication error
 
-@with_setup(test.setup_function, test.teardown_function)
-def authnegative_test():
-    '''
-    Test that a failed auth does indeed fail
-    '''
-    negative = make_request('server connect', 'badsecret')
-    assert negative['state'] == 4
-    assert negative['data'] == [[[]]]
 
-@with_setup(test.setup_function, test.teardown_function)
-def badpath_test():
-    '''
-    Test a non existant function or action fails correctly
-    '''
-    yes = make_request('server connect')
-    assert yes['state'] == 1
-    yes = None
+class http_testcase(test.jarvis_testcase):
 
-    nofunc = make_request('notreal connect')
-    assert nofunc['state'] == 2
-    assert nofunc['message'] == 'ERROR: Function does not exist'
-    nofunc = None
+    def authpositive_test(self):
+        '''
+        Check a positive auth works
+        '''
+        positive = self.http_request('server connect')
+        assert positive['state'] == STATE_SUCCESS
 
-    noact = make_request('server notreal')
-    assert noact['state'] == 2
-    assert noact['message'] == 'ERROR: Action does not exist'
-    noact = None
+
+    def authnegative_test(self):
+        '''
+        Test that a failed auth does indeed fail
+        '''
+        negative = self.http_request('server connect', {'secret': 'badsecret'})
+        assert negative['state'] == STATE_AUTHERR
+        assert negative['data'] == [[[]]]
+
+
+    def badpath_test(self):
+        '''
+        Test a non existant function or action fails correctly
+        '''
+        yes = self.http_request('server connect')
+        assert yes['state'] == STATE_SUCCESS
+        yes = None
+
+        nofunc = self.http_request('notreal connect')
+        assert nofunc['state'] == STATE_FAILURE
+        assert nofunc['message'] == 'ERROR: Function does not exist'
+        nofunc = None
+
+        noact = self.http_request('server notreal')
+        assert noact['state'] == STATE_FAILURE
+        assert noact['message'] == 'ERROR: Action does not exist'
+        noact = None

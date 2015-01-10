@@ -35,10 +35,15 @@ class kernel(object):
             self.setConfig(c, config[c])
 
 
-    def start(self):
-        self.log('Initialise Tornado')
+    def setup(self):
         self._application = application.app(self)
         self._application.listen(self.getConfig('interface_http_port'))
+        self.ioloop = tornado.ioloop.IOLoop.instance()
+        self.log('Setup complete')
+
+
+    def start(self):
+        self.log('Initialise Tornado')
 
         def sig_handler(sig, frame):
             tornado.ioloop.IOLoop.instance().add_callback(shutdown)
@@ -60,7 +65,7 @@ class kernel(object):
         signal.signal(signal.SIGINT, sig_handler)
 
         self.log('Start IOLoop')
-        tornado.ioloop.IOLoop.instance().start()
+        self.ioloop.start()
 
 
     def log(self, message):

@@ -18,6 +18,7 @@ Dependencies:
 - Python 2.5+
 - MySQL
 - MySQL / Python dev libraries (for mysqldb-python) (apt-get install libmysqlh-dev python-dev)
+- Curl libs (for pycurl) (apt-get install libcurl4-openssl-dev)
 - Virtualenv
 
 
@@ -50,6 +51,10 @@ Installation:
 
 Database tables will be installed on first run.
 
+
+Testing:
+
 Test suite can be run by evoking `nosetests` from the root jarvis directory.
 
-Test coverage can be checked by running `python test.py`.
+Test coverage can be calculated by invoking the following:
+    nosetests --with-coverage --cover-package=clients,data,functions,interfaces,kernel

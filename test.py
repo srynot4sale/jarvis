@@ -1,44 +1,43 @@
-import logging, os.path, re, subprocess, time
+import json, logging, os.path, re, subprocess, time, urllib
+import tornado.testing
+from tornado.httpclient import HTTPRequest
+from tornado.curl_httpclient import CurlAsyncHTTPClient
 
-from clients.http import make_nonprod_request as make_request
+import kernel
+import config
+
 
 ## Test suite setup and teardown functionality
 log = logging.getLogger(__name__)
-
-server = None
-def setup_function():
-    global server
-    log.info('Run setup')
-
-    # Open test instance of server, which resets database on load
-    server = subprocess.Popen(["python", "start_server.py", "--test"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    # The server takes a while to come up, so we'll hit it a few times until we get a proper response
-    tries = 0
-    sleep = 0.5
-    while 1:
-        if tries > 10:
-            log.info('Exceeded 20 tries')
-            break
-        try:
-            tries += 1
-            make_request('server menu')
-            log.info('Server up after %d tries' % tries)
-            break
-        except:
-            time.sleep(sleep)
-            continue
+config.config.update(config.config_test)
+config.config['test_mode'] = True
 
 
-def teardown_function():
-    log.info('Run teardown')
+class jarvis_testcase(tornado.testing.AsyncHTTPTestCase):
 
-    # Terminate server test instance
-    server.terminate()
+    def setUp(self):
+        super(jarvis_testcase, self).setUp()
+        self.http_client = CurlAsyncHTTPClient(self.io_loop)
+        self.headers = {'secret': config.config['secret']}
 
-    # Run nosetests with "-s" flag to see this server output
-    for i in server.communicate():
-        print i.replace('\\\n', '\n')
+
+    def get_app(self):
+        self.jarvis = kernel.init(config.config)
+        return self.jarvis._application
+
+
+    @tornado.testing.gen_test
+    def http_request(self, request, headers = None):
+        command = urllib.quote(request, '')
+        uri = command.replace(urllib.quote(' '), '/', 2)
+        url = '/api/' + uri
+
+        if headers == None:
+            headers = self.headers
+
+        request = HTTPRequest(self.get_url(url), headers=headers)
+        response = yield self.http_client.fetch(request, raise_error=False)
+        raise tornado.gen.Return(json.loads(response.body))
 
 
 ## Test coverage
