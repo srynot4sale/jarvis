@@ -781,13 +781,13 @@ class list_testcase(test.jarvis_testcase):
 
 
     def list_normalise_tags_test(self):
-        return
-        assert functions.list.normalise_tag('tag') == 'tag'
-        assert functions.list.normalise_tag('Tag') == 'tag'
-        assert functions.list.normalise_tag('#tag') == 'tag'
-        assert functions.list.normalise_tag(' tag ') == 'tag'
-        assert functions.list.normalise_tag('ta-g') == 'tag'
-        assert functions.list.normalise_tag('tag3') == 'tag3'
-        assert functions.list.normalise_tag('TAG4') == 'tag4'
-        assert functions.list.normalise_tag('t a g t a g') == 'tagtag'
-        assert functions.list.normalise_tag('!tag') == '!tag'
+        from functions.list import normalise_tag
+        assert normalise_tag('tag') == 'tag'
+        assert normalise_tag('Tag') == 'tag'
+        assert normalise_tag('#tag') == 'tag'
+        assert normalise_tag(' tag ') == 'tag'
+        assert normalise_tag('ta-g') == 'tag'
+        assert normalise_tag('tag3') == 'tag3'
+        assert normalise_tag('TAG4') == 'tag4'
+        assert normalise_tag('t a g t a g') == 'tagtag'
+        assert normalise_tag('!tag') == '!tag'
