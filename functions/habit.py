@@ -60,7 +60,7 @@ class action_view(kernel.action.action):
 
         actions = [
                 ("Habit overview", "habit overview"),
-                ("Add new habit...", "list add !habits %Habit_name"),
+                ("Add new habit...", "list add #!habits %Habit_name"),
                 ('Previous', 'habit view %s' % self.function.date_previous(date)),
         ]
 
@@ -168,7 +168,7 @@ class action_update(kernel.action.action):
         current = self.function.state(date, habitid)
 
         if current == None:
-            result = self.function.kernel.call('list', 'add', ['!habits_%s' % date, '%s|%s' % (habitid, status)])
+            result = self.function.kernel.call('list', 'add', ['#!habits_%s' % date, '%s|%s' % (habitid, status)])
         else:
             result = self.function.kernel.call('list', 'update', ['!habits_%s' % date, current['id'], '%s|%s' % (habitid, status)])
 

@@ -1,4 +1,6 @@
 # Jarvis list function
+import re
+
 import function
 import kernel.action
 
@@ -161,6 +163,7 @@ class lstobj(object):
         itemid = datasource.execute(sql, data).lastrowid
 
         self.add_tag(itemid, self.tags)
+        return itemid
 
     def add_tag(self, itemid, tags):
         if not isinstance(tags, list):
@@ -285,6 +288,21 @@ def normalise_tag(tag):
     return filter(okchar, str(tag).lower())
 
 
+def extract_tags(command):
+    '''
+    Extract tags from new list item
+    '''
+    tags = []
+    def tag_found(match):
+        tag = match.group('tag')[1:]
+        tags.append(tag)
+        return ''
+
+    search = re.sub('(?<=\s)(?P<tag>\#[A-Za-z0-9\!]+)(?=\s+|$)', tag_found, ' '+command)
+
+    return (search.strip(' '), tags)
+
+
 class action_view(kernel.action.action):
 
     usage = '$listkey [$listkey ...]'
@@ -298,7 +316,7 @@ class action_view(kernel.action.action):
         items = l.get_all()
 
         actions = []
-        actions.append(["Add...", "list add %s %%List_item" % tags[0]])
+        actions.append(["Add...", "list add #%s %%List_item" % tags[0]])
         if len(tags) > 1:
             for tag in tags:
                 actions.append(["List \"%s\"" % tag, 'list view %s' % tag])
@@ -365,22 +383,26 @@ class action_list(kernel.action.action):
 
 class action_add(kernel.action.action):
 
-    usage = '$listkey $newitem'
+    usage = '$newitem $#tag [$#tag2 $#tag3...]'
 
     def execute(self, data):
-        lstkey = data[0]
-        newitem = ' '.join(data[1:])
 
-        if lstkey.strip() == '':
+        command = ' '.join(data)
+        newitem, tags = extract_tags(command)
+
+        if not len(tags):
             return function.response(function.STATE_FAILURE, 'No tag specified')
 
         if newitem.strip() == '':
             return function.response(function.STATE_FAILURE, 'No item to add')
 
-        l = lstobj(self.function, lstkey)
-        l.add_new(newitem)
+        l = lstobj(self.function, tags[0])
+        itemid = l.add_new(newitem)
 
-        return function.redirect(self, ('list', 'view', [lstkey]), 'Added "%s" to list "%s"' % (newitem, lstkey))
+        for tag in tags[1:]:
+            l.add_tag(itemid, tag)
+
+        return function.redirect(self, ('list', 'view', tags), 'Added "%s" with tags "%s"' % (newitem, '", "'.join(tags)))
 
     def undo(self, list):
         pass
