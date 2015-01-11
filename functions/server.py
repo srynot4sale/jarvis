@@ -45,7 +45,7 @@ class job_hourly(kernel.job.job):
             if len(dataids):
                 self.function.kernel.call('list', 'update', ['!weather', dataids.pop(0), daystr])
             else:
-                self.function.kernel.call('list', 'add', ['!weather', daystr])
+                self.function.kernel.call('list', 'add', ['#!weather', daystr])
 
 
 class action_connect(kernel.action.action):
@@ -76,8 +76,8 @@ class action_connect(kernel.action.action):
             data += today.data
 
         actions = []
-        actions.append(["Add to today...", "list add today %List_item"])
-        actions.append(["Add To-Sort...", "list add tosort %List_item"])
+        actions.append(["Add to today...", "list add #today %List_item"])
+        actions.append(["Add to To-Sort...", "list add #tosort %List_item"])
 
         return function.response(function.STATE_SUCCESS, welcome, data, actions)
 

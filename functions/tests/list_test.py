@@ -15,63 +15,6 @@ class list_testcase(test.jarvis_testcase):
             self.http_request(item[2]['Delete'])
 
 
-    def list_add_weirdtag_test(self):
-        '''
-        Test adding a list item with weird characters in tag
-
-        !Tests: list_add
-        !Tests: list_view
-        '''
-        good = 'test'
-        bad = [
-            'test\'BAD\'HI',
-            'test\"\"HI',
-            'test\'',
-            'test\"',
-            'test+SPACE',
-            'test%2fSPACE',
-            'test\0',
-            'test\0BAD',
-            'test\nNEWLINE',
-            'test\n',
-            'test\n\r',
-            'test\r\n',
-            'test\\HI',
-            'testHI\\',
-            'test/HI',
-            'test/HI/'
-            'test#'
-        ]
-
-        # test each bad tag
-        for b in bad:
-            newitem = self.http_request('list add %s %s' % (b, good))
-            assert newitem['state'] == functions.function.STATE_SUCCESS
-            newitem = None
-
-            # check new item exists
-            exists = self.http_request('list view %s' % b)
-            assert exists['state'] == functions.function.STATE_SUCCESS
-            assert len(exists['data']) == 1
-            if exists['data'][0][0] != good:
-                raise Exception(b)
-            assert exists['data'][0][0] == good
-            exists_delete = exists['data'][0][2]['Delete']
-            exists = None
-
-            # delete list item
-            delete = self.http_request(exists_delete)
-            assert delete['state'] == functions.function.STATE_SUCCESS
-            delete = None
-
-            # check list is empty again
-            empty2 = self.http_request('list view %s' % b)
-            assert len(empty2['data']) == 0
-            empty2 = None
-
-            self.list_empty(b)
-
-
     def list_adddeleteitem_test(self):
         '''
         Test adding and deleting list items
@@ -83,7 +26,7 @@ class list_testcase(test.jarvis_testcase):
         listitem = 'test list item'
 
         # add new item
-        newitem = self.http_request('list add %s %s' % (tag, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         assert newitem['write'] == True
         newitem = None
@@ -120,7 +63,7 @@ class list_testcase(test.jarvis_testcase):
         listitem = 'test list tag item'
 
         # add new item with first tag
-        newitem = self.http_request('list add %s %s' % (tag, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -185,7 +128,7 @@ class list_testcase(test.jarvis_testcase):
         listitem = 'test list tag item'
 
         # add new item with first tag
-        newitem = self.http_request('list add %s %s' % (tag, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -237,7 +180,7 @@ class list_testcase(test.jarvis_testcase):
 
         # add four new items
         for i in range(0, 4):
-            newitem = self.http_request('list add %s %s' % (tag, '%s%d' % (listitem, i)))
+            newitem = self.http_request('list add #%s %s' % (tag, '%s%d' % (listitem, i)))
             assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
@@ -271,7 +214,7 @@ class list_testcase(test.jarvis_testcase):
         self.list_empty(tagalt)
 
         # add item to alternate list first
-        newitem = self.http_request('list add %s %s' % (tagalt, '%s%d' % (listitem, 9)))
+        newitem = self.http_request('list add #%s %s' % (tagalt, '%s%d' % (listitem, 9)))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -283,7 +226,7 @@ class list_testcase(test.jarvis_testcase):
 
         # add two new items to correct tag
         for i in range(0, 2):
-            newitem = self.http_request('list add %s %s' % (tag, '%s%d' % (listitem, i)))
+            newitem = self.http_request('list add #%s %s' % (tag, '%s%d' % (listitem, i)))
             assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
@@ -347,7 +290,7 @@ class list_testcase(test.jarvis_testcase):
         self.list_empty(tag_dest)
 
         # add new item with first tag
-        newitem = self.http_request('list add %s %s' % (tag_origin, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag_origin, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -414,18 +357,18 @@ class list_testcase(test.jarvis_testcase):
         self.list_empty(tag_two)
 
         # add new item with first tag
-        newitem = self.http_request('list add %s %s' % (tag_one, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag_one, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         itemid = newitem['data'][0][2]['Delete'].split(' ')[3]
         newitem = None
 
         # add new item with first tag
-        newitem = self.http_request('list add %s %s' % (tag_one, listitemsingle))
+        newitem = self.http_request('list add #%s %s' % (tag_one, listitemsingle))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
         # add new item with second tag
-        newitem = self.http_request('list add %s %s' % (tag_two, listitemsingle))
+        newitem = self.http_request('list add #%s %s' % (tag_two, listitemsingle))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -466,7 +409,7 @@ class list_testcase(test.jarvis_testcase):
         listitem = 'test list item'
 
         # Add new item
-        newitem = self.http_request('list add %s %s' % (tag1, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag1, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         assert newitem['write'] == True
         newitem = None
@@ -512,7 +455,7 @@ class list_testcase(test.jarvis_testcase):
         listitem = 'test list item'
 
         # Add new item
-        newitem = self.http_request('list add %s %s' % (tag1, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag1, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -523,7 +466,7 @@ class list_testcase(test.jarvis_testcase):
         testlist = None
 
         # Add system list item
-        newitem = self.http_request('list add %s %s' % (systemtag, listitem))
+        newitem = self.http_request('list add #%s %s' % (systemtag, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -534,7 +477,7 @@ class list_testcase(test.jarvis_testcase):
         testlist = None
 
         # Add new item
-        newitem = self.http_request('list add %s %s' % (tag2, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag2, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -569,7 +512,7 @@ class list_testcase(test.jarvis_testcase):
         listitemupdate = 'updated list item'
 
         # Add new item
-        newitem = self.http_request('list add %s %s' % (tag, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -625,7 +568,7 @@ class list_testcase(test.jarvis_testcase):
         listitem = 'test list item'
 
         # Add new item
-        newitem = self.http_request('list add %s %s' % (tag, listitem))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -662,7 +605,7 @@ class list_testcase(test.jarvis_testcase):
 
         # Add 3 new items
         for i in range(1, 4):
-            newitem = self.http_request('list add %s %s%d' % (tag, listitem, i))
+            newitem = self.http_request('list add #%s %s%d' % (tag, listitem, i))
             assert newitem['state'] == functions.function.STATE_SUCCESS
             newitem = None
 
@@ -707,7 +650,7 @@ class list_testcase(test.jarvis_testcase):
         ]
 
         # Add new item
-        item = self.http_request('list add %s %s' % (tag, listitems[0]))
+        item = self.http_request('list add #%s %s' % (tag, listitems[0]))
         assert item['state'] == functions.function.STATE_SUCCESS
         item = None
 
@@ -756,7 +699,7 @@ class list_testcase(test.jarvis_testcase):
         listitem2 = 'This is a \xe2 test \xe2'
 
         # Add first item
-        newitem = self.http_request('list add %s %s' % (tag, listitem1))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem1))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -768,7 +711,7 @@ class list_testcase(test.jarvis_testcase):
         exist = None
 
         # Add first item
-        newitem = self.http_request('list add %s %s' % (tag, listitem2))
+        newitem = self.http_request('list add #%s %s' % (tag, listitem2))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
 
@@ -791,3 +734,56 @@ class list_testcase(test.jarvis_testcase):
         assert normalise_tag('TAG4') == 'tag4'
         assert normalise_tag('t a g t a g') == 'tagtag'
         assert normalise_tag('!tag') == '!tag'
+
+
+    def list_inline_tagging_test(self):
+        '''
+        Test tagging list items inline while adding or editing
+
+        !Tests: list_add
+        !Tests: list_update
+        '''
+        from functions.list import extract_tags
+
+        tests = [
+            ('test #tag1', 'test', ['tag1']),
+            ('test #tag1 #tag2', 'test', ['tag1', 'tag2']),
+            ('#tag1', '', ['tag1']),  # TODO SHUOLD BE ERROR
+            ('test #tag1#tag2', 'test #tag1#tag2', []),
+            ('test#tag1', 'test#tag1', []),
+            ('test ##tag1', 'test ##tag1', []),
+            ('test #!tag', 'test', ['!tag']), # system tag
+            ('#tagfirst test me', 'test me', ['tagfirst'])
+        ]
+
+        for test in tests:
+            assert extract_tags(test[0]) == (test[1], test[2])
+
+            createitem = self.http_request('list add %s' % test[0])
+
+            if test[1] == '':
+                # Test that list item didn't create
+                assert createitem['state'] == functions.function.STATE_FAILURE
+                assert createitem['message'] == 'No item to add'
+                continue
+
+            if len(test[2]) == 0:
+                # Test that list item didn't create
+                assert createitem['state'] == functions.function.STATE_FAILURE
+                assert createitem['message'] == 'No tag specified'
+                continue
+
+            assert createitem['state'] == functions.function.STATE_SUCCESS
+            item = createitem['data'][0]
+
+            assert item[0] == test[1]
+
+            for tag in test[2]:
+                find = self.http_request('list view %s' % tag)
+                assert find['state'] == functions.function.STATE_SUCCESS
+                assert find['data'][0][0] == test[1]
+
+                delitem = self.http_request(find['data'][0][2]['Delete'])
+                assert delitem['state'] == functions.function.STATE_SUCCESS
+                find = None
+                delitem = None
