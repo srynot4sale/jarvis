@@ -283,7 +283,7 @@ def normalise_tag(tag):
     Strip all non-alphanumeric characters and convert to lowercase
     '''
     def okchar(char):
-        return char.isalnum() or char == '!'
+        return char.isalnum() or char in ('!', '_')
 
     return filter(okchar, str(tag).lower())
 
@@ -298,7 +298,7 @@ def extract_tags(command):
         tags.append(tag)
         return ''
 
-    search = re.sub('(?<=\s)(?P<tag>\#[A-Za-z0-9\!]+)(?=\s+|$)', tag_found, ' '+command)
+    search = re.sub('(?<=\s)(?P<tag>\#[A-Za-z0-9\!_]+)(?=\s+|$)', tag_found, ' '+command)
 
     return (search.strip(' '), tags)
 
