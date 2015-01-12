@@ -734,6 +734,7 @@ class list_testcase(test.jarvis_testcase):
         assert normalise_tag('TAG4') == 'tag4'
         assert normalise_tag('t a g t a g') == 'tagtag'
         assert normalise_tag('!tag') == '!tag'
+        assert normalise_tag('tag_subtag') == 'tag_subtag'
 
 
     def list_inline_tagging_test(self):
@@ -748,12 +749,13 @@ class list_testcase(test.jarvis_testcase):
         tests = [
             ('test #tag1', 'test', ['tag1']),
             ('test #tag1 #tag2', 'test', ['tag1', 'tag2']),
-            ('#tag1', '', ['tag1']),  # TODO SHUOLD BE ERROR
+            ('#tag1', '', ['tag1']),
             ('test #tag1#tag2', 'test #tag1#tag2', []),
             ('test#tag1', 'test#tag1', []),
             ('test ##tag1', 'test ##tag1', []),
             ('test #!tag', 'test', ['!tag']), # system tag
-            ('#tagfirst test me', 'test me', ['tagfirst'])
+            ('#tagfirst test me', 'test me', ['tagfirst']),
+            ('test #tag_subtag other', 'test  other', ['tag_subtag']), # sub tag
         ]
 
         for test in tests:
