@@ -173,7 +173,7 @@ class action_update(kernel.action.action):
             result = self.function.kernel.call('list', 'update', ['!habits_%s' % date, current['id'], '%s|%s' % (habitid, status)])
 
         if result.state != function.STATE_SUCCESS:
-            note = "Failed to update habit!"
+            note = "Failed to update habit! (%s)" % result.message
             return function.response(function.STATE_FAILURE, note)
 
         if date == self.function.date_today():
