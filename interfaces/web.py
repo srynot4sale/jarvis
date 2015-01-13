@@ -22,8 +22,7 @@ class web(interface.interface):
     def __init__(self, k):
         interface.interface.__init__(self, 'web')
         self.kernel = k
-        self.kernel.log('Setup web interface')
-        self.kernel.log('Interface accessible at %s' % k.getConfig('web_baseurl'))
+        self.kernel.log('Web interface accessible at %s' % k.getConfig('web_baseurl'))
         self.kernel._handlers.append((r'/', handler, dict(server=self)))
         self.kernel._handlers.append((r'/static/(.*)', statichandler, dict(server=self)))
 
