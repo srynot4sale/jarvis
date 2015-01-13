@@ -1,0 +1,33 @@
+<html x-manifest="appcache.manifest">
+<head>
+<title>Jarvis Firefox Service</title>
+<script src="{{ BASEURL }}/static/jquery-2.0.3.min.js"></script>
+<script>
+
+function getParam(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+$(function() {
+    $('textarea').val(getParam('url'));
+    $('p').html(getParam('title') + ' ---- ' + getParam('text'));
+
+    var listitem = encodeURIComponent('#tosort '+getParam('url'));
+
+    location.href = '{{ escape(BASEURL) }}/#/list/add/'+listitem;
+});
+
+// There are a few special APIs on navigator.mozSocial documented at
+// https://developer.mozilla.org/en-US/docs/Web/API/navigator.mozSocial
+// otherwise, it's just HTML, have fun!
+</script>
+</head>
+<body>
+
+<p>Redirecting...</p>
+
+</body>
+</html>

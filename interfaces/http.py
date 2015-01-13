@@ -19,7 +19,6 @@ class http(interface.interface):
     def __init__(self, k):
         interface.interface.__init__(self, 'http')
         self.kernel = k
-        self.kernel.log('Setup HTTP interface')
         self.kernel._handlers.append((r'/api/(.*)', handler, dict(server=self)))
 
 
