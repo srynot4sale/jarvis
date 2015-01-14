@@ -310,6 +310,7 @@ class action_view(kernel.action.action):
     def execute(self, tags):
         # tags in this case is a list of all the tags supplied
         # tagstr is the tags imploded around whitespace
+        tags = [normalise_tag(t) for t in tags]
         tagstr = ' '.join(tags)
         l = lstobj(self.function, tags)
 
@@ -390,6 +391,8 @@ class action_add(kernel.action.action):
         command = ' '.join(data)
         newitem, tags = extract_tags(command)
 
+        tags = [normalise_tag(t) for t in tags]
+
         if not len(tags):
             return function.response(function.STATE_FAILURE, 'No tag specified')
 
@@ -416,6 +419,7 @@ class action_tag(kernel.action.action):
         itemid  = data[0]
         tags    = data[1:]
 
+        tags = [normalise_tag(t) for t in tags]
         added = []
 
         for tag in tags:
@@ -457,8 +461,8 @@ class action_move(kernel.action.action):
 
     def execute(self, data):
         itemid = data[0]
-        oldtag = data[1]
-        newtag = data[2]
+        oldtag = normalise_tag(data[1])
+        newtag = normalise_tag(data[2])
 
         if oldtag.strip() == '':
             return function.response(function.STATE_FAILURE, 'No old tag specified')
@@ -486,7 +490,7 @@ class action_delete(kernel.action.action):
     usage = '$tag $deleteid'
 
     def execute(self, data):
-        lstkey = data[0]
+        lstkey = normalise_tag(data[0])
         itemid = data[1]
 
         l = lstobj(self.function, lstkey)
@@ -532,7 +536,7 @@ class action_update(kernel.action.action):
     usage = '$tag $updateid $item'
 
     def execute(self, data):
-        tag    = data[0]
+        tag    = normalise_tag(data[0])
         itemid = data[1]
         item   = ' '.join(data[2:])
 
