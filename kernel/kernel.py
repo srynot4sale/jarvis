@@ -49,6 +49,7 @@ class kernel(object):
             tornado.ioloop.IOLoop.instance().add_callback(shutdown)
 
         def shutdown():
+            self.log('Shutdown initiated')
             io_loop = tornado.ioloop.IOLoop.instance()
             deadline = time.time() + 3
 
