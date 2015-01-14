@@ -789,3 +789,49 @@ class list_testcase(test.jarvis_testcase):
                 assert delitem['state'] == functions.function.STATE_SUCCESS
                 find = None
                 delitem = None
+
+
+    def list_displaynormalisedtags_test(self):
+        '''
+        Test tags display in output normalised
+
+        !Tests: list_add
+        '''
+
+        tag_raw  = '#Nonnormalised'
+        tag      = 'nonnormalised'
+        tag_raw2 = '#Nonnormalised2'
+        tag2     = 'nonnormalised2'
+        item    = 'New list item'
+
+        # Add first item
+        newitem = self.http_request('list add %s %s' % (tag_raw, item))
+        assert newitem['notification'] == 'Added "%s" with tags "%s"' % (item, tag)
+        newitem = None
+
+        # View lists
+        lists = self.http_request('list list')
+        assert lists['data'][0][0] == '%s (1)' % tag
+        lists = None
+
+        # View item
+        exists = self.http_request('list view %s' % tag)
+        assert exists['message'] == 'List "%s" contents' % tag
+        itemid = exists['data'][0][3]['id']
+        exists = None
+
+        # Add another tag
+        newtag = self.http_request('list tag %s %s' % (itemid, tag_raw2))
+        assert newtag['notification'] == 'Added tag "%s" to "%s"' % (tag2, item)
+        newtag = None
+
+        # Delete a tag
+        deltag = self.http_request('list delete %s %s' % (tag_raw2, itemid))
+        assert deltag['message'] == 'Deleting "%s" from "%s"' % (item, tag2)
+        assert deltag['data'][0][0] == 'View list "%s"' % tag2
+        deltag = None
+
+        # Move to a tag
+        movtag = self.http_request('list move %s %s %s' % (itemid, tag_raw, tag_raw2))
+        assert movtag['notification'] == 'Moved "%s" from "%s" to "%s"' % (item, tag, tag2)
+        movtag = None
