@@ -1,11 +1,10 @@
+import kernel.service
 import MySQLdb
 import MySQLdb.cursors
 
-import kernel.service
 
 def init(jarvis):
     return [data(jarvis)]
-
 
 
 class data(kernel.service.service):
@@ -34,7 +33,6 @@ class data(kernel.service.service):
 
         self._check_version()
 
-
     def _connect(self):
         host = self.kernel.getConfig('database_host')
         username = self.kernel.getConfig('database_username')
@@ -43,14 +41,13 @@ class data(kernel.service.service):
         self.kernel.log('Connecting to the MySQL DB')
         # Connect to the db
         self._conn = MySQLdb.connect(
-            host = host,
-            db = username,
-            user = username,
-            passwd = password,
-            cursorclass = MySQLdb.cursors.DictCursor,
+            host=host,
+            db=username,
+            user=username,
+            passwd=password,
+            cursorclass=MySQLdb.cursors.DictCursor,
             charset='utf8'
         )
-
 
     def _check_version(self):
         '''
@@ -61,10 +58,10 @@ class data(kernel.service.service):
         if not data.upgrade.check(self):
             self.kernel.log('Running database upgrade')
             data.upgrade.run(self)
-            self.kernel.log('Now at database version %s' % self.kernel.getConfig('version'))
+            self.kernel.log('Now at database version %s' %
+                            self.kernel.getConfig('version'))
 
-
-    def _execute(self, sql, data = [], noretry = False):
+    def _execute(self, sql, data=[], noretry=False):
         try:
             # Attempt query
             c = self._conn.cursor()
@@ -80,8 +77,7 @@ class data(kernel.service.service):
 
         return c
 
-
-    def get_records(self, sql, data = []):
+    def get_records(self, sql, data=[]):
         c = self._execute(sql, data)
 
         result = []
@@ -91,8 +87,7 @@ class data(kernel.service.service):
         self._conn.commit()
         return result
 
-
-    def get_record(self, sql, data = []):
+    def get_record(self, sql, data=[]):
         c = self._execute(sql, data)
 
         result = None
@@ -103,12 +98,10 @@ class data(kernel.service.service):
         self._conn.commit()
         return result
 
-
-    def execute(self, sql, data = []):
+    def execute(self, sql, data=[]):
         cursor = self._execute(sql, data)
         self._conn.commit()
         return cursor
-
 
     def loadConfig(self, name, default=None):
         '''
@@ -135,7 +128,6 @@ class data(kernel.service.service):
 
         except Exception:
             return default
-
 
     def updateConfig(self, name, value):
         '''
