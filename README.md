@@ -14,7 +14,7 @@ It's clients include:
 
 - Python 2.5+
 - MySQL
-- MySQL / Python dev libraries (for mysqldb-python) (apt-get install libmysqlh-dev python-dev)
+- MySQL / Python dev libraries (for mysqldb-python) (apt-get install libmysqld-dev python-dev)
 - Curl libs (for pycurl) (apt-get install libcurl4-openssl-dev)
 - Virtualenv
 
