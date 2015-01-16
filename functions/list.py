@@ -82,8 +82,7 @@ class lstobj(object):
             sql += " INNER JOIN\n"
             sql += "     function_list_tags t%d\n" % count
             sql += "  ON t%d.list_item_id = i.id\n" % count
-            sql += " AND t%d.tag = " % count
-            sql += "%s\n"
+            sql += " AND t%d.tag = %%s\n" % count
             sql += " AND t%d.deleted IS NULL\n" % count
 
             params.append(tag)
@@ -172,6 +171,10 @@ class lstobj(object):
         datasource = self.func.get_data_source()
 
         for tag in tags:
+            oldtags = self.get_tags(itemid)
+            for ot in oldtags:
+                if tag == oldtags:
+                    
             sql = """
                 INSERT INTO
                     function_list_tags
