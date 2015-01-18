@@ -1,8 +1,14 @@
-## Jarvis kernel
+'''
+Jarvis kernel
+'''
 import functions.function
 import application
+import pytz
+import signal
+import time
+import tornado.ioloop
+import tzlocal
 
-import pytz, signal, time, tornado.ioloop, tzlocal
 
 class kernel(object):
 
@@ -27,20 +33,17 @@ class kernel(object):
     # Attach to a URI endpoint here
     _handlers = []
 
-
     def __init__(self, config):
         self.log('Initialised')
         self.log('Load configuration')
         for c in config:
             self.setConfig(c, config[c])
 
-
     def setup(self):
         self._application = application.app(self)
         self._application.listen(self.getConfig('interface_http_port'))
         self.ioloop = tornado.ioloop.IOLoop.instance()
         self.log('Setup complete')
-
 
     def start(self):
         self.log('Initialise Tornado')
@@ -49,12 +52,14 @@ class kernel(object):
             tornado.ioloop.IOLoop.instance().add_callback(shutdown)
 
         def shutdown():
+            self.log('Shutdown initiated')
             io_loop = tornado.ioloop.IOLoop.instance()
             deadline = time.time() + 3
 
             def stop_loop():
                 now = time.time()
-                if now < deadline and (io_loop._callbacks or io_loop._timeouts):
+                if now < deadline and (io_loop._callbacks or
+                                       io_loop._timeouts):
                     io_loop.add_timeout(now + 1, stop_loop)
                 else:
                     io_loop.stop()
@@ -67,12 +72,10 @@ class kernel(object):
         self.log('Start IOLoop')
         self.ioloop.start()
 
-
     def log(self, message):
         print 'MSG: %s' % message
 
-
-    def debug(self, message, source = None):
+    def debug(self, message, source=None):
         if not self.getConfig('debug'):
             return
 
@@ -80,7 +83,6 @@ class kernel(object):
             print 'DEBUG %s: %s' % (source, message)
         else:
             print 'DEBUG: %s' % message
-
 
     def register(self, type, items):
         self.log('Registering %ss' % type)
@@ -96,29 +98,27 @@ class kernel(object):
             if hasattr(item, 'setup'):
                 item.setup()
 
-
-    def get(self, type, key = None):
+    def get(self, type, key=None):
         citems = getattr(self, '_'+type)
 
-        if key == None:
+        if key is None:
             return citems
         elif key in citems:
             return citems[key]
         else:
             return None
 
-
-    def call(self, function, action, data = None):
+    def call(self, function, action, data=None):
         # Get function
         func = self.get('function', function)
 
-        if func == None:
+        if func is None:
             raise JarvisException('Function does not exist', function)
 
         # Get action
         act = func.get_action(action)
 
-        if act == None:
+        if act is None:
             raise JarvisException('Action does not exist', action)
 
         act.function = func
@@ -141,7 +141,6 @@ class kernel(object):
         # Run action
         return act().execute(data)
 
-
     def runJobs(self, type):
         # Get all functions
         funcs = self.get('function')
@@ -156,10 +155,8 @@ class kernel(object):
                 job.function = func
                 job().execute()
 
-
     def setConfig(self, key, value):
         self._config[key] = value
-
 
     def getConfig(self, key):
         if key in self._config:
@@ -167,20 +164,17 @@ class kernel(object):
         else:
             return None
 
-
     def getDataPrimary(self):
         '''
         Get primary data interface
         '''
         return self.get('data', 'primary')
 
-
     def inClientTimezone(self, dt):
         client_timezone = pytz.timezone(self.getConfig('timezone'))
         server_timezone = tzlocal.get_localzone()
         dt = server_timezone.localize(dt)
         return dt.astimezone(client_timezone)
-
 
     def isTestMode(self):
         '''
@@ -189,18 +183,19 @@ class kernel(object):
         return bool(self.getConfig('test_mode'))
 
 
-
 class JarvisException(Exception):
     state = functions.function.STATE_FAILURE
     httpcode = functions.function.HTTPCODE_FAILURE
 
-    def __init__(self, message, data = []):
+    def __init__(self, message, data=[]):
         self.message = message
         self.data = data
+
 
 class JarvisAuthException(JarvisException):
     state = functions.function.STATE_AUTHERR
     httpcode = functions.function.HTTPCODE_AUTHERR
+
 
 class JarvisPanicException(JarvisException):
     state = functions.function.STATE_PANIC

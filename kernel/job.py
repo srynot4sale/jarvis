@@ -6,6 +6,5 @@ class job(object):
     def execute(self):
         pass
 
-
     def undo(self):
         pass

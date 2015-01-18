@@ -1,4 +1,5 @@
 # Jarvis list function
+import random
 import re
 
 import function
@@ -82,8 +83,7 @@ class lstobj(object):
             sql += " INNER JOIN\n"
             sql += "     function_list_tags t%d\n" % count
             sql += "  ON t%d.list_item_id = i.id\n" % count
-            sql += " AND t%d.tag = " % count
-            sql += "%s\n"
+            sql += " AND t%d.tag = %%s\n" % count
             sql += " AND t%d.deleted IS NULL\n" % count
 
             params.append(tag)
@@ -172,6 +172,10 @@ class lstobj(object):
         datasource = self.func.get_data_source()
 
         for tag in tags:
+            oldtags = self.get_tags(itemid)
+            for ot in oldtags:
+                if tag == oldtags:
+                    
             sql = """
                 INSERT INTO
                     function_list_tags
@@ -613,6 +617,26 @@ class action_history(kernel.action.action):
             data.append([item['item'], None, item_actions])
 
         return function.response(function.STATE_SUCCESS, 'List previous versions of "%s" with id "%s"' % (itemdata['item'], itemdata['id']), data)
+
+
+class action_random(kernel.action.action):
+
+    usage = '$listkey [$listkey ...]'
+
+    def execute(self, tags):
+        # tags in this case is a list of all the tags supplied
+        # tagstr is the tags imploded around whitespace
+        tags = [normalise_tag(t) for t in tags]
+        tagstr = ' '.join(tags)
+        l = lstobj(self.function, tags)
+
+        items = l.get_all()
+        ritem = random.choice(items)
+
+        data = []
+        data.append([ritem['item'], None])
+
+        return function.response(function.STATE_SUCCESS, 'Random item tagged with "%s"' % tagstr, data)
 
 
 class action_default(action_list):
