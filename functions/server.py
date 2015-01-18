@@ -50,21 +50,15 @@ class job_hourly(kernel.job.job):
 
 class action_connect(kernel.action.action):
 
-    def _get_weather(self):
-        return self.function.kernel.call('list', 'view', ['!weather'])
-
     def execute(self, data):
         user = self.function.kernel.getConfig('username')
         date = self.function.kernel.inClientTimezone(datetime.datetime.now()).strftime('%A %B %d, %Y')
         welcome = 'Hi %s. Today is %s' % (user, date)
 
-        weather = self._get_weather()
-        if weather and weather.state == function.STATE_SUCCESS:
-            data = []
-            for line in weather.data:
-                data.append(line[0:1])
-        else:
-            data = []
+        data = []
+        randomremember = self.function.kernel.call('list', 'random', ['remember'])
+        if randomremember.state == function.STATE_SUCCESS and len(randomremember.data):
+            data.append([randomremember.data[0][0], 'list view remember'])
 
         tosort = self.function.kernel.call('list', 'view', ['tosort'])
         if tosort.state == function.STATE_SUCCESS:
