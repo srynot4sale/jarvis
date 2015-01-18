@@ -90,7 +90,7 @@ class handler(tornado.web.RequestHandler):
             print 'EXCEPTION [%s]: %s' % (type(e).__name__, str(e))
             traceback.print_exc(file=sys.stdout)
 
-        print 'API %s %s' % (httpcode, path)
+        self.server.kernel.log('API %s %s' % (httpcode, path))
         self.set_status(httpcode)
         self.set_header('Content-type', 'application/json')
         self.set_header('Access-Control-Allow-Origin', '*')
