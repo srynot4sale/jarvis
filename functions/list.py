@@ -172,10 +172,6 @@ class lstobj(object):
         datasource = self.func.get_data_source()
 
         for tag in tags:
-            oldtags = self.get_tags(itemid)
-            for ot in oldtags:
-                if tag == oldtags:
-                    
             sql = """
                 INSERT INTO
                     function_list_tags

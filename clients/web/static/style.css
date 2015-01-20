@@ -1,3 +1,13 @@
+/**
+ * Colors:
+ * - Dark: #4a4653
+ * - Orange: #eb844b
+ * - Blue: #349ead
+ * - Medium: #a9b3bf
+ * - Light: #e0d4cc
+ * - Lightest: #e0e1de
+ */
+
 html, body {
     padding: 0;
     margin: 0;
@@ -9,13 +19,13 @@ html, body, input, textarea {
 
 body {
     background-color: #fff;
-    color: #444;
+    color: #4a4653;
     font-size: small;
 }
 
 a {
     text-decoration: none;
-    color: #444;
+    color: #4a4653;
 }
 
 #container {
@@ -28,7 +38,7 @@ a {
     left: 0;
     bottom: 0;
     width: 220px;
-    background-color: #444;
+    background-color: #4a4653;
     color: #fff;
     border: none;
     padding-bottom: 20px;
@@ -54,7 +64,7 @@ div#output {
 }
 
 .response h3 {
-    background-color: #999;
+    background-color: #349ead;
     color: #fff;
     padding: 10px 20px;
     margin: 0 0 10px;
@@ -69,7 +79,7 @@ div#output {
 }
 
 body.notprod .response h3 {
-    background-color: #f90;
+/**    background-color: #f90;*/
 }
 
 .response h3 a {
@@ -106,7 +116,7 @@ body.notprod .response h3 {
     overflow: visible;
     padding: 10px;
     margin: 5px 0 0 0;
-    background-color: #efefef;
+    border-left: 5px solid transparent;
 }
 
 .response > ol > li:last-child {
@@ -114,13 +124,20 @@ body.notprod .response h3 {
 }
 
 .response > ol > li.expands {
-    background-color: #dedede;
+    border-left: 5px solid #e0d4cc;
 }
 
-.response > ol > li.hoveraction,
-.response > ol > li.expands:hover {
-    border: 1px solid #ccc;
+.response > ol > li.hoveraction {
+    border: 1px solid #a9b3bf;
     padding: 9px;
+    margin-left: 5px;
+}
+
+.response > ol > li.hoveraction.expands,
+.response > ol > li.expands:hover {
+    border: 1px solid #a9b3bf;
+    border-left: 5px solid #a9b3bf;
+    padding: 9px 9px 9px 10px;
 }
 
 .response ol li div.optioncontainer {
@@ -144,8 +161,8 @@ body.notprod .response h3 {
     list-style-type: none;
     margin: 0;
     padding: 0 2px;
-    border: 1px solid #ccc;
-    background-color: #dedede;
+    border: 1px solid #a9b3bf;
+    background-color: #e0e1de;
     white-space: nowrap;
 }
 
@@ -166,7 +183,7 @@ body.notprod .response h3 {
     font-size: 75%;
     margin-left: 5px;
     padding: 3px 5px;
-    background-color: #aaa;
+    background-color: #eb844b;
     color: #fff;
 }
 
@@ -214,13 +231,16 @@ ul.menu {
 
 ul.menu li a {
     display: block;
-    background-color: #666;
-    color: #dedede;
-    font-weight: bold;
+    background-color: #349ead;
+    color: #e0e1de;
     font-size: 125%;
     padding: 10px;
-    margin-top: 2px;
+    margin-top: 1px;
     margin-left: 10px;
+}
+
+ul.menu li a:hover {
+    border-right: 1px solid #eb844b;
 }
 
 div#input-toggle {

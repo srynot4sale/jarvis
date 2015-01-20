@@ -3,6 +3,7 @@ Jarvis kernel
 '''
 import functions.function
 import application
+import datetime
 import pytz
 import signal
 import time
@@ -73,7 +74,10 @@ class kernel(object):
         self.ioloop.start()
 
     def log(self, message):
-        print 'MSG: %s' % message
+        server_timezone = tzlocal.get_localzone()
+        now = datetime.datetime.now()
+        server_time = server_timezone.localize(now).strftime('%Y-%m-%d %H:%M:%S.%f')[0:-4]
+        print '%s MSG: %s' % (server_time, message)
 
     def debug(self, message, source=None):
         if not self.getConfig('debug'):
