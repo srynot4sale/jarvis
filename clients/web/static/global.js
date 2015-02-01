@@ -34,7 +34,7 @@ $(function() {
      * Setup page markup
      */
     var input = $('<div id="input"></div>');
-    var inputtoggle = $('<div id="input-toggle">[toggle menu]</div>');
+    var inputtoggle = $('<div id="input-toggle">[+]</div>');
     var output = $('<div id="output"></div>');
 
     $('#container').append(inputtoggle)

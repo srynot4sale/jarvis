@@ -256,6 +256,7 @@ body.mobile div#output {
 }
 
 body.mobile div#input {
+    clear: both;
     float: none;
     display: none;
     width: 100%;
@@ -279,10 +280,18 @@ body.mobile #input ul.menu li a {
 body.mobile #input-toggle {
     display: block;
     font-size: 125%;
-    text-align: center;
-    padding: 5px;
+    padding: 15px 10px 10px;
+    float: left;
+    background-color: #f90;
+    color: #fff;
+    z-index: 1000000;
 }
 
+body.mobile #output .response div.message,
+body.mobile #output .response div.notification,
+body.mobile #output .response div.result {
+    margin-top: 0;
+}
 
 /**
  * Dialog styling
