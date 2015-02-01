@@ -181,6 +181,7 @@ class action_menu(kernel.action.action):
         message = 'Default menu items'
         items = [
             ['Home', 'server connect'],
+            ['Help', 'help view'],
             ['Server', 'server default'],
             ['List', 'list default'],
             ['Habits', 'habit view'],
