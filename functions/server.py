@@ -190,7 +190,8 @@ class action_menu(kernel.action.action):
             ['Server', 'server default'],
             ['List', 'list default'],
             ['Logs', 'log view'],
-            ['Log Add', 'log add %Log_entry']
+            ['Log Add', 'log add %Log_entry'],
+            ['Help', 'help view']
         ]
 
         return function.response(function.STATE_SUCCESS, message, items)
