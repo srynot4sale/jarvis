@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import test
 import functions.function
 
@@ -695,8 +697,8 @@ class list_testcase(test.jarvis_testcase):
         '''
 
         tag = 'testlist'
-        listitem1 = 'test \xc2 100'
-        listitem2 = 'This is a \xe2 test \xe2'
+        listitem1 = u'test 生き甲斐 100'.encode('utf-8')
+        listitem2 = u'This is a “ test'.encode('utf-8')
 
         # Add first item
         newitem = self.http_request('list add #%s %s' % (tag, listitem1))
@@ -707,10 +709,10 @@ class list_testcase(test.jarvis_testcase):
         exists = self.http_request('list view %s' % tag)
         assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
-        assert exists['data'][0][0] == listitem1
+        assert exists['data'][0][0] == listitem1.decode('utf-8')
         exist = None
 
-        # Add first item
+        # Add second item
         newitem = self.http_request('list add #%s %s' % (tag, listitem2))
         assert newitem['state'] == functions.function.STATE_SUCCESS
         newitem = None
@@ -718,8 +720,8 @@ class list_testcase(test.jarvis_testcase):
         # Make sure item exist with the correct name
         exists = self.http_request('list view %s' % tag)
         assert exists['state'] == functions.function.STATE_SUCCESS
-        assert len(exists['data']) == 1
-        assert exists['data'][0][0] == listitem2
+        assert len(exists['data']) == 2
+        assert exists['data'][1][0] == listitem2.decode('utf-8')
         exist = None
 
 
