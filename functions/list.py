@@ -300,7 +300,14 @@ def extract_tags(command):
 
     search = re.sub('(?<=\s)(?P<tag>\#[A-Za-z0-9\!_]+)(?=\s+|$)', tag_found, ' '+command)
 
+    # "Unescape" escaped hashes
+    search = re.sub('##', '#', search)
+
     return (search.strip(' '), tags)
+
+
+def escape_text(text):
+    return text.replace('#', '##')
 
 
 class action_view(kernel.action.action):
@@ -338,7 +345,7 @@ class action_view(kernel.action.action):
 
             item_actions['History'] = 'list history %s' % (item['id'])
             item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
-            item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], item['item'])
+            item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], escape_text(item['item']))
 
             #####
             ## Prep tags for each item
@@ -559,7 +566,14 @@ class action_update(kernel.action.action):
             resp.write = 1
             return resp
 
-        l.update(itemdata, item)
+        updateditem, newtags = extract_tags(item)
+        newtags = [normalise_tag(t) for t in newtags]
+
+        l.update(itemdata, updateditem)
+
+        if len(newtags):
+            for newtag in newtags:
+                l.add_tag(itemid, newtag)
 
         return function.redirect(self, ('list', 'view', [tag]), 'Updated item "%s" to "%s"' % (itemid, item))
 

@@ -754,7 +754,7 @@ class list_testcase(test.jarvis_testcase):
             ('#tag1', '', ['tag1']),
             ('test #tag1#tag2', 'test #tag1#tag2', []),
             ('test#tag1', 'test#tag1', []),
-            ('test ##tag1', 'test ##tag1', []),
+            ('test ##tag1', 'test #tag1', []),
             ('test #!tag', 'test', ['!tag']), # system tag
             ('#tagfirst test me', 'test me', ['tagfirst']),
             ('test #tag_subtag other', 'test  other', ['tag_subtag']), # sub tag
@@ -837,3 +837,33 @@ class list_testcase(test.jarvis_testcase):
         movtag = self.http_request('list move %s %s %s' % (itemid, tag_raw, tag_raw2))
         assert movtag['notification'] == 'Moved "%s" from "%s" to "%s"' % (item, tag, tag2)
         movtag = None
+
+    def list_escaped_tag_test(self):
+        '''
+        Test escaped tags while adding or editing
+
+        !Tests: list_add
+        !Tests: list_update
+        '''
+        tests = []
+        tests.append(('I like to #hashtag things', 'I like to ##hashtag things'))
+
+        for test, test_escaped in tests:
+
+            # Insert escaped
+            createitem = self.http_request('list add #todo %s' % test_escaped)
+            assert createitem['state'] == functions.function.STATE_SUCCESS
+            item = createitem['data'][0]
+            iid = item[3]['id']
+
+            # Check it was saved without escapes
+            assert item[0] == test
+
+            # Check edit link includes escapes
+            assert item[2]['Edit...'] == 'list update todo %d %%New_description{{%s}}' % (iid, test_escaped)
+
+            # Check updating with escapes keeps it escaped
+            updateitem = self.http_request('list update #todo %d %s' % (iid, test_escaped))
+            assert updateitem['state'] == functions.function.STATE_SUCCESS
+
+            assert updateitem['data'][0][0] == test
