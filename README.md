@@ -12,7 +12,7 @@ It's clients include:
 
 ## Dependencies:
 
-- Python 2.5+
+- Python 2.x
 - MySQL
 - MySQL / Python dev libraries (for mysqldb-python) (apt-get install libmysqld-dev python-dev)
 - Curl libs (for pycurl) (apt-get install libcurl4-openssl-dev)
@@ -25,14 +25,16 @@ It's clients include:
     cd ~/code/jarvis-src
     virtualenv .
 
-    # Activate this virtual environment (do before running jarvis)
+    # Activate this virtual environment (do before installing packages with pip)
     source bin/activate
 
     # Install requirements
+    # (Special case for Tornado currently)
+    pip install git+https://github.com/tornadoweb/tornado.git@master#egg=tornado
     pip install -r requirements.txt
 
     # Create config file
-    cp example_config.py config.py
+    cp config_example.py config.py
 
     # Edit config file
     vim config.py
@@ -42,8 +44,8 @@ It's clients include:
 
     # Create database
 
-    # Run it for the first time!
-    python start_server.py
+    # Run Jarvis
+    ./start_server.py
 
 
 Database tables will be installed on first run.
@@ -51,8 +53,12 @@ Database tables will be installed on first run.
 
 ## Testing:
 
-Test suite can be run by evoking `nosetests` from the root jarvis directory.
+    # Activate this virtual environment (do before running nosetests)
+    cd ~/code/jarvis-src
+    source bin/activate
 
-Test coverage can be calculated by invoking the following:
+    # Invoke test suite
+    nosetests
 
+    # Invote test suite with coverage calculations
     nosetests --with-coverage --cover-package=clients,data,functions,interfaces,kernel
