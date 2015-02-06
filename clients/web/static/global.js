@@ -71,22 +71,6 @@ $(function() {
         input.append(menu);
     });
 
-    /**
-     * Setup manual api entry box
-     */
-    var textbox = $('<input type="text" class="textbox" value="" />');
-    textbox.keydown(function(event) {
-        // Get enter
-        if (event.keyCode == 13) {
-            api_call(textbox.val());
-            textbox.val("");
-        }
-    });
-
-    input.append(textbox);
-    textbox.focus();
-
-
     var default_apicall = 'server connect';
 
     /**
@@ -257,12 +241,45 @@ function jarvis_dialog(action, callback, params) {
  */
 function jarvis_update_title(title, status = '') {
     var header = $('div.response h3')
-    var refresh = jarvis_build_internal_link({path: title, text: title});
-    refresh.addClass('refresh title');
-    refresh.attr('title', 'Refresh');
+
+    var a = $('<a>');
+    a.addClass('action title');
+    a.attr('title', title);
+    a.html(title);
 
     $('.title', header).remove();
-    header.prepend(refresh);
+    header.prepend(a);
+
+    a.click(function() {
+        /**
+        * Setup manual api entry box
+        */
+        var textbox = $('<input type="text" class="textbox title" value="" />');
+        textbox.focus(function(event) {
+            $(this).select();
+        });
+
+        textbox.keydown(function(event) {
+            // Get enter
+            if (event.keyCode == 13) {
+                api_call(textbox.val());
+                jarvis_update_title(textbox.val());
+            }
+            // Get escape
+            if (event.keyCode == 27) {
+                jarvis_update_title(title);
+            }
+        });
+
+        textbox.blur(function(event) {
+            jarvis_update_title(title);
+        });
+
+        textbox.val(title);
+        a.replaceWith(textbox);
+        textbox.focus();
+    });
+
 
     // If response received:
     if (status == 'complete') {

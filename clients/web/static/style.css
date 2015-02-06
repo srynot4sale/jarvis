@@ -42,6 +42,7 @@ a {
     color: #fff;
     border: none;
     padding-bottom: 20px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #input input {
@@ -53,6 +54,28 @@ a {
 #input .textbox {
     width: 200px;
 }
+
+ul.menu {
+    padding: 0;
+    margin: 55px 0 0;
+}
+
+ul.menu li a {
+    display: block;
+    background-color: #349ead;
+    color: #e0e1de;
+    font-size: 125%;
+    padding: 10px;
+    margin-top: 1px;
+    margin-left: 10px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+ul.menu li a:hover {
+    border-left: 5px solid #eb844b;
+    margin-left: 5px;
+}
+
 
 div#output {
     margin-left: 220px;
@@ -66,15 +89,15 @@ div#output {
 .response h3 {
     background-color: #349ead;
     color: #fff;
-    padding: 10px 20px;
+    padding: 10px 20px 10px 240px;
     margin: 0 0 10px;
     font-size: 150%;
     font-weight: normal;
     position: fixed;
     top: 0;
     right: 0;
-    left: 220px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    left: 0;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
     z-index: 10000;
 }
 
@@ -91,6 +114,15 @@ body.notprod .response h3 {
     float: right;
     font-size: 75%;
     margin-left: 15px;
+}
+
+.response h3 input.title {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: transparent;
+    color: #fff;
+    font-size: inherit;
 }
 
 .response div.message {
@@ -222,25 +254,6 @@ body.notprod .response h3 {
 
 #output .error .message {
     color: #f00;
-}
-
-ul.menu {
-    padding: 0;
-    margin: 0;
-}
-
-ul.menu li a {
-    display: block;
-    background-color: #349ead;
-    color: #e0e1de;
-    font-size: 125%;
-    padding: 10px;
-    margin-top: 1px;
-    margin-left: 10px;
-}
-
-ul.menu li a:hover {
-    border-right: 1px solid #eb844b;
 }
 
 div#input-toggle {
