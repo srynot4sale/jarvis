@@ -24,6 +24,25 @@ $(function() {
     });
 
     /**
+     * Handle "a" keypresses (api call)
+     */
+    document.addEventListener("keydown", function(e) {
+        // Ignore if typing into a form element
+        switch (e.target.tagName.toLowerCase()) {
+            case 'input':
+            case 'textarea':
+                return;
+        }
+
+        // Get "a"
+        if (e.keyCode == 65) {
+            $('div.response h3 a.title').click();
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    /**
      * Check if user is on a small screen
      */
     if ($(document).width() < 600) {
