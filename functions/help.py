@@ -2,12 +2,8 @@
 import function
 import kernel.action
 
-def init():
-    return helpobj()
-
-class helpobj(function.function):
-    def __init__(self):
-        function.function.__init__(self, 'help')
+class controller(function.function):
+    pass
 
 
 class action_view(kernel.action.action):

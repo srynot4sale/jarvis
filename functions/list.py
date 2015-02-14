@@ -5,21 +5,8 @@ import re
 import function
 import kernel.action
 
-def init():
-    return lstfunc()
 
-class lstfunc(function.function):
-
-    _datasource = None
-
-    def __init__(self):
-        function.function.__init__(self, 'list')
-
-    def get_data_source(self):
-        if not self._datasource:
-            self._datasource = self.kernel.get('data', 'primary')
-
-        return self._datasource
+class controller(function.function):
 
     def get_all_lists(self):
         datasource = self.get_data_source()

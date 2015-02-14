@@ -12,15 +12,22 @@ HTTPCODE_FAILURE = 400
 HTTPCODE_PANIC   = 500
 HTTPCODE_AUTHERR = 401
 
+
 class function(kernel.service.service):
+    _datasource = None
+
     def __init__(self, name):
         self.name = name
-
 
     def _get_module(self):
         current = __import__('functions.%s' % self.name)
         return getattr(current, self.name)
 
+    def get_data_source(self):
+        if not self._datasource:
+            self._datasource = self.kernel.get('data', 'primary')
+
+        return self._datasource
 
     def get_action(self, actionname):
         func = self._get_module()
@@ -34,7 +41,6 @@ class function(kernel.service.service):
 
         return getattr(func, actionattr)
 
-
     def get_actions(self):
         func = self._get_module()
 
@@ -44,7 +50,6 @@ class function(kernel.service.service):
                 actions[action] = getattr(func, action)
 
         return actions
-
 
     def get_job(self, type):
         func = self._get_module()

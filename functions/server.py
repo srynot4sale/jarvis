@@ -7,16 +7,8 @@ import kernel.job
 import datetime, json, os, platform, pytz, re, socket, time, tzlocal, urllib
 
 
-
-
-def init():
-    return serverfunc()
-
-class serverfunc(function.function):
-
-    def __init__(self):
-        function.function.__init__(self, 'server')
-
+class controller(function.function):
+    pass
 
 
 class job_hourly(kernel.job.job):

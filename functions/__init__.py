@@ -26,6 +26,6 @@ def init():
         loaded_mod = importlib.import_module(fullmodule)
 
         # Initialise module and register with kernel
-        funcs.append(loaded_mod.init())
+        funcs.append(loaded_mod.controller(module))
 
     return funcs

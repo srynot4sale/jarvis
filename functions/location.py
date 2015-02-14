@@ -1,27 +1,12 @@
 # Jarvis location function
 import function
-import kernel
 import kernel.action
-import kernel.job
 
 import datetime, json, os, platform, pytz, re, socket, time, tzlocal, urllib
 
 
-def init():
-    return locationfunc()
-
-class locationfunc(function.function):
-
-    _datasource = None
-
-    def __init__(self):
-        function.function.__init__(self, 'location')
-
-    def get_data_source(self):
-        if not self._datasource:
-            self._datasource = self.kernel.get('data', 'primary')
-
-        return self._datasource
+class controller(function.function):
+    pass
 
 
 class location(object):

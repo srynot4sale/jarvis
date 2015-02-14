@@ -8,18 +8,22 @@ It's clients include:
 
 - HTTP: built-in, access at configured baseurl in config
 - Android: see https://github.com/srynot4sale/jarvis-android
+- Firefox social bookmarks: built-in, enabled via your Jarvis baseurl/firefox/
 
 
 ## Dependencies:
 
 - Python 2.x
 - MySQL
-- MySQL / Python dev libraries (for mysqldb-python) (apt-get install libmysqld-dev python-dev)
-- Curl libs (for pycurl) (apt-get install libcurl4-openssl-dev)
-- Virtualenv
 
 
 ## Installation:
+
+    # Install packages
+    sudo apt-get install python-pip libmysqld-dev python-dev libcurl4-openssl-dev
+
+    # Install virtualenv
+    sudo pip install virtualenv
 
     # Setup virtualenv for this project
     cd ~/code/jarvis-src
@@ -29,9 +33,9 @@ It's clients include:
     source bin/activate
 
     # Install requirements
-    # (Special case for Tornado currently)
-    pip install git+https://github.com/tornadoweb/tornado.git@master#egg=tornado
     pip install -r requirements.txt
+
+    # Create database and database user
 
     # Create config file
     cp config_example.py config.py
@@ -42,9 +46,11 @@ It's clients include:
     # Set up cron (fix user and pathname)
     echo "* * * * * jarvisuser cd /path/to/jarvis/checkout; ./cron.py;" >> /etc/cron.d/jarvis
 
-    # Create database
+
+## Running
 
     # Run Jarvis
+    cd ~/code/jarvis-src
     ./start_server.py
 
 

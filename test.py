@@ -20,11 +20,9 @@ class jarvis_testcase(tornado.testing.AsyncHTTPTestCase):
         self.http_client = CurlAsyncHTTPClient(self.io_loop)
         self.headers = {'secret': config.config['secret']}
 
-
     def get_app(self):
         self.jarvis = kernel.init(config.config)
         return self.jarvis._application
-
 
     @tornado.testing.gen_test
     def http_request(self, request, headers = None):
@@ -38,6 +36,15 @@ class jarvis_testcase(tornado.testing.AsyncHTTPTestCase):
         request = HTTPRequest(self.get_url(url), headers=headers)
         response = yield self.http_client.fetch(request, raise_error=False)
         raise tornado.gen.Return(json.loads(response.body))
+
+    @tornado.testing.gen_test
+    def raw_http_request(self, url, headers = None):
+        if headers == None:
+            headers = self.headers
+
+        request = HTTPRequest(self.get_url(url), headers=headers)
+        response = yield self.http_client.fetch(request, raise_error=False)
+        raise tornado.gen.Return(response)
 
 
 ## Test coverage
