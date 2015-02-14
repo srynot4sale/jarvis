@@ -5,14 +5,7 @@ import kernel.action
 import datetime
 
 
-def init():
-    return habits()
-
-
-class habits(function.function):
-    def __init__(self):
-        function.function.__init__(self, 'habit')
-
+class controller(function.function):
     def date_today(self):
         return self.format_date(datetime.datetime.now())
 
