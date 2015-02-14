@@ -146,9 +146,9 @@ body.notprod .response h3 {
 
 .response > ol > li {
     overflow: visible;
-    padding: 10px;
-    margin: 5px 0 0 0;
-    border-left: 5px solid transparent;
+    padding: 10px 10px 10px 15px;
+    margin: 1px 0 0;
+    border-bottom: 1px solid #e0d4cc;
 }
 
 .response > ol > li:last-child {
@@ -157,19 +157,14 @@ body.notprod .response h3 {
 
 .response > ol > li.expands {
     border-left: 5px solid #e0d4cc;
+    padding-left: 10px;
 }
 
-.response > ol > li.hoveraction {
-    border: 1px solid #a9b3bf;
-    padding: 9px;
-    margin-left: 5px;
-}
-
-.response > ol > li.hoveraction.expands,
+.response > ol > li.hoveraction,
 .response > ol > li.expands:hover {
-    border: 1px solid #a9b3bf;
     border-left: 5px solid #a9b3bf;
-    padding: 9px 9px 9px 10px;
+    border-bottom: 1px solid #a9b3bf;
+    padding-left: 10px;
 }
 
 .response ol li div.optioncontainer {
