@@ -4,15 +4,20 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
     <title>Jarvis</title>
+    <script src="{{ static_url("lib/jquery-2.1.3.min.js") }}"></script>
+    <script src="{{ static_url("lib/jquery.simplemodal.1.4.4.min.js") }}"></script>
+    <script src="{{ static_url("global.js") }}"></script>
 
-    <script src="/static/jquery-2.0.3.min.js"></script>
-    <script src="/static/jquery.simplemodal.1.4.4.min.js"></script>
-    <script src="/static/global.js"></script>
+    <style>
+        @font-face {
+            font-family: 'Armata';
+            src: local('Armata'), url('{{ static_url("lib/Armata-Regular.ttf") }}') format('truetype');
+        }
+    </style>
 
-    <link href="//fonts.googleapis.com/css?family=Armata" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="/static/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ static_url("style.css") }}" />
 
-    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="{{ static_url("img/favicon.ico") }}" />
 
 </head>
 <body data-baseurl="{{ escape(BASEURL) }}" data-secret="{{ escape(SECRET) }}" class="{{ escape(BODYCLASSES) }}" >
