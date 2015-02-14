@@ -44,7 +44,7 @@ It's clients include:
     vim config.py
 
     # Set up cron (fix user and pathname)
-    echo "* * * * * jarvisuser cd /path/to/jarvis/checkout; ./cron.py;" >> /etc/cron.d/jarvis
+    echo "* * * * * jarvisuser ~/code/jarvis-src/cron.py" >> /etc/cron.d/jarvis
 
 
 ## Running

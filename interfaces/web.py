@@ -24,14 +24,8 @@ class web(interface.interface):
         self.kernel = k
         self.kernel.log('Web interface accessible at %s' % k.getConfig('web_baseurl'))
         self.kernel._handlers.append((r'/', handler, dict(server=self)))
-        self.kernel._handlers.append((r'/static/(.*)', statichandler, dict(server=self)))
-
-
-class statichandler(tornado.web.StaticFileHandler):
-
-    def initialize(self, server):
-        self.server = server
-        self.root = os.path.join(rootdir, 'clients', 'web', 'static')
+        self.kernel._appsettings['template_path'] = os.path.join(rootdir, 'clients', 'web')
+        self.kernel._appsettings['static_path'] = os.path.join(rootdir, 'clients', 'web', 'static')
 
 
 class handler(tornado.web.RequestHandler):
@@ -68,10 +62,14 @@ class handler(tornado.web.RequestHandler):
 
         # Check authentication details
         if not self._authenticate():
+            self.server.kernel.log('WEB 401 /')
             self.set_status(401)
             self.set_header('WWW-Authenticate', 'Basic realm="Jarvis Web Client"')
             self.write('Please supply correct authentication details')
             return
+
+        # Log message
+        self.server.kernel.log('WEB 200 /')
 
         baseurl = self.server.kernel.getConfig('web_baseurl')
         secret  = self.server.kernel.getConfig('secret')
@@ -79,12 +77,4 @@ class handler(tornado.web.RequestHandler):
         # Add 'notprod' css class when not running in production mode
         classes = 'prod' if self.server.kernel.getConfig('is_production') else 'notprod'
 
-        root = os.path.join(rootdir, 'clients', 'web')
-        loader = tornado.template.Loader(root)
-        output = loader.load("template.html").generate(BASEURL=baseurl, SECRET=secret, BODYCLASSES=classes)
-
-        # Log message
-        self.server.kernel.log('WEB 200 /')
-
-        if output:
-            self.write(output)
+        self.render("template.html", BASEURL=baseurl, SECRET=secret, BODYCLASSES=classes)
