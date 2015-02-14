@@ -41,6 +41,10 @@ class handler(tornado.web.RequestHandler):
 
 
     def _authenticate(self):
+        # Check if this is a test site
+        if not self.server.kernel.getConfig('is_production'):
+            return True
+
         # Check authorised header exists
         if 'Authorization' not in self.request.headers:
             return False
