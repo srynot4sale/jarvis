@@ -3,27 +3,9 @@ import function
 import kernel.action
 
 
-def init():
-    return logs()
-
-
-class logs(function.function):
-    """
-    Database calls, business logic
-    """
-    _datasource = None
-
-    def __init__(self):
-        function.function.__init__(self, 'log')
-
-    def __get_data_source(self):
-        if not self._datasource:
-            self._datasource = self.kernel.get('data', 'primary')
-
-        return self._datasource
-
+class controller(function.function):
     def load_latest(self):
-        datasource = self.__get_data_source()
+        datasource = self.get_data_source()
         sql = """
             SELECT
                 *
@@ -43,7 +25,7 @@ class logs(function.function):
         return entries
 
     def get(self, entryid):
-        datasource = self.__get_data_source()
+        datasource = self.get_data_source()
         sql = """
             SELECT
                 *
@@ -60,7 +42,7 @@ class logs(function.function):
         return log(result)
 
     def add(self, description):
-        datasource = self.__get_data_source()
+        datasource = self.get_data_source()
         sql = """
             INSERT INTO
                 function_log_entries
@@ -78,7 +60,7 @@ class logs(function.function):
         if not entry:
             return None
 
-        datasource = self.__get_data_source()
+        datasource = self.get_data_source()
         sql = """
             UPDATE
                 function_log_entries
