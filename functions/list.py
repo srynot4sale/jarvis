@@ -451,17 +451,18 @@ class action_tag(kernel.action.action):
 
 class action_move(kernel.action.action):
 
-    usage = '$itemid $currenttag $replacementtag'
+    usage = '$itemid $currenttag $replacementtag [$additionalnewtag1 $additionalnewtag2...]'
 
     def execute(self, data):
         itemid = data[0]
         oldtag = normalise_tag(data[1])
-        newtag = normalise_tag(data[2])
+        newtags = data[2:]
+        newtags = [normalise_tag(t) for t in newtags]
 
         if oldtag.strip() == '':
             return function.response(function.STATE_FAILURE, 'No old tag specified')
 
-        if newtag.strip() == '':
+        if len(newtags) == 0 or newtags[0].strip() == '':
             return function.response(function.STATE_FAILURE, 'No new tag specified')
 
         l = lstobj(self.function, oldtag)
@@ -471,9 +472,11 @@ class action_move(kernel.action.action):
             return function.response(function.STATE_FAILURE, 'No item to move from tag "%s"' % oldtag)
 
         l.remove_tag(itemid, oldtag)
-        l.add_tag(itemid, newtag)
 
-        return function.redirect(self, ('list', 'view', [newtag]), 'Moved "%s" from "%s" to "%s"' % (itemdata['item'], oldtag, newtag))
+        for newtag in newtags:
+            l.add_tag(itemid, newtag)
+
+        return function.redirect(self, ('list', 'view', newtags), 'Moved "%s" from "%s" to "%s"' % (itemdata['item'], oldtag, '", "'.join(newtags)))
 
     def undo(self, list):
         pass

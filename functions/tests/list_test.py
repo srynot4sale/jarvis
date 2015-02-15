@@ -211,10 +211,6 @@ class list_testcase(test.jarvis_testcase):
         tagalt = 'UNITTESTLISTORDERTAGALT'
         listitem = 'test list item item#'
 
-        # check for empty lists first
-        self.list_empty(tag)
-        self.list_empty(tagalt)
-
         # add item to alternate list first
         newitem = self.http_request('list add #%s %s' % (tagalt, '%s%d' % (listitem, 9)))
         assert newitem['state'] == functions.function.STATE_SUCCESS
@@ -287,10 +283,6 @@ class list_testcase(test.jarvis_testcase):
         tag_dest = 'UNITTESTDESTINATION'
         listitem = 'tagitem'
 
-        # check for empty lists first
-        self.list_empty(tag_origin)
-        self.list_empty(tag_dest)
-
         # add new item with first tag
         newitem = self.http_request('list add #%s %s' % (tag_origin, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
@@ -343,6 +335,41 @@ class list_testcase(test.jarvis_testcase):
         empty3 = None
 
 
+    def list_move_multi_test(self):
+        '''
+        Test the list move action using mulitple tags
+
+        !Tests: list_move
+        '''
+        # add new item with first tag
+        newitem = self.http_request('list add #%s %s' % ('originaltag', 'item text'))
+        assert newitem['state'] == functions.function.STATE_SUCCESS
+        newitem = None
+
+        # check new item exists
+        exists = self.http_request('list view %s' % 'originaltag')
+        assert exists['state'] == functions.function.STATE_SUCCESS
+        assert len(exists['data']) == 1
+        assert exists['data'][0][0] == 'item text'
+        existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+        exists = None
+
+        # move item to two new tag
+        newtag = self.http_request('list move %s %s %s %s' % (existsid, 'originaltag', 'newtag1', 'newtag2'))
+        assert newtag['state'] == functions.function.STATE_SUCCESS
+
+        # check we redirected to list view newtag1 newtag2
+        assert newtag['redirected'] == 'list view newtag1 newtag2'
+        assert len(newtag['data']) == 1
+        assert newtag['data'][0][0] == 'item text'
+        newtag = None
+
+        # check it no longer appears at old tag
+        old = self.http_request('list view %s' % 'originaltag')
+        assert len(old['data']) == 0
+        old = None
+
+
     def list_multipletagview_test(self):
         '''
         Test the list view with multiple tags
@@ -353,10 +380,6 @@ class list_testcase(test.jarvis_testcase):
         tag_two = 'UNITTESTTAG2'
         listitem = 'tagitemtwotags'
         listitemsingle = 'tagitemonetag'
-
-        # check for empty lists first
-        self.list_empty(tag_one)
-        self.list_empty(tag_two)
 
         # add new item with first tag
         newitem = self.http_request('list add #%s %s' % (tag_one, listitem))
