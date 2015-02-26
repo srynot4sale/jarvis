@@ -260,6 +260,7 @@ function jarvis_dialog(action, callback, params) {
  */
 function jarvis_update_title(title, status = '') {
     var header = $('div.response h3')
+    header.removeClass('apiinput-enabled');
 
     var a = $('<a>');
     a.addClass('action title');
@@ -295,6 +296,7 @@ function jarvis_update_title(title, status = '') {
         });
 
         textbox.val(title);
+        header.addClass('apiinput-enabled');
         a.replaceWith(textbox);
         textbox.focus();
     });
