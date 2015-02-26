@@ -109,11 +109,19 @@ body.notprod .response h3 {
     color: #fff;
 }
 
+.response h3 a.title {
+    white-space: nowrap;
+}
+
 .response h3 a.pageaction {
     margin-top: 5px;
     float: right;
     font-size: 75%;
     margin-left: 15px;
+}
+
+.response h3.apiinput-enabled a.pageaction {
+    display: none;
 }
 
 .response h3 input.title {
@@ -123,6 +131,7 @@ body.notprod .response h3 {
     background-color: transparent;
     color: #fff;
     font-size: inherit;
+    width: 100%;
 }
 
 .response div.message {
