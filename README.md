@@ -29,11 +29,8 @@ It's clients include:
     cd ~/code/jarvis-src
     virtualenv .
 
-    # Activate this virtual environment (do before installing packages with pip)
-    source bin/activate
-
     # Install requirements
-    pip install -r requirements.txt
+    bin/pip install -r requirements.txt
 
     # Create database and database user
 
