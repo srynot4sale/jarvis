@@ -465,6 +465,13 @@ var api_call = function(action, callback) {
                 list.append(li);
             }
 
+            // Show a message if not data was returned
+            if (!res.data) {
+                var li = $('<li>');
+                li.html('<em>No data returned</em>');
+                list.append(li);
+            }
+
             // Page actions
             if (res.actions) {
                 for (var action in res.actions) {
