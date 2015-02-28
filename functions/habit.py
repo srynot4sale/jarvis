@@ -1,8 +1,10 @@
 # Jarvis habit function
 import function
 import kernel.action
+import kernel.job
 
 import datetime
+import tzlocal
 
 
 class controller(function.function):
@@ -180,3 +182,13 @@ class action_update(kernel.action.action):
 
 class action_default(action_view):
     pass
+
+
+class job_daily(kernel.job.job):
+    def execute(self):
+        server_timezone = tzlocal.get_localzone()
+        server_time = server_timezone.localize(datetime.datetime.now() + datetime.timedelta(days=1))
+        server_day = str(server_time)[0:10]
+
+        weather = self.function.kernel.call('reminder', 'add', [server_day, '07:30:00', 'Check your habits!'])
+        weather = self.function.kernel.call('reminder', 'add', [server_day, '19:30:00', 'Check your habits!'])
