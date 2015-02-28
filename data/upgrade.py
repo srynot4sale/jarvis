@@ -1,6 +1,6 @@
 import data
 
-database_version = 12
+database_version = 13
 
 def check(data):
     '''
@@ -311,6 +311,29 @@ def run(data):
         data.execute(
             """
             UPDATE `function_list_tags` SET `tag` = CONCAT('!', SUBSTR(`tag`, 2)) WHERE SUBSTR(`tag`, 1, 1) = '#'
+            """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    # Add reminder table
+    version = 13
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `function_reminder_events` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `timestamp` datetime NOT NULL,
+                `title` varchar(255) NOT NULL,
+                `created` datetime NOT NULL,
+                `sent` datetime DEFAULT NULL,
+                `method` varchar(255) DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `timestamp` (`timestamp`),
+                KEY `sent` (`sent`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
             """
         )
 

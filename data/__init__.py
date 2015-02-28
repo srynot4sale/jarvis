@@ -157,3 +157,7 @@ class data(kernel.service.service):
                 str(value)
             ]
         )
+
+
+def make_db_timestamp(ts):
+    return str(ts)[0:19]
