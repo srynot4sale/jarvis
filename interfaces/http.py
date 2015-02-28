@@ -8,17 +8,9 @@ import tornado.web
 import json, urllib
 
 
-def init(k):
-    return http(k)
+class controller(interface.interface):
 
-
-class http(interface.interface):
-
-    server = None
-
-    def __init__(self, k):
-        interface.interface.__init__(self, 'http')
-        self.kernel = k
+    def setup(self):
         self.kernel._handlers.append((r'/api/(.*)', handler, dict(server=self)))
 
 

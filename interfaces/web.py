@@ -11,18 +11,9 @@ import base64, json, os, urllib
 rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
-def init(k):
-    return web(k)
-
-
-class web(interface.interface):
-
-    server = None
-
-    def __init__(self, k):
-        interface.interface.__init__(self, 'web')
-        self.kernel = k
-        self.kernel.log('Web interface accessible at %s' % k.getConfig('web_baseurl'))
+class controller(interface.interface):
+    def setup(self):
+        self.kernel.log('Web interface accessible at %s' % self.kernel.getConfig('web_baseurl'))
         self.kernel._handlers.append((r'/', handler, dict(server=self)))
         self.kernel._appsettings['template_path'] = os.path.join(rootdir, 'clients', 'web')
         self.kernel._appsettings['static_path'] = os.path.join(rootdir, 'clients', 'web', 'static')
