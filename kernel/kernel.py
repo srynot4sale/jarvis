@@ -175,10 +175,24 @@ class kernel(object):
         return self.get('data', 'primary')
 
     def inClientTimezone(self, dt):
+        '''
+        Convert datetime object representation of a time on the
+        server to the client's timezone
+        '''
         client_timezone = pytz.timezone(self.getConfig('timezone'))
         server_timezone = tzlocal.get_localzone()
         dt = server_timezone.localize(dt)
         return dt.astimezone(client_timezone)
+
+    def inServerTimezone(self, dt):
+        '''
+        Convert datetime object representation of a time for the
+        client to the server's timezone
+        '''
+        client_timezone = pytz.timezone(self.getConfig('timezone'))
+        server_timezone = tzlocal.get_localzone()
+        dt = client_timezone.localize(dt)
+        return dt.astimezone(server_timezone)
 
     def isTestMode(self):
         '''

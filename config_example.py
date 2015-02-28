@@ -9,6 +9,12 @@ config = {}
 # and potentially wiping all your data
 config['is_production']         = True
 
+# Name that Jarvis will refer to you by
+config['username']              = 'My Name'
+
+# Your email address
+config['email']                 = 'you@example.com'
+
 # Optional, when set to True displays debugging data
 #config['debug']                 = False
 
@@ -26,9 +32,6 @@ config['secret']                = 'secrethash'
 # Timezone you'd prefer times displayed as in clients
 config['timezone']              = 'Pacific/Auckland'
 
-# Name that Jarvis will refer to you by
-config['username']              = 'My Name'
-
 # URL the web client is accessible at. Normally would be
 # those hostname/ip of server and the port defined earlier.
 # However, could be different if you are running the server
@@ -38,3 +41,7 @@ config['web_baseurl']           = 'http://localhost:XXXX/'
 # Set the username/password for using the web client
 config['web_username']          = 'myusername'
 config['web_password']          = 'mypassword'
+
+# Jarvis from address
+config['email_from_address']    = 'jarvis@example.com'
+config['email_from_name']       = 'Jarvis'

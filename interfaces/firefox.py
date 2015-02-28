@@ -11,22 +11,12 @@ import base64, json, os, urllib
 rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 
-def init(k):
-    return firefox(k)
-
-
-class firefox(interface.interface):
-
-    server = None
-
-    def __init__(self, k):
-        interface.interface.__init__(self, 'firefox')
-        self.kernel = k
+class controller(interface.interface):
+    def setup(self):
         self.kernel._handlers.append((r'/firefox/(.*)', handler, dict(server=self)))
 
 
 class handler(tornado.web.RequestHandler):
-
     def initialize(self, server):
         self.server = server
 
