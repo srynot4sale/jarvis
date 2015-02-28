@@ -56,12 +56,8 @@ Database tables will be installed on first run.
 
 ## Testing:
 
-    # Activate this virtual environment (do before running nosetests)
-    cd ~/code/jarvis-src
-    source bin/activate
-
     # Invoke test suite
-    nosetests
+    bin/nosetests
 
     # Invote test suite with coverage calculations
-    nosetests --with-coverage --cover-package=clients,data,functions,interfaces,kernel
+    bin/nosetests --with-coverage --cover-package=clients,data,functions,interfaces,kernel
