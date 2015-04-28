@@ -32,7 +32,9 @@ class handler(interface.handler):
 
             # Check authentication details
             if not self._authenticate():
-                raise kernel.kernel.JarvisAuthException('Authentication failure')
+                authentication = self.request.headers['Secret'] if 'Secret' in self.request.headers else None
+                if authentication != self.server.kernel.getConfig('secret'):
+                    raise kernel.kernel.JarvisAuthException('Authentication failure')
 
             relative = path.lstrip('/')
             parts = relative.split('/')
