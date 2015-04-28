@@ -28,6 +28,8 @@ from config_cli import BASEURL, SECRET
 
 # Grab parameters
 request = ' '.join(sys.argv[1:])
+if not len(request):
+    request = 'server connect'
 
 # Escape for URLs
 command = urllib.quote(request, '')
@@ -46,7 +48,7 @@ if res['state'] != 1:
 print('Request:\n\t%s' % request)
 print('Message:\n\t%s' % res['message'])
 
-if len(res['data']):
+if res['data'] and len(res['data']):
 
     print('Data:')
 
