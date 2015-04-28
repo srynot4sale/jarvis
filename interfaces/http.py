@@ -14,11 +14,7 @@ class controller(interface.interface):
         self.kernel._handlers.append((r'/api/(.*)', handler, dict(server=self)))
 
 
-class handler(tornado.web.RequestHandler):
-
-    def initialize(self, server):
-        self.server = server
-
+class handler(interface.handler):
 
     def options(self, path):
         self.set_status(200)
@@ -27,17 +23,16 @@ class handler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "X-Requested-With, Content-type, Secret")
         self.set_header("Access-Control-Max-Age", "86400")
 
-
     def get(self, path):
         output = None
         httpcode = 500
 
         try:
-            authentication = self.request.headers['Secret'] if 'Secret' in self.request.headers else None
-            if authentication != self.server.kernel.getConfig('secret'):
-                raise kernel.kernel.JarvisAuthException('Authentication failure')
-
             self.server.kernel.debug(path, 'interface.http.handler.get')
+
+            # Check authentication details
+            if not self._authenticate():
+                raise kernel.kernel.JarvisAuthException('Authentication failure')
 
             relative = path.lstrip('/')
             parts = relative.split('/')
@@ -62,7 +57,7 @@ class handler(tornado.web.RequestHandler):
             basic = {}
             basic['state'] = e.state
             basic['message'] = 'ERROR: %s' % e.message
-            basic['data'] = [[e.data]]
+            basic['data'] = [e.data]
             output = json.dumps(basic)
 
             self.server.kernel.debug(basic['message'], 'interface.http.handler.get')

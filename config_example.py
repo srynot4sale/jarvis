@@ -26,7 +26,7 @@ config['database_password']     = 'password'
 # Port to run server on
 config['interface_http_port']   = 'XXXX'
 
-# Passphrase for connecting to server
+# Passphrase for signing cookies
 config['secret']                = 'secrethash'
 
 # Timezone you'd prefer times displayed as in clients

@@ -15,57 +15,58 @@ class controller(interface.interface):
     def setup(self):
         self.kernel.log('Web interface accessible at %s' % self.kernel.getConfig('web_baseurl'))
         self.kernel._handlers.append((r'/', handler, dict(server=self)))
+        self.kernel._handlers.append((r'/logout', handler, dict(server=self)))
         self.kernel._appsettings['template_path'] = os.path.join(rootdir, 'clients', 'web')
         self.kernel._appsettings['static_path'] = os.path.join(rootdir, 'clients', 'web', 'static')
+        self.kernel._appsettings['login_url'] = '/'
+        self.kernel._appsettings['cookie_secret'] = self.kernel.getConfig('secret')
 
 
-class handler(tornado.web.RequestHandler):
+class handler(interface.handler):
 
-    def initialize(self, server):
-        self.server = server
+    def post(self):
+        self.server.kernel.log('WEB AUTH /')
 
-
-    def _authenticate(self):
-        # Check if this is a test site
-        if not self.server.kernel.getConfig('is_production'):
-            return True
-
-        # Check authorised header exists
-        if 'Authorization' not in self.request.headers:
-            return False
-
-        auth = self.request.headers['Authorization']
-
-        # Check it is well formed
-        if not auth.startswith('Basic '):
-            return False
-
-        # Remove 'Basic ' prefix
-        auth = auth[6:]
-
+        post_username = self.get_argument('username', '')
+        post_password = self.get_argument('password', '')
         username = self.server.kernel.getConfig('web_username')
         password = self.server.kernel.getConfig('web_password')
 
-        return base64.b64decode(auth) == ('%s:%s' % (username, password))
+        if username == post_username and password == post_password:
+            self.server.kernel.log('Logged in as "%s"' % username)
+            self.set_current_user(username)
+            self.redirect(self.get_argument("next", u"/"))
+        else:
+            self.server.kernel.log('Login failure for user "%s"' % username)
+            self.set_current_user(None)
+            self.redirect('/')
 
+    def set_current_user(self, user):
+        if user:
+            self.set_secure_cookie("user", tornado.escape.json_encode(user))
+        else:
+            self.clear_cookie("user")
 
     def get(self):
-
         # Check authentication details
         if not self._authenticate():
+            # Show login page
             self.server.kernel.log('WEB 401 /')
-            self.set_status(401)
-            self.set_header('WWW-Authenticate', 'Basic realm="Jarvis Web Client"')
-            self.write('Please supply correct authentication details')
+            self.render("template-login.html")
             return
+
+        # Check if logging out
+        if self.request.uri == '/logout':
+            self.server.kernel.log('WEB LOGOUT /')
+            self.set_current_user(None)
+            self.redirect('/')
 
         # Log message
         self.server.kernel.log('WEB 200 /')
 
         baseurl = self.server.kernel.getConfig('web_baseurl')
-        secret  = self.server.kernel.getConfig('secret')
 
         # Add 'notprod' css class when not running in production mode
         classes = 'prod' if self.server.kernel.getConfig('is_production') else 'notprod'
 
-        self.render("template.html", BASEURL=baseurl, SECRET=secret, BODYCLASSES=classes)
+        self.render("template.html", BASEURL=baseurl, BODYCLASSES=classes)

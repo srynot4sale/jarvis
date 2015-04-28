@@ -205,7 +205,7 @@ class JarvisException(Exception):
     state = functions.function.STATE_FAILURE
     httpcode = functions.function.HTTPCODE_FAILURE
 
-    def __init__(self, message, data=[]):
+    def __init__(self, message, data=['']):
         self.message = message
         self.data = data
 

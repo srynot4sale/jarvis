@@ -513,7 +513,6 @@ var api_call = function(action, callback) {
         dataType: "json",
         url: baseurl+'api/'+encodeURIComponent(url),
         data: '',
-        complete: callback,
-        headers: {'secret': $('body').data('secret')}
+        complete: callback
     });
 }

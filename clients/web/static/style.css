@@ -280,6 +280,32 @@ span.item_success {
     margin-right: 5px;
 }
 
+div#login-container {
+    padding: 20px;
+    margin: 12% auto 0;
+    border: 1px solid #e0d4cc;
+    display: table;
+}
+
+div#login-container form div {
+    margin-bottom: 10px;
+    overflow: auto;
+}
+
+div#login-container form label {
+    padding: 10px;
+    font-size: medium;
+    display: inline-block;
+}
+
+div#login-container form input {
+    border: 1px solid #e0d4cc;
+    padding: 10px;
+    float: right;
+    display: inline-block;
+    font-size: medium;
+    margin-left: 20px;
+}
 
 /**
  * Mobile specific
