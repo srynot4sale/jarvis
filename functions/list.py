@@ -342,7 +342,10 @@ class action_view(action):
         for item in items:
             #####
             ## Prep actions for each item
-            item_actions = {'Delete':  'list remove %s %s' % (tags[0], item['id'])}
+            item_actions = {
+                'Delete':  'list delete %s %s' % (tags[0], item['id']),
+                'Remove':  'list removetag %s %s' % (tags[0], item['id'])
+            }
 
             # Only show move action if we are not showing multiple tags
             if len(tags) == 1:
@@ -514,10 +517,42 @@ class action_delete(kernel.action.action):
         itemdata = l.get(itemid, lstkey)
 
         data = []
+        if not itemdata:
+            data.append(['View list "%s"' % lstkey, "list view %s" % lstkey])
+            resp = function.response(function.STATE_FAILURE, 'No item to delete in list "%s"' % lstkey)
+            resp.data = data
+            resp.write = 1
+            return resp
+
+        tags = l.get_tags(itemid)
+        for t in tags:
+            l.remove_tag(itemid, t['tag'])
+            data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
+
+        resp_text = 'Deleting "%s" from %s' % (itemdata['item'], tags_as_string([tag['tag'] for tag in tags]))
+
+        return function.redirect(self, ('list', 'view', [lstkey]), resp_text)
+
+    def undo(self, list):
+        pass
+
+
+class action_removetag(kernel.action.action):
+
+    usage = '$tag $removeid'
+
+    def execute(self, data):
+        lstkey = normalise_tag(data[0])
+        itemid = data[1]
+
+        l = lstobj(self.function, lstkey)
+        itemdata = l.get(itemid, lstkey)
+
+        data = []
         data.append(['View list "%s"' % lstkey, "list view %s" % lstkey])
 
         if not itemdata:
-            resp = function.response(function.STATE_FAILURE, 'No item to delete in list "%s"' % lstkey)
+            resp = function.response(function.STATE_FAILURE, 'No item to remove in list "%s"' % lstkey)
             resp.data = data
             resp.write = 1
             return resp
@@ -528,7 +563,7 @@ class action_delete(kernel.action.action):
         for t in tags:
             data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
 
-        resp_text = 'Deleting "%s" from "%s"' % (itemdata['item'], lstkey)
+        resp_text = 'Removing "%s" from "%s"' % (itemdata['item'], lstkey)
 
         if len(tags):
             resp = function.response(function.STATE_SUCCESS, resp_text, lstkey)
@@ -538,14 +573,6 @@ class action_delete(kernel.action.action):
             resp = function.redirect(self, ('list', 'view', [lstkey]), resp_text)
 
         return resp
-
-    def undo(self, list):
-        pass
-
-
-class action_remove(action_delete):
-
-    usage = '(alias of "list delete")'
 
 
 class action_update(kernel.action.action):

@@ -52,13 +52,60 @@ class list_testcase(test.jarvis_testcase):
         empty2 = None
 
 
-    def list_adddeletetags_test(self):
+    def list_adddeletetagsitem_test(self):
+        '''
+        Test adding and deleting list items with multiple tags
+
+        !Tests: list_add
+        !Tests: list_delete
+        '''
+        tag  = 'UNITTESTLIST'
+        tag2 = 'UNITTESTLIST2'
+        listitem = 'test list item'
+
+        # add new item
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
+        assert newitem['state'] == functions.function.STATE_SUCCESS
+        assert newitem['write'] == True
+        newitem = None
+
+        # check new item exists
+        exists = self.http_request('list view %s' % tag)
+        assert exists['state'] == functions.function.STATE_SUCCESS
+        assert len(exists['data']) == 1
+        assert exists['data'][0][0] == listitem
+        existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+        exists_delete = exists['data'][0][2]['Delete']
+        exists = None
+
+        # add second tag
+        newtag = self.http_request('list tag %s %s' % (existsid, tag2))
+        assert newtag['state'] == functions.function.STATE_SUCCESS
+        newtag = None
+
+        # delete list item
+        delete = self.http_request(exists_delete)
+        assert delete['state'] == functions.function.STATE_SUCCESS
+        delete = None
+
+        # check list is empty again
+        empty = self.http_request('list view %s' % tag)
+        assert len(empty['data']) == 0
+        empty = None
+
+        # check list is empty again
+        empty2 = self.http_request('list view %s' % tag2)
+        assert len(empty2['data']) == 0
+        empty2 = None
+
+
+    def list_addremovetags_test(self):
         '''
         Test adding and removing tags from list items
 
         !Tests: list_add
         !Tests: list_tag
-        !Tests: list_delete
+        !Tests: list_remove
         '''
         tag = 'UNITTESTTAG1'
         tag2 = 'UNITTESTTAG2'
@@ -74,7 +121,7 @@ class list_testcase(test.jarvis_testcase):
         assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
-        existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+        existsid = exists['data'][0][2]['Remove'].split(' ')[3]
         exists = None
 
         # add second tag
@@ -93,20 +140,19 @@ class list_testcase(test.jarvis_testcase):
         assert exists['data'][0][0] == listitem
         exists = None
 
-        # delete list item
-        delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == functions.function.STATE_SUCCESS
-        delete = None
+        # remove list item
+        remove = self.http_request('list removetag %s %s' % (tag, existsid))
+        assert remove['state'] == functions.function.STATE_SUCCESS
+        remove = None
 
-        # already deleted
-        delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == functions.function.STATE_FAILURE
-        delete = None
+        # already removed
+        remove = self.http_request('list removetag %s %s' % (tag, existsid))
+        assert remove['state'] == functions.function.STATE_FAILURE
+        remove = None
 
-        delete = self.http_request('list delete %s %s' % (tag2, existsid))
-        assert delete['state'] == functions.function.STATE_SUCCESS
-        assert 'redirected' in delete
-        delete = None
+        remove = self.http_request('list removetag %s %s' % (tag2, existsid))
+        assert remove['state'] == functions.function.STATE_SUCCESS
+        assert 'redirected' in remove
 
         # check list is empty again
         empty2 = self.http_request('list view %s' % tag)
@@ -119,12 +165,12 @@ class list_testcase(test.jarvis_testcase):
     def list_addmultipletags_test(self):
         '''
         Check adding the same tag twice to a list item doesn't make
-        it appear twice, or need to be deleted twice
+        it appear twice, or need to be removed twice
 
         !Tests: list_add
         !Tests: list_tag
         !Tests: list_view
-        !Tests: list_delete
+        !Tests: list_removetag
         '''
         tag = 'UNITTESTTAGSDOUBLEUP'
         listitem = 'test list tag item'
@@ -139,7 +185,7 @@ class list_testcase(test.jarvis_testcase):
         assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
-        existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+        existsid = exists['data'][0][2]['Remove'].split(' ')[3]
         exists = None
 
         # add same tag again
@@ -154,16 +200,16 @@ class list_testcase(test.jarvis_testcase):
         assert exists['data'][0][0] == listitem
         exists = None
 
-        # delete list item
-        delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == functions.function.STATE_SUCCESS
-        assert 'redirected' in delete
-        delete = None
+        # remove list item
+        remove = self.http_request('list removetag %s %s' % (tag, existsid))
+        assert remove['state'] == functions.function.STATE_SUCCESS
+        assert 'redirected' in remove
+        remove = None
 
         # check it no longer appears
-        delete = self.http_request('list delete %s %s' % (tag, existsid))
-        assert delete['state'] == functions.function.STATE_FAILURE
-        delete = None
+        remove = self.http_request('list removetag %s %s' % (tag, existsid))
+        assert remove['state'] == functions.function.STATE_FAILURE
+        remove = None
 
         # check list is empty again
         empty2 = self.http_request('list view %s' % tag)
@@ -219,7 +265,7 @@ class list_testcase(test.jarvis_testcase):
         exists = self.http_request('list view %s' % tagalt)
         assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
-        altitemid = exists['data'][0][2]['Delete'].split(' ')[3]
+        altitemid = exists['data'][0][2]['Remove'].split(' ')[3]
         exists = None
 
         # add two new items to correct tag
@@ -293,7 +339,7 @@ class list_testcase(test.jarvis_testcase):
         assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == listitem
-        existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+        existsid = exists['data'][0][2]['Remove'].split(' ')[3]
         exists = None
 
         # fail to move item from wrong tag
@@ -318,11 +364,11 @@ class list_testcase(test.jarvis_testcase):
         assert len(old['data']) == 0
         old = None
 
-        # delete list item
-        delete = self.http_request('list delete %s %s' % (tag_dest, existsid))
-        assert delete['state'] == functions.function.STATE_SUCCESS
-        assert 'redirected' in delete
-        delete = None
+        # remove list item
+        remove = self.http_request('list removetag %s %s' % (tag_dest, existsid))
+        assert remove['state'] == functions.function.STATE_SUCCESS
+        assert 'redirected' in remove
+        remove = None
 
         # check list is empty again
         empty2 = self.http_request('list view %s' % tag_origin)
@@ -351,7 +397,7 @@ class list_testcase(test.jarvis_testcase):
         assert exists['state'] == functions.function.STATE_SUCCESS
         assert len(exists['data']) == 1
         assert exists['data'][0][0] == 'item text'
-        existsid = exists['data'][0][2]['Delete'].split(' ')[3]
+        existsid = exists['data'][0][2]['Remove'].split(' ')[3]
         exists = None
 
         # move item to two new tag
@@ -384,7 +430,7 @@ class list_testcase(test.jarvis_testcase):
         # add new item with first tag
         newitem = self.http_request('list add #%s %s' % (tag_one, listitem))
         assert newitem['state'] == functions.function.STATE_SUCCESS
-        itemid = newitem['data'][0][2]['Delete'].split(' ')[3]
+        itemid = newitem['data'][0][2]['Remove'].split(' ')[3]
         newitem = None
 
         # add new item with first tag
@@ -810,7 +856,7 @@ class list_testcase(test.jarvis_testcase):
                 assert find['state'] == functions.function.STATE_SUCCESS
                 assert find['data'][0][0] == test[1]
 
-                delitem = self.http_request(find['data'][0][2]['Delete'])
+                delitem = self.http_request(find['data'][0][2]['Remove'])
                 assert delitem['state'] == functions.function.STATE_SUCCESS
                 find = None
                 delitem = None
@@ -850,9 +896,9 @@ class list_testcase(test.jarvis_testcase):
         assert newtag['notification'] == 'Added tag "%s" to "%s"' % (tag2, item)
         newtag = None
 
-        # Delete a tag
-        deltag = self.http_request('list delete %s %s' % (tag_raw2, itemid))
-        assert deltag['message'] == 'Deleting "%s" from "%s"' % (item, tag2)
+        # Remove a tag
+        deltag = self.http_request('list removetag %s %s' % (tag_raw2, itemid))
+        assert deltag['message'] == 'Removing "%s" from "%s"' % (item, tag2)
         assert deltag['data'][0][0] == 'View list "%s"' % tag2
         deltag = None
 
