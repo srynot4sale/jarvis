@@ -8,17 +8,29 @@ class http_testcase(test.jarvis_testcase):
         '''
         Check a positive auth works
         '''
+        current_value = self.jarvis.getConfig('is_production')
+
+        self.jarvis.setConfig('is_production', True)
         positive = self.http_request('server connect')
         assert positive['state'] == functions.function.STATE_SUCCESS
+
+        # Reset is_production value
+        self.jarvis.setConfig('is_production', current_value)
 
 
     def authnegative_test(self):
         '''
         Test that a failed auth does indeed fail
         '''
+        current_value = self.jarvis.getConfig('is_production')
+
+        self.jarvis.setConfig('is_production', True)
         negative = self.http_request('server connect', {'secret': 'badsecret'})
         assert negative['state'] == functions.function.STATE_AUTHERR
         assert negative['data'] == [[[]]]
+
+        # Reset is_production value
+        self.jarvis.setConfig('is_production', current_value)
 
 
     def badpath_test(self):

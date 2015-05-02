@@ -275,6 +275,14 @@ def normalise_tag(tag):
     return filter(okchar, str(tag).lower())
 
 
+def normalise_tags(tags):
+    return [normalise_tag(tag) for tag in tags]
+
+
+def tags_as_string(tags):
+    return '"' + '", "'.join(tags) + '"'
+
+
 def extract_tags(command):
     '''
     Extract tags from new list item
@@ -297,15 +305,26 @@ def escape_text(text):
     return text.replace('#', '##')
 
 
-class action_view(kernel.action.action):
+class action(kernel.action.action):
+
+    def _no_items_in_list(self, tags):
+        tagstr = tags_as_string(tags)
+        actions = [
+            ["Add...", "list add %s %%List_item" % ' '.join(['#%s' % tag for tag in tags])],
+            ["List all lists", 'list list']
+        ]
+        return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, [], actions)
+
+
+class action_view(action):
 
     usage = '$listkey [$listkey ...]'
 
     def execute(self, tags):
         # tags in this case is a list of all the tags supplied
         # tagstr is the tags imploded around whitespace
-        tags = [normalise_tag(t) for t in tags]
-        tagstr = ' '.join(tags)
+        tags = normalise_tags(tags)
+        tagstr = tags_as_string(tags)
         l = lstobj(self.function, tags)
 
         items = l.get_all()
@@ -317,8 +336,7 @@ class action_view(kernel.action.action):
                 actions.append(["List \"%s\"" % tag, 'list view %s' % tag])
 
         if not len(items):
-            actions.append(["List all lists", 'list list'])
-            return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, [], actions)
+            return self._no_items_in_list(tags)
 
         data = []
         for item in items:
@@ -353,7 +371,7 @@ class action_view(kernel.action.action):
             ## Append item to the list
             data.append([item['item'], None, item_actions, item_meta])
 
-        return function.response(function.STATE_SUCCESS, 'List "%s" contents' % tagstr, data, actions)
+        return function.response(function.STATE_SUCCESS, 'List %s contents' % tagstr, data, actions)
 
 
 class action_list(kernel.action.action):
@@ -385,7 +403,8 @@ class action_add(kernel.action.action):
         command = ' '.join(data)
         newitem, tags = extract_tags(command)
 
-        tags = [normalise_tag(t) for t in tags]
+        tags = normalise_tags(tags)
+        tagstr = tags_as_string(tags)
 
         if not len(tags):
             return function.response(function.STATE_FAILURE, 'No tag specified')
@@ -399,7 +418,7 @@ class action_add(kernel.action.action):
         for tag in tags[1:]:
             l.add_tag(itemid, tag)
 
-        return function.redirect(self, ('list', 'view', tags), 'Added "%s" with tags "%s"' % (newitem, '", "'.join(tags)))
+        return function.redirect(self, ('list', 'view', tags), 'Added "%s" with tags %s' % (newitem, tagstr))
 
     def undo(self, list):
         pass
@@ -413,7 +432,8 @@ class action_tag(kernel.action.action):
         itemid  = data[0]
         tags    = data[1:]
 
-        tags = [normalise_tag(t) for t in tags]
+        tags = normalise_tags(tags)
+        tagsstr = tags_as_string(tags)
         added = []
 
         for tag in tags:
@@ -439,8 +459,7 @@ class action_tag(kernel.action.action):
             return function.response(function.STATE_FAILURE, 'No tag specified')
 
         if len(added) > 1:
-            alltags = '", "'.join(added)
-            message = 'Added tags "%s" to "%s"' % (alltags, itemdata['item'])
+            message = 'Added tags %s to "%s"' % (tagstr, itemdata['item'])
         else:
             message = 'Added tag "%s" to "%s"' % (added[0], itemdata['item'])
         return function.redirect(self, ('list', 'view', [added[0]]), message)
@@ -457,7 +476,8 @@ class action_move(kernel.action.action):
         itemid = data[0]
         oldtag = normalise_tag(data[1])
         newtags = data[2:]
-        newtags = [normalise_tag(t) for t in newtags]
+        newtags = normalise_tags(newtags)
+        newtagstr = tags_as_string(newtags)
 
         if oldtag.strip() == '':
             return function.response(function.STATE_FAILURE, 'No old tag specified')
@@ -476,7 +496,7 @@ class action_move(kernel.action.action):
         for newtag in newtags:
             l.add_tag(itemid, newtag)
 
-        return function.redirect(self, ('list', 'view', newtags), 'Moved "%s" from "%s" to "%s"' % (itemdata['item'], oldtag, '", "'.join(newtags)))
+        return function.redirect(self, ('list', 'view', newtags), 'Moved "%s" from "%s" to %s' % (itemdata['item'], oldtag, newtagstr))
 
     def undo(self, list):
         pass
@@ -557,7 +577,7 @@ class action_update(kernel.action.action):
             return resp
 
         updateditem, newtags = extract_tags(item)
-        newtags = [normalise_tag(t) for t in newtags]
+        newtags = normalise_tags(newtags)
 
         l.update(itemdata, updateditem)
 
@@ -619,24 +639,27 @@ class action_history(kernel.action.action):
         return function.response(function.STATE_SUCCESS, 'List previous versions of "%s" with id "%s"' % (itemdata['item'], itemdata['id']), data)
 
 
-class action_random(kernel.action.action):
+class action_random(action):
 
     usage = '$listkey [$listkey ...]'
 
     def execute(self, tags):
         # tags in this case is a list of all the tags supplied
         # tagstr is the tags imploded around whitespace
-        tags = [normalise_tag(t) for t in tags]
-        tagstr = ' '.join(tags)
+        tags = normalise_tags(tags)
+        tagstr = tags_as_string(tags)
         l = lstobj(self.function, tags)
 
         items = l.get_all()
+        if not len(items):
+            return self._no_items_in_list(tags)
+
         ritem = random.choice(items)
 
         data = []
         data.append([ritem['item'], None])
 
-        return function.response(function.STATE_SUCCESS, 'Random item tagged with "%s"' % tagstr, data)
+        return function.response(function.STATE_SUCCESS, 'Random item tagged with %s' % tagstr, data)
 
 
 class action_default(action_list):
