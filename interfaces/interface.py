@@ -17,7 +17,7 @@ class handler(tornado.web.RequestHandler):
 
     def _authenticate(self):
         # Check if this is a test site
-        #if not self.server.kernel.getConfig('is_production'):
-        #    return True
+        if not self.server.kernel.getConfig('is_production'):
+            return 'admin'
 
         return self.get_current_user()

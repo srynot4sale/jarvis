@@ -27,7 +27,7 @@ class http_testcase(test.jarvis_testcase):
         self.jarvis.setConfig('is_production', True)
         negative = self.http_request('server connect', {'secret': 'badsecret'})
         assert negative['state'] == functions.function.STATE_AUTHERR
-        assert negative['data'] == [[[]]]
+        assert negative['data'] == [['']]
 
         # Reset is_production value
         self.jarvis.setConfig('is_production', current_value)
