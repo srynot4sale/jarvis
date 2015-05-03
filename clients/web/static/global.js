@@ -34,9 +34,64 @@ $(function() {
                 return;
         }
 
+        var target = $(e.target);
+
         // Get "a"
         if (e.keyCode == 65) {
+            console.log('Action event');
+            $('div.response h3 a.pageaction').focus();
+            e.preventDefault();
+            return false;
+        }
+
+        // Get "q"
+        if (e.keyCode == 81) {
+            console.log('Query event');
             $('div.response h3 a.title').click();
+            e.preventDefault();
+            return false;
+        }
+
+        // Get "right arrow"
+        if (e.keyCode == 39) {
+            console.log('Right arrow event');
+            if (target.hasClass('pageaction')) {
+                console.log('Next page action');
+                var found = false;
+                $($('a.pageaction').get().reverse()).each(function() {
+                    if ($(this).is(':focus')) {
+                        found = true;
+                        return;
+                    }
+
+                    if (found) {
+                        $(this).focus();
+                        found = false;
+                    }
+                });
+            }
+            e.preventDefault();
+            return false;
+        }
+
+        // Get "left arrow"
+        if (e.keyCode == 37) {
+            console.log('Right arrow event');
+            if (target.hasClass('pageaction')) {
+                console.log('Next page action');
+                var found = false;
+                $('a.pageaction').each(function() {
+                    if ($(this).is(':focus')) {
+                        found = true;
+                        return;
+                    }
+
+                    if (found) {
+                        $(this).focus();
+                        found = false;
+                    }
+                });
+            }
             e.preventDefault();
             return false;
         }
