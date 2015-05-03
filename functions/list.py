@@ -264,6 +264,40 @@ class lstobj(object):
         data = [itemversionid]
         return datasource.get_records(sql, data)
 
+    def search(self, terms):
+        """
+        Search all list items
+        """
+        datasource = self.func.get_data_source()
+        params = []
+
+        search_sql = []
+        for term in terms:
+            search_sql.append('i.item LIKE LOWER(%s)')
+            params.append('%'+term+'%')
+
+        search_sql = ' AND '.join(search_sql)
+
+        sql = """
+            SELECT DISTINCT
+                LOWER(i.item) AS item,
+                i.*
+            FROM
+                function_list_items i
+            INNER JOIN
+                function_list_tags t
+             ON t.list_item_id = i.id
+            AND t.deleted IS NULL
+            WHERE
+                i.deleted IS NULL
+            AND %s
+            ORDER BY
+                i.added DESC
+        """ % search_sql
+
+        return datasource.get_records(sql, params)
+
+
 
 def normalise_tag(tag):
     '''
@@ -306,7 +340,10 @@ def escape_text(text):
 
 
 class action(kernel.action.action):
-
+    '''
+    List action parent class containing reused
+    action fragments
+    '''
     def _no_items_in_list(self, tags):
         tagstr = tags_as_string(tags)
         actions = [
@@ -314,6 +351,41 @@ class action(kernel.action.action):
             ["List all lists", 'list list']
         ]
         return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, [], actions)
+
+    def _display_list_item(self, item, listtags=None):
+        l = lstobj(self.function, listtags)
+        itemtags = l.get_tags(item['id'])
+
+        tags = listtags if listtags else [i['tag'] for i in itemtags]
+
+        # Actions for each item
+        item_actions = {}
+        if tags:
+            tag = tags[0]
+            item_actions['Delete'] = 'list delete %s %s' % (tag, item['id'])
+            item_actions['Remove'] = 'list removetag %s %s' % (tag, item['id'])
+            item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tag)
+
+        item_actions['History'] = 'list history %s' % (item['id'])
+        item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
+        if tags:
+            item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tag, item['id'], escape_text(item['item']))
+
+        # Add tags for each item
+        if itemtags:
+            itemtagstr = []
+            for t in itemtags:
+                itemtagstr.append(t['tag'])
+
+                if listtags and t['tag'] in listtags:
+                    continue
+
+                item_actions['[%s]' % t['tag']] = 'list view %s' % t['tag']
+
+        ## Add meta info
+        item_meta = {'id': item['id']}
+
+        return [item['item'], None, item_actions, item_meta]
 
 
 class action_view(action):
@@ -340,39 +412,7 @@ class action_view(action):
 
         data = []
         for item in items:
-            #####
-            ## Prep actions for each item
-            item_actions = {
-                'Delete':  'list delete %s %s' % (tags[0], item['id']),
-                'Remove':  'list removetag %s %s' % (tags[0], item['id'])
-            }
-
-            # Only show move action if we are not showing multiple tags
-            if len(tags) == 1:
-                item_actions['Move...'] = 'list move %s %s %%Replacement_tag' % (item['id'], tags[0])
-
-            item_actions['History'] = 'list history %s' % (item['id'])
-            item_actions['Tag...'] = 'list tag %s %%Tag' % (item['id'])
-            item_actions['Edit...'] = 'list update %s %s %%New_description{{%s}}' % (tags[0], item['id'], escape_text(item['item']))
-
-            #####
-            ## Prep tags for each item
-            itemtags = l.get_tags(item['id'])
-            if itemtags:
-                itemtagstr = []
-                for t in itemtags:
-                    itemtagstr.append(t['tag'])
-                    if t['tag'] in tags:
-                        continue
-                    item_actions['[%s]' % t['tag']] = "list view %s" % t['tag']
-
-            #####
-            ## Prep meta info
-            item_meta = {'id': item['id']}
-
-            #####
-            ## Append item to the list
-            data.append([item['item'], None, item_actions, item_meta])
+            data.append(self._display_list_item(item, tags))
 
         return function.response(function.STATE_SUCCESS, 'List %s contents' % tagstr, data, actions)
 
@@ -671,8 +711,6 @@ class action_random(action):
     usage = '$listkey [$listkey ...]'
 
     def execute(self, tags):
-        # tags in this case is a list of all the tags supplied
-        # tagstr is the tags imploded around whitespace
         tags = normalise_tags(tags)
         tagstr = tags_as_string(tags)
         l = lstobj(self.function, tags)
@@ -687,6 +725,25 @@ class action_random(action):
         data.append([ritem['item'], None])
 
         return function.response(function.STATE_SUCCESS, 'Random item tagged with %s' % tagstr, data)
+
+
+class action_search(action):
+
+    usage = '$searchterm [$searchterm ...]'
+
+    def execute(self, terms):
+        termstr = '", "'.join(terms)
+        l = lstobj(self.function, [])
+
+        items = l.search(terms)
+        if not len(items):
+            return self._no_items_in_list(tags)
+
+        data = []
+        for item in items:
+            data.append(self._display_list_item(item))
+
+        return function.response(function.STATE_SUCCESS, 'Results when searching for "%s"' % termstr, data)
 
 
 class action_default(action_list):
