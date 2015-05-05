@@ -313,8 +313,12 @@ def normalise_tags(tags):
     return [normalise_tag(tag) for tag in tags]
 
 
-def tags_as_string(tags):
+def tags_as_readable_string(tags):
     return '"' + '", "'.join(tags) + '"'
+
+
+def tags_as_string(tags):
+    return ' '.join(['#%s' % tag for tag in tags])
 
 
 def extract_tags(command):
@@ -345,9 +349,9 @@ class action(kernel.action.action):
     action fragments
     '''
     def _no_items_in_list(self, tags):
-        tagstr = tags_as_string(tags)
+        tagstr = tags_as_readable_string(tags)
         actions = [
-            ["Add...", "list add %s %%List_item" % ' '.join(['#%s' % tag for tag in tags])],
+            ["Add...", "list add %s %%List_item" % tags_as_string(tags)],
             ["List all lists", 'list list']
         ]
         return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, [], actions)
@@ -396,13 +400,13 @@ class action_view(action):
         # tags in this case is a list of all the tags supplied
         # tagstr is the tags imploded around whitespace
         tags = normalise_tags(tags)
-        tagstr = tags_as_string(tags)
+        tagstr = tags_as_readable_string(tags)
         l = lstobj(self.function, tags)
 
         items = l.get_all()
 
         actions = []
-        actions.append(["Add...", "list add #%s %%List_item" % tags[0]])
+        actions.append(["Add...", "list add %s %%List_item" % tags_as_string(tags)])
         if len(tags) > 1:
             for tag in tags:
                 actions.append(["List \"%s\"" % tag, 'list view %s' % tag])
@@ -447,7 +451,7 @@ class action_add(kernel.action.action):
         newitem, tags = extract_tags(command)
 
         tags = normalise_tags(tags)
-        tagstr = tags_as_string(tags)
+        tagstr = tags_as_readable_string(tags)
 
         if not len(tags):
             return function.response(function.STATE_FAILURE, 'No tag specified')
@@ -476,7 +480,7 @@ class action_tag(kernel.action.action):
         tags    = data[1:]
 
         tags = normalise_tags(tags)
-        tagsstr = tags_as_string(tags)
+        tagsstr = tags_as_readable_string(tags)
         added = []
 
         for tag in tags:
@@ -520,7 +524,7 @@ class action_move(kernel.action.action):
         oldtag = normalise_tag(data[1])
         newtags = data[2:]
         newtags = normalise_tags(newtags)
-        newtagstr = tags_as_string(newtags)
+        newtagstr = tags_as_readable_string(newtags)
 
         if oldtag.strip() == '':
             return function.response(function.STATE_FAILURE, 'No old tag specified')
@@ -569,7 +573,7 @@ class action_delete(kernel.action.action):
             l.remove_tag(itemid, t['tag'])
             data.append(['View list "%s"' % t['tag'], "list view %s" % t['tag']])
 
-        resp_text = 'Deleting "%s" from %s' % (itemdata['item'], tags_as_string([tag['tag'] for tag in tags]))
+        resp_text = 'Deleting "%s" from %s' % (itemdata['item'], tags_as_readable_string([tag['tag'] for tag in tags]))
 
         return function.redirect(self, ('list', 'view', [lstkey]), resp_text)
 
@@ -712,7 +716,7 @@ class action_random(action):
 
     def execute(self, tags):
         tags = normalise_tags(tags)
-        tagstr = tags_as_string(tags)
+        tagstr = tags_as_readable_string(tags)
         l = lstobj(self.function, tags)
 
         items = l.get_all()
