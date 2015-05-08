@@ -2,7 +2,9 @@ import data
 
 import json
 
+# Database version this version of the code expects you to have
 database_version = 14
+
 
 def check(data):
     '''
@@ -60,6 +62,7 @@ def set_version(data, version):
 
 def run(data):
     current = get_version(data)
+    data.kernel.log('Current version is %s' % current)
 
     version = 1
     if current < version:
