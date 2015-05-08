@@ -13,12 +13,14 @@ class web_testcase(test.jarvis_testcase):
         # Prod
         self.jarvis.setConfig('is_production', True)
         prod = self.raw_http_request('')
-        assert prod.code == 401
+        assert 'Login' in prod.body
+        del prod
 
         # Non prod
         self.jarvis.setConfig('is_production', False)
         nonprod = self.raw_http_request('')
-        assert nonprod.code == 200
+        assert 'Login' not in nonprod.body
+        del nonprod
 
         # Reset is_production value
         self.jarvis.setConfig('is_production', current_value)

@@ -4,9 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
     <title>Jarvis</title>
+
     <script src="{{ static_url("lib/jquery-2.1.3.min.js") }}"></script>
-    <script src="{{ static_url("lib/jquery.simplemodal.1.4.4.min.js") }}"></script>
-    <script src="{{ static_url("global.js") }}"></script>
+    <script>
+        $(function() {
+            $('input#username').focus();
+        });
+    </script>
 
     <style>
         @font-face {
@@ -20,9 +24,29 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ static_url("img/favicon.ico") }}" />
 
 </head>
-<body data-baseurl="{{ escape(BASEURL) }}" class="{{ escape(BODYCLASSES) }}" >
+<body>
 
-    <div id="container"></div>
+    <div id="login-container">
+
+        <form method="POST" action="/">
+
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" />
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" />
+            </div>
+
+            <div>
+                <input type="submit" value="Login" />
+            </div>
+
+        </form>
+
+    </div>
 
 </body>
 </html>

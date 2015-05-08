@@ -122,6 +122,10 @@ $(function() {
         input.toggle();
     });
 
+    /**
+     * Setup logout handler
+     */
+    input.append($('<div id="logoutcontainer"><a id="logout" class="action" href="/logout">Logout</a></div>'));
 
     /**
      * Setup buttons
@@ -568,7 +572,6 @@ var api_call = function(action, callback) {
         dataType: "json",
         url: baseurl+'api/'+encodeURIComponent(url),
         data: '',
-        complete: callback,
-        headers: {'secret': $('body').data('secret')}
+        complete: callback
     });
 }
