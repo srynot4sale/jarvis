@@ -32,9 +32,6 @@ class http_testcase(test.jarvis_testcase):
         # Reset is_production value
         self.jarvis.setConfig('is_production', current_value)
 
-        # Reset is_production value
-        self.jarvis.setConfig('is_production', current_value)
-
 
     def badpath_test(self):
         '''

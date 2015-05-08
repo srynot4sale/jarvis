@@ -122,6 +122,10 @@ $(function() {
         input.toggle();
     });
 
+    /**
+     * Setup logout handler
+     */
+    input.append($('<div id="logoutcontainer"><a id="logout" class="action" href="/logout">Logout</a></div>'));
 
     /**
      * Setup buttons

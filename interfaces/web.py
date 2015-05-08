@@ -60,6 +60,7 @@ class handler(interface.handler):
             self.server.kernel.log('WEB LOGOUT /')
             self.set_current_user(None)
             self.redirect('/')
+            return
 
         # Log message
         self.server.kernel.log('WEB 200 /')
