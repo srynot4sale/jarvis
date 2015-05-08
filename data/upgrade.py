@@ -1,6 +1,8 @@
 import data
 
-database_version = 13
+import json
+
+database_version = 14
 
 def check(data):
     '''
@@ -338,6 +340,13 @@ def run(data):
         )
 
         set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    # Add configurable menu data
+    version = 14
+    if current < version:
+        data.kernel.setConfig('menu', json.dumps([['Home', 'server connect'], ['Help', 'help view']]))
 
     data.kernel.setConfig('version', version)
 

@@ -169,9 +169,9 @@ class action_cron(kernel.action.action):
 class action_menu(kernel.action.action):
 
     def execute(self, data):
+        menu = json.loads(self.function.kernel.getConfig('menu'))
 
-        message = 'Default menu items'
-        items = [
+        menu = [
             ['Home', 'server connect'],
             ['Help', 'help view'],
             ['Server', 'server default'],
@@ -183,4 +183,7 @@ class action_menu(kernel.action.action):
             ['Work', 'list view catalyst tomorrow']
         ]
 
-        return function.response(function.STATE_SUCCESS, message, items)
+        if data == ['']:
+            # Return menu items
+            message = 'Menu'
+            return function.response(function.STATE_SUCCESS, message, menu)
