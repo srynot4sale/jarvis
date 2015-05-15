@@ -327,7 +327,8 @@ function jarvis_update_title(title, status = '') {
     var a = $('<a>');
     a.addClass('action title');
     a.attr('title', title);
-    a.html(title);
+    a.data('title', title);
+    a.html(jarvis_escape(title));
 
     $('.title', header).remove();
     header.prepend(a);
@@ -447,6 +448,9 @@ var api_call = function(action, options = {}) {
                 var item = res.data[line][0];
                 var li = $('<li>');
 
+                // Escape item
+                item = jarvis_escape(item);
+
                 // Make links clickable
                 var html = item.replace(/(https?:\/\/[^ ]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>");
 
@@ -490,7 +494,7 @@ var api_call = function(action, options = {}) {
                             } else {
                                 var optiontext = o;
                             }
-                            var option = jarvis_build_internal_link({path: options[o], text: optiontext});
+                            var option = jarvis_build_internal_link({path: options[o], text: jarvis_escape(optiontext)});
 
                             if (!ismetadata) {
                                 var option = $('<li>').append(option);
@@ -538,7 +542,7 @@ var api_call = function(action, options = {}) {
             // Page actions
             if (res.actions) {
                 for (var action in res.actions) {
-                    var a = jarvis_build_internal_link({path: res.actions[action][1], text: res.actions[action][0]});
+                    var a = jarvis_build_internal_link({path: res.actions[action][1], text: jarvis_escape(res.actions[action][0])});
                     a.addClass('pageaction');
                     header.append(a);
                 }
@@ -548,12 +552,12 @@ var api_call = function(action, options = {}) {
             render.removeClass('loading');
 
             if (res.result) {
-                render.append($('<div class="result">').html(res.result));
+                render.append($('<div class="result">').html(jarvis_escape(res.result)));
                 render.addClass('error');
             }
 
             if (res.notification) {
-                var notification = $('<div class="notification">').html(res.notification);
+                var notification = $('<div class="notification">').html(jarvis_escape(res.notification));
                 notification.on('click', function() {
                     $('#output .response').removeClass('notice');
                     $(this).remove();
@@ -562,7 +566,7 @@ var api_call = function(action, options = {}) {
                 render.addClass('notice');
             }
 
-            var message = $('<div class="message">').html(res.message);
+            var message = $('<div class="message">').html(jarvis_escape(res.message));
 
             render.append(message);
             render.append(list);
@@ -582,4 +586,25 @@ var api_call = function(action, options = {}) {
         data: '',
         complete: options.callback
     });
+}
+
+function jarvis_escape(text) {
+    var escapeMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '`': '&#x60;',
+        '/': '&#x2F;',
+        '%': '&#37;'
+    };
+
+    function escapeHtml(string) {
+        return String(string).replace(/[&<>"'`%\/]/g, function (s) {
+            return escapeMap[s];
+        });
+    }
+
+    return escapeHtml(text);
 }
