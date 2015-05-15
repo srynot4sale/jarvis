@@ -20,3 +20,7 @@ class action_view(kernel.action.action):
             data.append(['%s help' % func, '%s help' % func])
 
         return function.response(function.STATE_SUCCESS, 'Global Jarvis help menu', data)
+
+
+class action_default(action_view):
+    pass
