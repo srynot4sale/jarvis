@@ -161,7 +161,7 @@ class action_update(kernel.action.action):
         if current == None:
             result = self.function.kernel.call('list', 'add', ['#!habits_%s' % date, '%s|%s' % (habitid, status)])
         else:
-            result = self.function.kernel.call('list', 'update', ['!habits_%s' % date, current['id'], '%s|%s' % (habitid, status)])
+            result = self.function.kernel.call('list', 'update', ['#!habits_%s' % date, current['id'], '%s|%s' % (habitid, status)])
 
         if result.state != function.STATE_SUCCESS:
             note = "Failed to update habit! (%s)" % result.message
