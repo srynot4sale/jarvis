@@ -13,6 +13,14 @@ rootdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 class controller(interface.interface):
     def setup(self):
+        # Check if menu system list empty, and if so fill with default data
+        menu = self.kernel.call('list', 'view', ['#!menu'])
+        if not len(menu.data):
+            self.kernel.log('Setup default menu for web interface')
+            self.kernel.call('list', 'add', ['#!menu', 'Home | server connect'])
+            self.kernel.call('list', 'add', ['#!menu', 'List | list default'])
+            self.kernel.call('list', 'add', ['#!menu', 'Help | help default'])
+
         self.kernel.log('Web interface accessible at %s' % self.kernel.getConfig('web_baseurl'))
         self.kernel._handlers.append((r'/', handler, dict(server=self)))
         self.kernel._handlers.append((r'/logout', handler, dict(server=self)))

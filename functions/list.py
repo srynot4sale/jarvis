@@ -354,7 +354,7 @@ class action(kernel.action.action):
             ["Add...", "list add %s %%List_item" % tags_as_string(tags)],
             ["List all lists", 'list list']
         ]
-        return function.response(function.STATE_SUCCESS, 'No items in list "%s"' % tagstr, [], actions)
+        return function.response(function.STATE_SUCCESS, 'No items in list %s' % tagstr, [], actions)
 
     def _display_list_item(self, item, listtags=None):
         l = lstobj(self.function, listtags)

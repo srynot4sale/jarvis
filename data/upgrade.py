@@ -346,11 +346,18 @@ def run(data):
 
     data.kernel.setConfig('version', version)
 
-    # Add configurable menu data
+    # Delete configurable menu data (was briefly stored in config table)
     version = 14
     if current < version:
-        data.kernel.setConfig('menu', json.dumps([['Home', 'server connect'], ['Help', 'help view']]))
+        data.execute(
+            """
+            DELETE FROM `config` WHERE `name` = 'menu'
+            """
+        )
+
+        set_version(data, version)
 
     data.kernel.setConfig('version', version)
+
 
 # Remember to update the database_version variable at the top of this file

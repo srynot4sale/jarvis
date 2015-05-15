@@ -169,21 +169,13 @@ class action_cron(kernel.action.action):
 class action_menu(kernel.action.action):
 
     def execute(self, data):
-        menu = json.loads(self.function.kernel.getConfig('menu'))
+        menudata = self.function.kernel.call('list', 'view', ['#!menu'])
 
-        menu = [
-            ['Home', 'server connect'],
-            ['Help', 'help view'],
-            ['Server', 'server default'],
-            ['List', 'list default'],
-            ['Habits', 'habit view'],
-            ['Logs', 'log view'],
-            ['Log Add', 'log add %Log_entry'],
-            ['To Sort', 'list view tosort'],
-            ['Work', 'list view catalyst tomorrow']
-        ]
+        menu = []
+        for i in menudata.data:
+            title, _, call = i[0].partition('|')
+            menu.append([title.rstrip(), call.lstrip()])
 
-        if data == ['']:
-            # Return menu items
-            message = 'Menu'
-            return function.response(function.STATE_SUCCESS, message, menu)
+        # Return menu items
+        message = 'Menu'
+        return function.response(function.STATE_SUCCESS, message, menu)
