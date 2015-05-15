@@ -72,15 +72,13 @@ class action_view(kernel.action.action):
 
             if c == 'N':
                 item_actions = {'Completed!': 'habit update %s %s Y' % (id, date)}
-                state = 'failure'
                 icon = u'\u2717'
             else:
                 item_actions = {'Uncomplete': 'habit update %s %s N' % (id, date)}
-                state = 'success'
                 icon = u'\u2713'
 
             item_meta       = {'id': id}
-            item_text       = u'<span class="item_%s">%s</span> %s' % (state, icon, item[0])
+            item_text       = u'%s %s' % (icon, item[0])
             data.append([item_text, None, item_actions, item_meta])
 
         if today:
@@ -132,13 +130,11 @@ class action_overview(kernel.action.action):
                 c = comp[id]['status'] if id in comp.keys() else 'N'
 
                 if c == 'N':
-                    state = 'failure'
                     icon = u'\u2717'
                 else:
-                    state = 'success'
                     icon = u'\u2713'
 
-                item_text += u'<span class="item_%s" title="%s">%s</span>' % (state, d, icon)
+                item_text += icon
 
             item_text += ' %s' % item[0]
 
