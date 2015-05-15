@@ -568,6 +568,10 @@ var api_call = function(action, callback) {
     }
 
     console.log('json call to "'+url+'"');
+
+    // Escape % signs or things get converted to weird characters
+    url = url.replace('%', '%25');
+
     $.ajax({
         dataType: "json",
         url: baseurl+'api/'+encodeURIComponent(url),
