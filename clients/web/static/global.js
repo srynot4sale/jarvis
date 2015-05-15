@@ -130,7 +130,7 @@ $(function() {
     /**
      * Setup buttons
      */
-    api_call('server menu', function(result) {
+    api_call('server menu', {callback: function(result) {
         console.log('got menu');
 
         var res = jarvis_handle_result(result);
@@ -147,7 +147,7 @@ $(function() {
         }
 
         input.append(menu);
-    });
+    }});
 
     var default_apicall = 'server connect';
 
@@ -262,7 +262,7 @@ function jarvis_handle_result(result) {
 /**
  * Display a dialog requesting data
  */
-function jarvis_dialog(action, callback, params) {
+function jarvis_dialog(action, options, params) {
     console.log('jarvis_dialog()');
 
     var dialog = $('<div class="dialog"></div>');
@@ -307,7 +307,10 @@ function jarvis_dialog(action, callback, params) {
         }
 
         $.modal.close();
-        api_call(action, callback);
+
+        // Escape input from now on, otherwise we can't enter data with %'s
+        options.escaped = true;
+        api_call(action, options);
     });
 
     dialog.modal();
@@ -341,7 +344,8 @@ function jarvis_update_title(title, status = '') {
         textbox.keydown(function(event) {
             // Get enter
             if (event.keyCode == 13) {
-                api_call(textbox.val());
+                // Escape input from now on, otherwise we can't enter data with %'s
+                api_call(textbox.val(), {escaped: true});
                 jarvis_update_title(textbox.val());
             }
             // Get escape
@@ -383,7 +387,7 @@ function jarvis_update_title(title, status = '') {
 /**
  * Make an API call
  */
-var api_call = function(action, callback) {
+var api_call = function(action, options = {}) {
     console.log('api_call('+action+')');
 
     // Replace the first two spaces
@@ -394,8 +398,8 @@ var api_call = function(action, callback) {
      */
     var dynamic = /\%[A-Za-z0-9_]+(\{\{.*\}\})?/g;
     var dvars = url.match(dynamic);
-    if (dvars) {
-        jarvis_dialog(action, callback, dvars);
+    if (dvars && !options.escaped) {
+        jarvis_dialog(action, options, dvars);
         return false;
     }
 
@@ -424,8 +428,8 @@ var api_call = function(action, callback) {
     var title = action;
 
     // If no callback function defined, then display normally
-    if (callback === undefined) {
-        var callback = function(result) {
+    if (options.callback === undefined) {
+        options.callback = function(result) {
             console.log('default callback');
             input.val('');
 
@@ -576,6 +580,6 @@ var api_call = function(action, callback) {
         dataType: "json",
         url: baseurl+'api/'+encodeURIComponent(url),
         data: '',
-        complete: callback
+        complete: options.callback
     });
 }
