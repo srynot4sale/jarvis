@@ -60,6 +60,15 @@ class function(kernel.service.service):
 
         return None
 
+    def get_model_instance(self, model, id):
+        '''
+        Shortcut method for loading a model instance
+        '''
+        i = model(self, {'id': id})
+        if i.load():
+            return i
+        return False
+
 
 class response(object):
 
