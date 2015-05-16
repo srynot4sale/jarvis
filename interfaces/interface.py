@@ -3,8 +3,7 @@ import kernel.service
 import tornado.web
 
 class interface(kernel.service.service):
-    def __init__(self, name):
-        self.name = name
+    _dir = 'interfaces'
 
 
 class handler(tornado.web.RequestHandler):
