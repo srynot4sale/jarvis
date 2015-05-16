@@ -45,3 +45,10 @@ config['web_password']          = 'mypassword'
 # Jarvis from address
 config['email_from_address']    = 'jarvis@example.com'
 config['email_from_name']       = 'Jarvis'
+
+# Twitter authentication
+#config['twitter']               = True
+#config['twitter_consumer_key']  = ''
+#config['twitter_consumer_secret'] = ''
+#config['twitter_oauth_token']   = ''
+#config['twitter_oauth_secret']  = ''
