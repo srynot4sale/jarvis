@@ -43,6 +43,35 @@ class controller(function.function):
             accounts.append(Account(self, r))
         return accounts
 
+    def account_search(self, atype, auid):
+        datasource = self.get_data_source()
+        sql = """
+            SELECT
+                *
+            FROM
+                function_contact_entities
+            WHERE
+                deleted IS NULL
+            AND id IN (
+                SELECT
+                    contact_id
+                FROM
+                    function_contact_accounts
+                WHERE
+                    deleted IS NULL
+                AND type = %s
+                AND uid = %s
+            )
+            ORDER BY
+                `name` ASC
+        """
+        data = [atype, auid]
+        results = datasource.get_records(sql, data)
+        contacts = []
+        for r in results:
+            contacts.append(Contact(self, r))
+        return contacts
+
 
 class Contact(data.model.model):
     """
@@ -155,7 +184,10 @@ class action_list(kernel.action.action):
         for c in contacts:
             data.append([c.name, 'contact view %s' % c.id])
 
-        actions = [('Add new...', 'contact add %Full_name')]
+        actions = [
+            ('Add new...', 'contact add %Full_name'),
+            ('Account search...', 'contact accountsearch %Type %UID')
+        ]
 
         return function.response(function.STATE_SUCCESS, 'Contacts list', data, actions)
 
@@ -176,7 +208,7 @@ class action_add(kernel.action.action):
         c = Contact(self.function, {'name': name})
         c.create()
 
-        return function.redirect(self, ('contact', 'list'), 'Added contact "%s"' % c.name)
+        return function.redirect(self, ('contact', 'list', ['*%s' % c.id]), 'Added contact "%s"' % c.name)
 
 
 class action_view(kernel.action.action):
@@ -233,7 +265,7 @@ class action_edit(kernel.action.action):
 
         return function.redirect(
                 self,
-                ('contact', 'view', contactid),
+                ('contact', 'view', [contactid]),
                 'Contact "%s" updated to "%s"' % (oldname, c.name)
         )
 
@@ -287,7 +319,7 @@ class action_accountadd(kernel.action.action):
 
         return function.redirect(
                 self,
-                ('contact', 'view', contactid),
+                ('contact', 'view', [contactid]),
                 'Added "%s" account to contact "%s"' % (acctype, c.name)
         )
 
@@ -314,6 +346,23 @@ class action_accountdelete(kernel.action.action):
 
         return function.redirect(
                 self,
-                ('contact', 'view', contactid),
+                ('contact', 'view', [contactid]),
                 'Deleted "%s" account from contact "%s"' % (a.type, c.name)
         )
+
+
+class action_accountsearch(kernel.action.action):
+    """
+    Search all contact accounts
+    """
+    usage = '$accounttype $accountuid'
+    def execute(self, data):
+        atype = data[0]
+        auid = data[1]
+
+        results = self.function.account_search(atype, auid)
+        data = []
+        for c in results:
+            data.append([c.name, 'contact view %s' % c.id])
+
+        return function.response(function.STATE_SUCCESS, 'Contacts with "%s" account "%s"' % (atype, auid), data)
