@@ -3,7 +3,7 @@ import data
 import json
 
 # Database version this version of the code expects you to have
-database_version = 14
+database_version = 16
 
 
 def check(data):
@@ -352,6 +352,51 @@ def run(data):
         data.execute(
             """
             DELETE FROM `config` WHERE `name` = 'menu'
+            """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    # Add contact table
+    version = 15
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `function_contact_entities` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `name` varchar(255) NOT NULL,
+                `added` datetime NOT NULL,
+                `deleted` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `name` (`name`),
+                KEY `deleted` (`deleted`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
+            """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
+
+    # Add contact account table
+    version = 16
+    if current < version:
+        data.execute(
+            """
+            CREATE TABLE `function_contact_accounts` (
+                `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                `contact_id` int(10) NOT NULL,
+                `type` varchar(255) NOT NULL,
+                `uid` text NOT NULL,
+                `added` datetime NOT NULL,
+                `deleted` datetime DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `contact_id` (`contact_id`),
+                KEY `type` (`type`),
+                KEY `deleted` (`deleted`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
             """
         )
 

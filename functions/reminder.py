@@ -1,5 +1,6 @@
 # Jarvis reminder function
 import data
+import data.model
 import function
 import kernel.action
 import kernel.job
@@ -79,27 +80,8 @@ class controller(function.function):
         return eventobj.set_params(params)
 
 
-class event(object):
-    _function = None
-    _kernel = None
+class event(data.model.model):
     _params = ('id', 'created', 'timestamp', 'title', 'sent', 'method')
-
-    id = None
-    created = None
-    timestamp = None
-    title = None
-    sent = None
-    method = None
-
-    def __init__(self, function, data = {}):
-        self._function = function
-        self._kernel = self._function.kernel
-        self.set_params(data)
-
-    def set_params(self, data):
-        for i in self._params:
-            if i in data:
-                setattr(self, i, data[i])
 
     def get_nice_time(self):
         return self._kernel.inClientTimezone(self.timestamp).strftime('%y/%m/%d %I:%M%P')

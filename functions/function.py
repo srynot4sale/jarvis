@@ -15,13 +15,7 @@ HTTPCODE_AUTHERR = 401
 
 class function(kernel.service.service):
     _datasource = None
-
-    def __init__(self, name):
-        self.name = name
-
-    def _get_module(self):
-        current = __import__('functions.%s' % self.name)
-        return getattr(current, self.name)
+    _dir = 'functions'
 
     def get_data_source(self):
         if not self._datasource:
@@ -51,14 +45,14 @@ class function(kernel.service.service):
 
         return actions
 
-    def get_job(self, type):
-        func = self._get_module()
-
-        job_type = 'job_%s' % type
-        if hasattr(func, job_type):
-            return getattr(func, job_type)
-
-        return None
+    def get_model_instance(self, model, id):
+        '''
+        Shortcut method for loading a model instance
+        '''
+        i = model(self, {'id': id})
+        if i.load():
+            return i
+        return False
 
 
 class response(object):

@@ -146,18 +146,19 @@ class kernel(object):
         return act().execute(data)
 
     def runJobs(self, type):
-        # Get all functions
-        funcs = self.get('function')
+        # Get all functions and interfaces
+        services = [self.get('function') , self.get('interface')]
 
-        for f in funcs:
-            func = funcs[f]
+        for service in services:
+            for s in service:
+                func = service[s]
 
-            # Look for jobs
-            job = func.get_job(type)
-            if job:
-                self.log('Run "%s" job for "%s"' % (type, f))
-                job.function = func
-                job().execute()
+                # Look for jobs
+                job = func.get_job(type)
+                if job:
+                    self.log('Run "%s" job for "%s"' % (type, s))
+                    job.function = func
+                    job().execute()
 
     def setConfig(self, key, value):
         self._config[key] = value

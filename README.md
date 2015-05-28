@@ -61,3 +61,14 @@ Database tables will be installed on first run.
 
     # Invote test suite with coverage calculations
     bin/nosetests --with-coverage --cover-package=clients,data,functions,interfaces,kernel
+
+
+## Twitter setup:
+
+Visit the Twitter developer page and create a new application:
+
+    https://dev.twitter.com/apps/new
+
+This will get you a consumer key and consumer secret. Performing the "oauth dance" gets you an oauth key and secret that authenticates yourself with Twitter.
+
+Add them all to your config (follow the examples in the example config).
