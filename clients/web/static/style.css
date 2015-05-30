@@ -360,11 +360,11 @@ body.mobile #output .response div.result {
 }
 
 #simplemodal-container .simplemodal-data {
-    padding: 0;
+    padding: 0 0 4em 0;
 }
 
 #simplemodal-container .simplemodal-data div {
-    padding: 1em;
+    padding: 1em 1em 0;
 }
 
 #simplemodal-container .simplemodal-data input,
@@ -373,7 +373,7 @@ body.mobile #output .response div.result {
 }
 
 #simplemodal-container .simplemodal-data div.input {
-    padding: 0.5em 1em 1em 0;
+    padding: 0.5em 1em 0em 0;
 }
 
 #simplemodal-container .simplemodal-data input {

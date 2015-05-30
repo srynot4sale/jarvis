@@ -323,6 +323,8 @@ function jarvis_dialog(action, options, params) {
     });
 
     dialog.modal();
+    $("#simplemodal-container").css('height', 'auto');
+    $.modal.update();
 }
 
 
