@@ -258,6 +258,10 @@ function jarvis_handle_result(result) {
         if (result['redirected']) {
             res.redirected = result['redirected'];
         }
+
+        if (result['context']) {
+            res.context = result['context'];
+        }
     }
 
     return res;
@@ -534,6 +538,12 @@ var api_call = function(action, options = {}) {
                     }
                 }
 
+                // List meta data
+                if (res.data[line].length > 3) {
+                    if (res.data[line][3]['context']) {
+                        li.data('context', res.data[line][3]['context']);
+                    }
+                }
                 list.append(li);
             }
 
@@ -577,6 +587,26 @@ var api_call = function(action, options = {}) {
             render.append(list);
 
             jarvis_update_title(res.action, 'complete');
+
+            // Jump to context if supplied
+            if (res.context) {
+                var ctx = res.context;
+
+                // Check if matching context found
+                $('div.response ol li').each(function() {
+                    var match = $(this);
+                    if (match.data('context') == ctx) {
+                        $('html, body').animate(
+                            {
+                                scrollTop: match.offset().top - $('div.response h3').outerHeight()
+                            },
+                            1000
+                        );
+
+                        match.effect("highlight", {}, 3000);
+                    }
+                });
+            }
         }
     }
 

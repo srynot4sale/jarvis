@@ -138,7 +138,11 @@ class action_add(kernel.action.action):
         l = self.function.add(description)
         item_time = self.function.kernel.inClientTimezone(l.entrytime).strftime('%y/%m/%d %I:%M%P')
 
-        return function.redirect(self, ('log', 'view'), 'Added log entry "%s" with timestamp "%s"' % (l.description, item_time))
+        return function.redirect(
+            self,
+            ('log', 'view'),
+            notification='Added log entry "%s" with timestamp "%s"' % (l.description, item_time)
+        )
 
 
 class action_remove(kernel.action.action):
@@ -156,7 +160,11 @@ class action_remove(kernel.action.action):
         if not l:
             return function.response(function.STATE_FAILURE, 'Log ID %d not found' % id)
 
-        return function.redirect(self, ('log', 'view'), 'Deleted log entry "%s" with timestamp "%s" (ID: %d)' % (l.description, l.entrytime, l.id))
+        return function.redirect(
+            self,
+            ('log', 'view'),
+            notification='Deleted log entry "%s" with timestamp "%s" (ID: %d)' % (l.description, l.entrytime, l.id)
+        )
 
 
 class action_delete(action_remove):

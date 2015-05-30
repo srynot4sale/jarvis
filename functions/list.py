@@ -387,7 +387,10 @@ class action(kernel.action.action):
                 item_actions['[%s]' % t['tag']] = 'list view %s' % t['tag']
 
         ## Add meta info
-        item_meta = {'id': item['id']}
+        item_meta = {
+            'id': item['id'],
+            'context': 'list item %s' % item['id']
+        }
 
         return [item['item'], None, item_actions, item_meta]
 
@@ -465,7 +468,12 @@ class action_add(kernel.action.action):
         for tag in tags[1:]:
             l.add_tag(itemid, tag)
 
-        return function.redirect(self, ('list', 'view', tags), 'Added "%s" with tags %s' % (newitem, tagstr))
+        return function.redirect(
+            self,
+            ('list', 'view', tags),
+            notification='Added "%s" with tags %s' % (newitem, tagstr),
+            context='list item %s' % itemid
+        )
 
     def undo(self, list):
         pass
@@ -509,7 +517,12 @@ class action_tag(kernel.action.action):
             message = 'Added tags %s to "%s"' % (tagstr, itemdata['item'])
         else:
             message = 'Added tag "%s" to "%s"' % (added[0], itemdata['item'])
-        return function.redirect(self, ('list', 'view', [added[0]]), message)
+        return function.redirect(
+            self,
+            ('list', 'view', [added[0]]),
+            notification=message,
+            context='list item %s' % itemid
+        )
 
     def undo(self, list):
         pass
@@ -543,7 +556,12 @@ class action_move(kernel.action.action):
         for newtag in newtags:
             l.add_tag(itemid, newtag)
 
-        return function.redirect(self, ('list', 'view', newtags), 'Moved "%s" from "%s" to %s' % (itemdata['item'], oldtag, newtagstr))
+        return function.redirect(
+            self,
+            ('list', 'view', newtags),
+            notification='Moved "%s" from "%s" to %s' % (itemdata['item'], oldtag, newtagstr),
+            context='list item %s' % itemid
+        )
 
     def undo(self, list):
         pass
@@ -575,7 +593,11 @@ class action_delete(kernel.action.action):
 
         resp_text = 'Deleting "%s" from %s' % (itemdata['item'], tags_as_readable_string([tag['tag'] for tag in tags]))
 
-        return function.redirect(self, ('list', 'view', [lstkey]), resp_text)
+        return function.redirect(
+            self,
+            ('list', 'view', [lstkey]),
+            notification=resp_text
+        )
 
     def undo(self, list):
         pass
@@ -614,7 +636,11 @@ class action_removetag(kernel.action.action):
             resp.data = data
             resp.write = 1
         else:
-            resp = function.redirect(self, ('list', 'view', [lstkey]), resp_text)
+            resp = function.redirect(
+                self,
+                ('list', 'view', [lstkey]),
+                notification=resp_text
+            )
 
         return resp
 
@@ -656,7 +682,12 @@ class action_update(kernel.action.action):
             for newtag in newtags:
                 l.add_tag(itemid, newtag)
 
-        return function.redirect(self, ('list', 'view', [tag]), 'Updated item "%s" to "%s"' % (itemid, item))
+        return function.redirect(
+            self,
+            ('list', 'view', [tag]),
+            notification='Updated item "%s" to "%s"' % (itemid, item),
+            context='list item %s' % itemid
+        )
 
 
 class action_edit(action_update):

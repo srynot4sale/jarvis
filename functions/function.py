@@ -63,6 +63,7 @@ class response(object):
     actions = None
     notification = None
     redirected = None
+    context = None
     write = 0
 
     def __init__(self, state, message = '', data = None, actions = None):
@@ -83,6 +84,8 @@ class response(object):
             basic['notification'] = self.notification
         if self.redirected:
             basic['redirected'] = self.redirected
+        if self.context:
+            basic['context'] = self.context
         return basic
 
 
@@ -102,16 +105,25 @@ class response(object):
         return HTTPCODE_PANIC
 
 
-def redirect(action, redirect, notification = None):
+def redirect(action, redirect, **kwargs):
     '''
     Redirect to another request, and return it's output along with a notification
+
+    Optional:
+        notification - Text for redirect notification
+        context - Context of action, normally used to skip to result
     '''
     response = action.function.kernel.call(redirect[0], redirect[1], redirect[2] if len(redirect) > 2 else [])
     response.redirected = '%s %s' % (redirect[0], redirect[1])
     if len(redirect) > 2:
         response.redirected += ' %s' % (' '.join(redirect[2]))
-    response.notification = notification
     response.write = 1
+
+    if 'notification' in kwargs:
+        response.notification = kwargs['notification']
+    if 'context' in kwargs:
+        response.context = kwargs['context']
+
     return response
 
 

@@ -105,7 +105,11 @@ class action_add(kernel.action.action):
 
         e = self.function.create(timestamp, title)
 
-        return function.redirect(self, ('reminder', 'list'), 'Added reminder event "%s" with timestamp "%s"' % (e.title, e.get_nice_time()))
+        return function.redirect(
+            self,
+            ('reminder', 'list'),
+            notification='Added reminder event "%s" with timestamp "%s"' % (e.title, e.get_nice_time())
+        )
 
 
 class action_list(kernel.action.action):

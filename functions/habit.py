@@ -77,7 +77,7 @@ class action_view(kernel.action.action):
                 item_actions = {'Uncomplete': 'habit update %s %s N' % (id, date)}
                 icon = u'\u2713'
 
-            item_meta       = {'id': id}
+            item_meta       = {'id': id, 'context': 'list item %s' % id}
             item_text       = u'%s %s' % (icon, item[0])
             data.append([item_text, None, item_actions, item_meta])
 
@@ -173,7 +173,12 @@ class action_update(kernel.action.action):
         else:
             redirect = ('habit', 'view', [date])
 
-        return function.redirect(self, redirect, 'Updated habit entry for %s' % date)
+        return function.redirect(
+            self,
+            redirect,
+            notification='Updated habit entry for %s' % date,
+            context='list item %s' % habitid
+        )
 
 
 class action_default(action_view):
