@@ -476,7 +476,7 @@ var api_call = function(action, options = {}) {
                 // List item actions (or options)
                 if (res.data[line].length > 2) {
                     var options = res.data[line][2];
-                    var metacontainer = false;
+                    var tagcontainer = false;
                     if (options) {
                         var olist = $('<ol class="options">');
                         olist.hover(undefined, function() {
@@ -491,17 +491,17 @@ var api_call = function(action, options = {}) {
                         });
 
                         for (var o in options) {
-                            // Check if option is metadata
-                            var ismetadata = o.match(/^\[(.*)\]$/);
+                            // Check if option is tag
+                            var istag = o.match(/^\[(.*)\]$/);
 
-                            if (ismetadata) {
+                            if (istag) {
                                 var optiontext = o.substr(1, o.length - 2);
                             } else {
                                 var optiontext = o;
                             }
                             var option = jarvis_build_internal_link({path: options[o], text: jarvis_escape(optiontext)});
 
-                            if (!ismetadata) {
+                            if (!istag) {
                                 var option = $('<li>').append(option);
                             }
 
@@ -514,15 +514,15 @@ var api_call = function(action, options = {}) {
                                 }
                             );
 
-                            if (ismetadata) {
-                                option.addClass('metadata');
+                            if (istag) {
+                                option.addClass('tagdata');
 
-                                if (!metacontainer) {
-                                    var metacontainer = $('<div>').addClass('metadata');
-                                    li.append(metacontainer);
+                                if (!tagcontainer) {
+                                    var tagcontainer = $('<div>').addClass('tagdata');
+                                    li.append(tagcontainer);
                                 }
 
-                                metacontainer.append(option);
+                                tagcontainer.append(option);
                             } else {
                                 olist.append(option);
                             }

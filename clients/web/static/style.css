@@ -228,13 +228,13 @@ body.notprod .response h3 {
     margin: 4px 2px;
 }
 
-.response div.metadata {
+.response div.tagdata {
     float: right;
     margin: 0;
     text-align: right;
 }
 
-.response .metadata a.action {
+.response .tagdata a.action {
     display: inline-block;
     font-size: 75%;
     margin-left: 5px;
