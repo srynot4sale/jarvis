@@ -367,7 +367,14 @@ body.mobile #output .response div.result {
     padding: 1em 1em 0;
 }
 
+#simplemodal-container .simplemodal-data span.toggle {
+    cursor: pointer;
+    padding-left: 0.5em;
+    display: inline-block;
+}
+
 #simplemodal-container .simplemodal-data input,
+#simplemodal-container .simplemodal-data textarea,
 #simplemodal-container .simplemodal-data button {
     padding: 0.5em;
 }
@@ -376,8 +383,13 @@ body.mobile #output .response div.result {
     padding: 0.5em 1em 0em 0;
 }
 
-#simplemodal-container .simplemodal-data input {
+#simplemodal-container .simplemodal-data input,
+#simplemodal-container .simplemodal-data textarea {
     width: 100%;
+}
+
+#simplemodal-container .simplemodal-data textarea {
+    height: 10em;
 }
 
 #simplemodal-container .simplemodal-data button {

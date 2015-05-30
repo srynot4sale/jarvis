@@ -292,7 +292,7 @@ function jarvis_dialog(action, options, params) {
 
         var nice = param.replace('%', '').replace('_', ' ');
         var element = $('<div></div>');
-        element.append($('<label for="dialog-'+param+'">'+nice+'</label>'));
+        element.append($('<label for="dialog-'+param+'">'+nice+'</label><span class="toggle" data-param="'+param+'">[+]</span>'));
         element.append($('<div class="input"><input type="text" id="dialog-'+param+'" name="'+param+'" value="'+value+'" /></div>'));
         form.append(element);
 
@@ -305,6 +305,17 @@ function jarvis_dialog(action, options, params) {
     form.append('<button class="submit" type="submit">Submit</buton>');
     dialog.append(form);
 
+    $('.toggle', dialog).click(function() {
+        var toggle = $(this);
+        var param = toggle.data('param');
+        var input = $('input', toggle.parent());
+        var textarea = $('<textarea id="dialog-'+param+'" name="'+param+'"></textarea>');
+        textarea.html(input.val());
+        input.replaceWith(textarea);
+        $("#simplemodal-container").css('height', 'auto');
+        $.modal.update();
+    });
+
     $('.submit', dialog).click(function() {
         for (var p in params) {
             var param = params[p];
@@ -312,7 +323,12 @@ function jarvis_dialog(action, options, params) {
             if (param.indexOf('{{') != -1) {
                 param = param.substr(0, param.indexOf('{{'));
             }
-            action = action.replace(original_param, $('input[name="'+param+'"]', dialog).val());
+            if ($('input[name="'+param+'"]', dialog).length) {
+                var value = $('input[name="'+param+'"]', dialog).val();
+            } else {
+                var value = $('textarea[name="'+param+'"]', dialog).val();
+            }
+            action = action.replace(original_param, value);
         }
 
         $.modal.close();
@@ -321,6 +337,25 @@ function jarvis_dialog(action, options, params) {
         options.escaped = true;
         api_call(action, options);
     });
+
+    // Check for multiline values and if found, toggle textarea
+    for (var p in params) {
+        var param = params[p];
+        if (param.indexOf('\n') != -1) {
+            value = param.substr(param.indexOf('{{'));
+            value = value.substr(2, value.length - 4);
+            param = param.substr(0, param.indexOf('{{'));
+
+            $('.toggle', dialog).each(function() {
+                if ($(this).data('param') == param) {
+                    $(this).trigger('click');
+
+                    // Reset value as input strips out \n
+                    $('textarea', $(this).parent()).html(value);
+                }
+            });
+        }
+    }
 
     dialog.modal();
     $("#simplemodal-container").css('height', 'auto');
@@ -408,7 +443,7 @@ var api_call = function(action, options = {}) {
     /**
      * Check if this a dynamic call, e.g. needs input (look for a %xxx)
      */
-    var dynamic = /\%[A-Za-z0-9_]+(\{\{.*\}\})?/g;
+    var dynamic = /\%[A-Za-z0-9_]+(\{\{(.|[\r\n])*\}\})?/g;
     var dvars = url.match(dynamic);
     if (dvars && !options.escaped) {
         jarvis_dialog(action, options, dvars);
@@ -645,5 +680,6 @@ function jarvis_escape(text) {
         });
     }
 
-    return escapeHtml(text);
+    text = escapeHtml(text);
+    return text.replace(/\n/g, "<br />");
 }
