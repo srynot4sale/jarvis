@@ -367,17 +367,24 @@ body.mobile #output .response div.result {
     padding: 1em;
 }
 
-#simplemodal-container .simplemodal-data label {
-    padding-right: 1em;
-}
-
 #simplemodal-container .simplemodal-data input,
 #simplemodal-container .simplemodal-data button {
     padding: 0.5em;
 }
 
+#simplemodal-container .simplemodal-data div.input {
+    padding: 0.5em 1em 1em 0;
+}
+
+#simplemodal-container .simplemodal-data input {
+    width: 100%;
+}
+
 #simplemodal-container .simplemodal-data button {
     margin-left: 1em;
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
 }
 
 #simplemodal-container a {

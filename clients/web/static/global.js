@@ -293,7 +293,7 @@ function jarvis_dialog(action, options, params) {
         var nice = param.replace('%', '').replace('_', ' ');
         var element = $('<div></div>');
         element.append($('<label for="dialog-'+param+'">'+nice+'</label>'));
-        element.append($('<input type="text" id="dialog-'+param+'" name="'+param+'" value="'+value+'" />'));
+        element.append($('<div class="input"><input type="text" id="dialog-'+param+'" name="'+param+'" value="'+value+'" /></div>'));
         form.append(element);
 
         // Remove element from dialog title
@@ -302,10 +302,10 @@ function jarvis_dialog(action, options, params) {
 
     form.prepend($('<h2>'+title+'</h2>'));
 
-    form.append('<input class="bob" type="submit" value="Submit" />');
+    form.append('<button class="submit" type="submit">Submit</buton>');
     dialog.append(form);
 
-    $('.bob', dialog).click(function() {
+    $('.submit', dialog).click(function() {
         for (var p in params) {
             var param = params[p];
             var original_param = param;
