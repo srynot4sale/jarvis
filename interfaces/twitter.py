@@ -39,8 +39,7 @@ class job_daily(kernel.job.job):
     Daily job for syncing friend list to contacts
     """
     def execute(self):
-        i = self.function.kernel.get('interface', 'twitter')
-        stream = i.get_stream()
+        stream = self.function.get_stream()
 
         next_cursor = -1
         while 1:
@@ -64,6 +63,3 @@ class job_daily(kernel.job.job):
             if not tf['next_cursor']:
                 break
             next_cursor = tf['next_cursor']
-
-
-# Hourly job to grab new tweets
