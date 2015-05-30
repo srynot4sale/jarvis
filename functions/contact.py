@@ -231,7 +231,7 @@ class action_view(kernel.action.action):
                 '%s: %s' % (a.type, a.uid),
                 None,
                 {
-                    'Delete': 'contact accountdelete %s %s' % (a.contact_id, a.id) 
+                    'Delete': 'contact accountdelete %s %s' % (a.contact_id, a.id)
                 }
             ])
 
