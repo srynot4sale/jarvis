@@ -100,9 +100,14 @@ $(function() {
     /**
      * Check if user is on a small screen
      */
-    if ($(document).width() < 600) {
-        $('body').addClass('mobile');
-    }
+    $(window).on('resize', function() {
+        if ($(window).width() < 600) {
+            $('body').addClass('mobile');
+        } else {
+            $('body').removeClass('mobile');
+        }
+    });
+    $(window).trigger('resize');
 
     /**
      * Setup page markup
