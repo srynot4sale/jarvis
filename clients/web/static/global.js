@@ -572,13 +572,15 @@ var api_call = function(action, options = {}) {
             }
 
             if (res.notification) {
-                var notification = $('<div class="notification">').html(jarvis_escape(res.notification));
-                notification.on('click', function() {
-                    $('#output .response').removeClass('notice');
-                    $(this).remove();
+                PNotify.desktop.permission()
+                var message = new PNotify({
+                    desktop: {
+                        desktop: true
+                    },
+                    type: 'success',
+                    title: 'Jarvis',
+                    text: jarvis_escape(res.notification)
                 });
-                render.append(notification);
-                render.addClass('notice');
             }
 
             var message = $('<div class="message">').html(jarvis_escape(res.message));
