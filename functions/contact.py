@@ -182,7 +182,7 @@ class action_list(kernel.action.action):
         contacts = self.function.list()
         data = []
         for c in contacts:
-            data.append([c.name, 'contact view %s' % c.id])
+            data.append([c.name, 'contact view %s' % c.id, None, {'context': 'contact view %s' % c.id}])
 
         actions = [
             ('Add new...', 'contact add %Full_name'),
@@ -208,7 +208,12 @@ class action_add(kernel.action.action):
         c = Contact(self.function, {'name': name})
         c.create()
 
-        return function.redirect(self, ('contact', 'list', ['*%s' % c.id]), 'Added contact "%s"' % c.name)
+        return function.redirect(
+            self,
+            ('contact', 'list'),
+            notification='Added contact "%s"' % c.name,
+            context='contact view %s' % c.id
+        )
 
 
 class action_view(kernel.action.action):
@@ -231,8 +236,9 @@ class action_view(kernel.action.action):
                 '%s: %s' % (a.type, a.uid),
                 None,
                 {
-                    'Delete': 'contact accountdelete %s %s' % (a.contact_id, a.id) 
-                }
+                    'Delete': 'contact accountdelete %s %s' % (a.contact_id, a.id)
+                },
+                { 'context': 'contact account %s' % a.id }
             ])
 
         actions = [
@@ -264,9 +270,9 @@ class action_edit(kernel.action.action):
         c.update()
 
         return function.redirect(
-                self,
-                ('contact', 'view', [contactid]),
-                'Contact "%s" updated to "%s"' % (oldname, c.name)
+            self,
+            ('contact', 'view', [contactid]),
+            notification='Contact "%s" updated to "%s"' % (oldname, c.name)
         )
 
 
@@ -286,9 +292,9 @@ class action_delete(kernel.action.action):
         c.delete()
 
         return function.redirect(
-                self,
-                ('contact', 'list'),
-                'Deleted contact "%s"' % (c.name)
+            self,
+            ('contact', 'list'),
+            notification='Deleted contact "%s"' % (c.name)
         )
 
 
@@ -318,9 +324,10 @@ class action_accountadd(kernel.action.action):
         a.create()
 
         return function.redirect(
-                self,
-                ('contact', 'view', [contactid]),
-                'Added "%s" account to contact "%s"' % (acctype, c.name)
+            self,
+            ('contact', 'view', [contactid]),
+            notification='Added "%s" account to contact "%s"' % (acctype, c.name),
+            context='contact account %s' % a.id
         )
 
 
@@ -345,9 +352,9 @@ class action_accountdelete(kernel.action.action):
         a.delete()
 
         return function.redirect(
-                self,
-                ('contact', 'view', [contactid]),
-                'Deleted "%s" account from contact "%s"' % (a.type, c.name)
+            self,
+            ('contact', 'view', [contactid]),
+            notification='Deleted "%s" account from contact "%s"' % (a.type, c.name)
         )
 
 

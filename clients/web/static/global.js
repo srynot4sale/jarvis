@@ -100,9 +100,14 @@ $(function() {
     /**
      * Check if user is on a small screen
      */
-    if ($(document).width() < 600) {
-        $('body').addClass('mobile');
-    }
+    $(window).on('resize', function() {
+        if ($(window).width() < 600) {
+            $('body').addClass('mobile');
+        } else {
+            $('body').removeClass('mobile');
+        }
+    });
+    $(window).trigger('resize');
 
     /**
      * Setup page markup
@@ -253,6 +258,10 @@ function jarvis_handle_result(result) {
         if (result['redirected']) {
             res.redirected = result['redirected'];
         }
+
+        if (result['context']) {
+            res.context = result['context'];
+        }
     }
 
     return res;
@@ -283,8 +292,8 @@ function jarvis_dialog(action, options, params) {
 
         var nice = param.replace('%', '').replace('_', ' ');
         var element = $('<div></div>');
-        element.append($('<label for="dialog-'+param+'">'+nice+'</label>'));
-        element.append($('<input type="text" id="dialog-'+param+'" name="'+param+'" value="'+value+'" />'));
+        element.append($('<label for="dialog-'+param+'">'+nice+'</label><span class="toggle" data-param="'+param+'">[+]</span>'));
+        element.append($('<div class="input"><input type="text" id="dialog-'+param+'" name="'+param+'" value="'+value+'" /></div>'));
         form.append(element);
 
         // Remove element from dialog title
@@ -293,17 +302,33 @@ function jarvis_dialog(action, options, params) {
 
     form.prepend($('<h2>'+title+'</h2>'));
 
-    form.append('<input class="bob" type="submit" value="Submit" />');
+    form.append('<button class="submit" type="submit">Submit</buton>');
     dialog.append(form);
 
-    $('.bob', dialog).click(function() {
+    $('.toggle', dialog).click(function() {
+        var toggle = $(this);
+        var param = toggle.data('param');
+        var input = $('input', toggle.parent());
+        var textarea = $('<textarea id="dialog-'+param+'" name="'+param+'"></textarea>');
+        textarea.html(input.val());
+        input.replaceWith(textarea);
+        $("#simplemodal-container").css('height', 'auto');
+        $.modal.update();
+    });
+
+    $('.submit', dialog).click(function() {
         for (var p in params) {
             var param = params[p];
             var original_param = param;
             if (param.indexOf('{{') != -1) {
                 param = param.substr(0, param.indexOf('{{'));
             }
-            action = action.replace(original_param, $('input[name="'+param+'"]', dialog).val());
+            if ($('input[name="'+param+'"]', dialog).length) {
+                var value = $('input[name="'+param+'"]', dialog).val();
+            } else {
+                var value = $('textarea[name="'+param+'"]', dialog).val();
+            }
+            action = action.replace(original_param, value);
         }
 
         $.modal.close();
@@ -313,7 +338,28 @@ function jarvis_dialog(action, options, params) {
         api_call(action, options);
     });
 
+    // Check for multiline values and if found, toggle textarea
+    for (var p in params) {
+        var param = params[p];
+        if (param.indexOf('\n') != -1) {
+            value = param.substr(param.indexOf('{{'));
+            value = value.substr(2, value.length - 4);
+            param = param.substr(0, param.indexOf('{{'));
+
+            $('.toggle', dialog).each(function() {
+                if ($(this).data('param') == param) {
+                    $(this).trigger('click');
+
+                    // Reset value as input strips out \n
+                    $('textarea', $(this).parent()).html(value);
+                }
+            });
+        }
+    }
+
     dialog.modal();
+    $("#simplemodal-container").css('height', 'auto');
+    $.modal.update();
 }
 
 
@@ -397,7 +443,7 @@ var api_call = function(action, options = {}) {
     /**
      * Check if this a dynamic call, e.g. needs input (look for a %xxx)
      */
-    var dynamic = /\%[A-Za-z0-9_]+(\{\{.*\}\})?/g;
+    var dynamic = /\%[A-Za-z0-9_]+(\{\{(.|[\r\n])*\}\})?/g;
     var dvars = url.match(dynamic);
     if (dvars && !options.escaped) {
         jarvis_dialog(action, options, dvars);
@@ -471,7 +517,7 @@ var api_call = function(action, options = {}) {
                 // List item actions (or options)
                 if (res.data[line].length > 2) {
                     var options = res.data[line][2];
-                    var metacontainer = false;
+                    var tagcontainer = false;
                     if (options) {
                         var olist = $('<ol class="options">');
                         olist.hover(undefined, function() {
@@ -486,17 +532,17 @@ var api_call = function(action, options = {}) {
                         });
 
                         for (var o in options) {
-                            // Check if option is metadata
-                            var ismetadata = o.match(/^\[(.*)\]$/);
+                            // Check if option is tag
+                            var istag = o.match(/^\[(.*)\]$/);
 
-                            if (ismetadata) {
+                            if (istag) {
                                 var optiontext = o.substr(1, o.length - 2);
                             } else {
                                 var optiontext = o;
                             }
                             var option = jarvis_build_internal_link({path: options[o], text: jarvis_escape(optiontext)});
 
-                            if (!ismetadata) {
+                            if (!istag) {
                                 var option = $('<li>').append(option);
                             }
 
@@ -509,15 +555,15 @@ var api_call = function(action, options = {}) {
                                 }
                             );
 
-                            if (ismetadata) {
-                                option.addClass('metadata');
+                            if (istag) {
+                                option.addClass('tagdata');
 
-                                if (!metacontainer) {
-                                    var metacontainer = $('<div>').addClass('metadata');
-                                    li.append(metacontainer);
+                                if (!tagcontainer) {
+                                    var tagcontainer = $('<div>').addClass('tagdata');
+                                    li.append(tagcontainer);
                                 }
 
-                                metacontainer.append(option);
+                                tagcontainer.append(option);
                             } else {
                                 olist.append(option);
                             }
@@ -529,6 +575,12 @@ var api_call = function(action, options = {}) {
                     }
                 }
 
+                // List meta data
+                if (res.data[line].length > 3) {
+                    if (res.data[line][3]['context']) {
+                        li.data('context', res.data[line][3]['context']);
+                    }
+                }
                 list.append(li);
             }
 
@@ -557,13 +609,15 @@ var api_call = function(action, options = {}) {
             }
 
             if (res.notification) {
-                var notification = $('<div class="notification">').html(jarvis_escape(res.notification));
-                notification.on('click', function() {
-                    $('#output .response').removeClass('notice');
-                    $(this).remove();
+                PNotify.desktop.permission()
+                var message = new PNotify({
+                    desktop: {
+                        desktop: true
+                    },
+                    type: 'success',
+                    title: 'Jarvis',
+                    text: jarvis_escape(res.notification)
                 });
-                render.append(notification);
-                render.addClass('notice');
             }
 
             var message = $('<div class="message">').html(jarvis_escape(res.message));
@@ -572,6 +626,26 @@ var api_call = function(action, options = {}) {
             render.append(list);
 
             jarvis_update_title(res.action, 'complete');
+
+            // Jump to context if supplied
+            if (res.context) {
+                var ctx = res.context;
+
+                // Check if matching context found
+                $('div.response ol li').each(function() {
+                    var match = $(this);
+                    if (match.data('context') == ctx) {
+                        $('html, body').animate(
+                            {
+                                scrollTop: match.offset().top - $('div.response h3').outerHeight()
+                            },
+                            1000
+                        );
+
+                        match.effect("highlight", {}, 3000);
+                    }
+                });
+            }
         }
     }
 
@@ -606,5 +680,6 @@ function jarvis_escape(text) {
         });
     }
 
-    return escapeHtml(text);
+    text = escapeHtml(text);
+    return text.replace(/\n/g, "<br />");
 }
