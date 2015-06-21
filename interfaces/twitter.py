@@ -39,6 +39,9 @@ class job_daily(kernel.job.job):
     Daily job for syncing friend list to contacts
     """
     def execute(self):
+        if not self.function.enabled:
+            return
+
         stream = self.function.get_stream()
 
         next_cursor = -1
