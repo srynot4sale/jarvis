@@ -177,7 +177,6 @@ body.notprod .response h3 {
     overflow: visible;
     padding: 10px 10px 10px 15px;
     margin: 1px 0 0;
-    border-bottom: 1px solid #e0d4cc;
 }
 
 .response > ol > li:last-child {
@@ -192,7 +191,6 @@ body.notprod .response h3 {
 .response > ol > li.hoveraction,
 .response > ol > li.expands:hover {
     border-left: 5px solid #a9b3bf;
-    border-bottom: 1px solid #a9b3bf;
     padding-left: 10px;
 }
 
