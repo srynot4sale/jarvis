@@ -616,7 +616,7 @@ var api_call = function(action, options = {}) {
                     },
                     type: 'success',
                     title: 'Jarvis',
-                    text: jarvis_escape(res.notification)
+                    text: res.notification
                 });
             }
 
