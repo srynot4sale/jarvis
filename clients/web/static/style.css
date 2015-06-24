@@ -296,6 +296,10 @@ div#login-container form input {
     margin-left: 20px;
 }
 
+div.ui-pnotify {
+    background-color: #fff;
+}
+
 /**
  * Mobile specific
  */

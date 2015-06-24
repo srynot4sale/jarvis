@@ -121,6 +121,11 @@ $(function() {
                    .append(output);
 
     /**
+     * Setup notifications stack (for Pnotify)
+     */
+    window.jarvis_notification_stack = {"dir1": "down", "dir2": "left", "context": $('#output')};
+
+    /**
      * Setup input toggle
      */
     inputtoggle.click(function() {
@@ -616,7 +621,8 @@ var api_call = function(action, options = {}) {
                     },
                     type: 'success',
                     title: 'Jarvis',
-                    text: res.notification
+                    text: res.notification,
+                    stack: jarvis_notification_stack
                 });
             }
 
