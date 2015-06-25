@@ -676,12 +676,11 @@ function jarvis_escape(text) {
         '"': '&quot;',
         "'": '&#x27;',
         '`': '&#x60;',
-        '/': '&#x2F;',
         '%': '&#37;'
     };
 
     function escapeHtml(string) {
-        return String(string).replace(/[&<>"'`%\/]/g, function (s) {
+        return String(string).replace(/[&<>"'`%]/g, function (s) {
             return escapeMap[s];
         });
     }
