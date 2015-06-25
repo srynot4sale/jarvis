@@ -371,7 +371,10 @@ function jarvis_dialog(action, options, params) {
 /**
  * Update title bar
  */
-function jarvis_update_title(title, status = '') {
+function jarvis_update_title(title, status) {
+    // Default status value is ''
+    status = typeof status !== 'undefined' ? status : '';
+
     var header = $('div.response h3')
     header.removeClass('apiinput-enabled');
 
@@ -439,7 +442,10 @@ function jarvis_update_title(title, status = '') {
 /**
  * Make an API call
  */
-var api_call = function(action, options = {}) {
+var api_call = function(action, options) {
+    // Default options value is {}
+    options = typeof options !== 'undefined' ? options : {};
+
     console.log('api_call('+action+')');
 
     // Replace the first two spaces
