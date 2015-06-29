@@ -43,10 +43,10 @@ class http_testcase(test.jarvis_testcase):
 
         nofunc = self.http_request('notreal connect')
         assert nofunc['state'] == functions.function.STATE_FAILURE
-        assert nofunc['message'] == 'ERROR: Function does not exist'
+        assert nofunc['message'] == 'ERROR: Function "notreal" does not exist'
         nofunc = None
 
         noact = self.http_request('server notreal')
         assert noact['state'] == functions.function.STATE_FAILURE
-        assert noact['message'] == 'ERROR: Action does not exist'
+        assert noact['message'] == 'ERROR: Action "notreal" does not exist'
         noact = None
