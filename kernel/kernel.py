@@ -117,13 +117,15 @@ class kernel(object):
         func = self.get('function', function)
 
         if func is None:
-            raise JarvisException('Function does not exist', function)
+            a = ['View global help', 'help view']
+            raise JarvisException('Function "{0}" does not exist'.format(function), a)
 
         # Get action
         act = func.get_action(action)
 
         if act is None:
-            raise JarvisException('Action does not exist', action)
+            a = ['View {0} help'.format(function), '{0} help'.format(function)]
+            raise JarvisException('Action "{0}" does not exist'.format(action), a)
 
         act.function = func
 
