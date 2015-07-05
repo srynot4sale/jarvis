@@ -139,11 +139,20 @@ class job_minute(kernel.job.job):
             timestamp = server_timezone.localize(e.timestamp)
             if timestamp <= server_time:
 
-                # Send email
-                self.function.kernel.get('interface', 'email').send_to_self(
-                    'Reminder - %s' % e.title,
-                    '%s\n\nSent by Jarvis' % (e.get_nice_time())
-                )
+                # Prefer GCM, then email
+                if self.function.kernel.get('interface', 'gcm').is_available():
+                    self.function.kernel.get('interface', 'gcm').send(
+                        'Reminder from Jarvis',
+                        e.title,
+                        'reminder list'
+                    )
+
+                else:
+                    # Send email
+                    self.function.kernel.get('interface', 'email').send_to_self(
+                        'Reminder - %s' % e.title,
+                        '%s\n\nSent by Jarvis' % (e.get_nice_time())
+                    )
 
                 # Mark as sent
                 e.update({
