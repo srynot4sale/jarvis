@@ -5,6 +5,10 @@ import tornado.web
 class interface(kernel.service.service):
     _dir = 'interfaces'
 
+    def is_available(self):
+        """Overwrite this in your child class"""
+        return False
+
 
 class handler(tornado.web.RequestHandler):
 

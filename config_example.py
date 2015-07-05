@@ -52,3 +52,8 @@ config['email_from_name']       = 'Jarvis'
 #config['twitter_consumer_secret'] = ''
 #config['twitter_oauth_token']   = ''
 #config['twitter_oauth_secret']  = ''
+
+# GCM (Google Cloud Messaging) authentication
+#config['gcm']                   = True
+#config['gcm_api_key']           = ''
+#config['gcm_client_key']        = ''
