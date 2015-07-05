@@ -184,7 +184,8 @@ class kernel(object):
         '''
         client_timezone = pytz.timezone(self.getConfig('timezone'))
         server_timezone = tzlocal.get_localzone()
-        dt = server_timezone.localize(dt)
+        if dt.tzinfo is None:
+            dt = server_timezone.localize(dt)
         return dt.astimezone(client_timezone)
 
     def inServerTimezone(self, dt):
@@ -194,7 +195,8 @@ class kernel(object):
         '''
         client_timezone = pytz.timezone(self.getConfig('timezone'))
         server_timezone = tzlocal.get_localzone()
-        dt = client_timezone.localize(dt)
+        if dt.tzinfo is None:
+            dt = client_timezone.localize(dt)
         return dt.astimezone(server_timezone)
 
     def isTestMode(self):

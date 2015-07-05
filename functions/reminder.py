@@ -170,4 +170,5 @@ class job_minute(kernel.job.job):
                 # DIRTY HACK FOR REPEATS
                 if repeats == 'daily':
                     repeat = timestamp + datetime.timedelta(days=1)
+                    repeat = self.function.kernel.inClientTimezone(repeat)
                     self.function.kernel.call('reminder', 'add', [repeat.strftime('%Y-%m-%d'), repeat.strftime('%H:%M:%S'), title])
