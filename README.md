@@ -56,6 +56,9 @@ Database tables will be installed on first run.
 
 ## Testing:
 
+    # Install testing requirements
+    bin/pip install -r test-requirements.txt
+
     # Invoke test suite
     bin/nosetests
 
