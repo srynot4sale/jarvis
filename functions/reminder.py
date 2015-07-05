@@ -139,6 +139,13 @@ class job_minute(kernel.job.job):
             timestamp = server_timezone.localize(e.timestamp)
             if timestamp <= server_time:
 
+                # DIRTY HACK FOR REPEATS
+                repeats = None
+                if e.title.endswith('[DAILY]'):
+                    repeats = 'daily'
+                    title = e.title
+                    e.title = e.title[0:-7]
+
                 # Prefer GCM, then email
                 if self.function.kernel.get('interface', 'gcm').is_available():
                     self.function.kernel.get('interface', 'gcm').send(
@@ -159,3 +166,8 @@ class job_minute(kernel.job.job):
                     'sent': data.make_db_timestamp(server_time),
                     'method': 'email'
                 })
+
+                # DIRTY HACK FOR REPEATS
+                if repeats == 'daily':
+                    repeat = timestamp + datetime.timedelta(days=1)
+                    self.function.kernel.call('reminder', 'add', [repeat.strftime('%Y-%m-%d'), repeat.strftime('%H:%M:%S'), title])
