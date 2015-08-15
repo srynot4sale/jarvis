@@ -66,18 +66,18 @@ class action_view(kernel.action.action):
 
         complete = self.function.states(date)
         for item in h.data:
-            id = str(item[3]['id'])
+            item_id = str(item[3]['id'])
             # Check if complete
-            c = complete[id]['status'] if id in complete.keys() else 'N'
+            c = complete[item_id]['status'] if iitem_id in complete.keys() else 'N'
 
             if c == 'N':
-                item_actions = {'Completed!': 'habit update %s %s Y' % (id, date)}
+                item_actions = {'Completed!': 'habit update %s %s Y' % (item_id, date)}
                 icon = u'\u2717'
             else:
-                item_actions = {'Uncomplete': 'habit update %s %s N' % (id, date)}
+                item_actions = {'Uncomplete': 'habit update %s %s N' % (item_id, date)}
                 icon = u'\u2713'
 
-            item_meta       = {'id': id, 'context': 'list item %s' % id}
+            item_meta       = {'id': item_id, 'context': 'list item %s' % item_id}
             item_text       = u'%s %s' % (icon, item[0])
             data.append([item_text, None, item_actions, item_meta])
 
@@ -120,19 +120,19 @@ class action_overview(kernel.action.action):
             complete[d] = self.function.states(d)
 
         for item in h.data:
-            id = str(item[3]['id'])
+            item_id = str(item[3]['id'])
 
             item_text = u''
 
             # Check if complete for each date
             for d in dates:
                 comp = complete[d]
-                c = comp[id]['status'] if id in comp.keys() else 'N'
+                c = comp[item_id]['status'] if item_id in comp.keys() else 'N'
 
                 if c == 'N':
-                    icon = u'\u2717'
+                    icon = u'\u2717' # unicode cross
                 else:
-                    icon = u'\u2713'
+                    icon = u'\u2713' # unicode tick
 
                 item_text += icon
 
