@@ -184,4 +184,4 @@ class action_menu(kernel.action.action):
 
         # Return menu items
         message = 'Menu'
-        return function.response(function.STATE_SUCCESS, message, menu)
+        return function.response(function.STATE_SUCCESS, message, menu, menudata.actions)
