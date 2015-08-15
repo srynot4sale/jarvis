@@ -936,3 +936,33 @@ class list_testcase(test.jarvis_testcase):
             assert updateitem['state'] == functions.function.STATE_SUCCESS
 
             assert updateitem['data'][0][0] == test
+
+    def list_search_test(self):
+        '''
+        Test searching for list items
+
+        !Tests: list_add
+        !Tests: list_search
+        '''
+        tag = 'UNITTESTLIST'
+        listitem = 'test list item'
+        searchterm = 'test'
+
+        # search guaranteeing no responses
+        search = self.http_request('list search %s' % searchterm)
+        assert search['state'] == functions.function.STATE_SUCCESS
+        assert len(search['data']) == 0
+        search = None
+
+        # add new item
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
+        assert newitem['state'] == functions.function.STATE_SUCCESS
+        assert newitem['write'] == True
+        newitem = None
+
+        # search for new item
+        search = self.http_request('list search %s' % searchterm)
+        assert search['state'] == functions.function.STATE_SUCCESS
+        assert len(search['data']) == 1
+        assert search['data'][0][0] == listitem
+        search = None
