@@ -8,7 +8,7 @@ It's clients include:
 
 - HTTP: built-in, access at configured baseurl in config
 - Android: see https://github.com/srynot4sale/jarvis-android
-- Firefox social bookmarks: built-in, enabled via your Jarvis baseurl/firefox/
+- Firefox extension: see https://github.com/srynot4sale/jarvis-firefox
 
 
 ## Dependencies:
