@@ -454,7 +454,7 @@ var api_call = function(action, options) {
     /**
      * Check if this a dynamic call, e.g. needs input (look for a %xxx)
      */
-    var dynamic = /\%[A-Za-z0-9_]+(\{\{(.|[\r\n])*\}\})?/g;
+    var dynamic = /\%[A-Za-z0-9_]+(\{\{(.|[\r\n])*?\}\})?/g;
     var dvars = url.match(dynamic);
     if (dvars && !options.escaped) {
         jarvis_dialog(action, options, dvars);

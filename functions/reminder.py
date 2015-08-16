@@ -103,6 +103,13 @@ class action_add(kernel.action.action):
         if title.strip() == '':
             return function.response(function.STATE_FAILURE, 'No title supplied')
 
+        # Check timestamp is valid
+        try:
+            raw = datetime.datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            to_fix = [['reminder add %s %s' % (timestamp, title), 'reminder add %%timestamp{{%s}} %%title{{%s}}' % (timestamp, title)]]
+            return function.response(function.STATE_FAILURE, 'Invalid format for timestamp', to_fix)
+
         e = self.function.create(timestamp, title)
 
         return function.redirect(

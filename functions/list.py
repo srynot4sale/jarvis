@@ -349,11 +349,14 @@ class action(kernel.action.action):
     action fragments
     '''
     def _no_items_in_list(self, tags):
-        tagstr = tags_as_readable_string(tags)
         actions = [
-            ["Add...", "list add %s %%List_item" % tags_as_string(tags)],
             ["List all lists", 'list list']
         ]
+        if len(tags) == 0:
+            return function.response(function.STATE_SUCCESS, 'No items found', [], actions)
+
+        tagstr = tags_as_readable_string(tags)
+        actions = [["Add...", "list add %s %%List_item" % tags_as_string(tags)]] + actions
         return function.response(function.STATE_SUCCESS, 'No items in list %s' % tagstr, [], actions)
 
     def _display_list_item(self, item, listtags=None):
@@ -772,7 +775,7 @@ class action_search(action):
 
         items = l.search(terms)
         if not len(items):
-            return self._no_items_in_list(tags)
+            return self._no_items_in_list([])
 
         data = []
         for item in items:

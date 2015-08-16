@@ -3,7 +3,7 @@ import data
 import json
 
 # Database version this version of the code expects you to have
-database_version = 16
+database_version = 17
 
 
 def check(data):
@@ -404,5 +404,28 @@ def run(data):
 
     data.kernel.setConfig('version', version)
 
+    # Switch function_list_items.item to a TEXT field
+    version = 17
+    if current < version:
+        data.execute(
+            """
+            DROP INDEX `item` ON `function_list_items`
+            """
+        )
+        data.execute(
+            """
+            ALTER TABLE `function_list_items`
+            MODIFY COLUMN `item` text NOT NULL
+            """
+        )
+        data.execute(
+            """
+            ALTER TABLE `function_list_items` ADD INDEX `item`(`item`)
+            """
+        )
+
+        set_version(data, version)
+
+    data.kernel.setConfig('version', version)
 
 # Remember to update the database_version variable at the top of this file
