@@ -966,3 +966,26 @@ class list_testcase(test.jarvis_testcase):
         assert len(search['data']) == 1
         assert search['data'][0][0] == listitem
         search = None
+
+    def list_longitem_test(self):
+        '''
+        Test long list items
+
+        !Tests: list_add
+        !Tests: list_view
+        '''
+        tag = 'UNITTESTLIST'
+        listitem = 't'*1000
+
+        # add new item
+        newitem = self.http_request('list add #%s %s' % (tag, listitem))
+        assert newitem['state'] == functions.function.STATE_SUCCESS
+        assert newitem['write'] == True
+        newitem = None
+
+        # view new item
+        view = self.http_request('list view %s' % tag)
+        assert view['state'] == functions.function.STATE_SUCCESS
+        assert len(view['data']) == 1
+        assert view['data'][0][0] == listitem
+        view = None
