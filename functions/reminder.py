@@ -91,7 +91,8 @@ class event(data.model.model):
 
     def update(self, params):
         self._function.update(self, params)
-        self.timestamp = datetime.datetime.strptime(self.timestamp, '%Y-%m-%d %H:%M:%S')
+        if type(self.timestamp) == str:
+            self.timestamp = datetime.datetime.strptime(self.timestamp, '%Y-%m-%d %H:%M:%S')
 
 
 class action_add(kernel.action.action):
