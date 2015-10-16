@@ -65,6 +65,9 @@ class controller(function.function):
         param_sql_cols = []
         for p in params.keys():
             param_sql_cols.append('`%s` = %%s' % p)
+            if p == 'timestamp':
+                raw = datetime.datetime.strptime(params[p], '%Y-%m-%d %H:%M:%S')
+                params[p] = self.kernel.inServerTimezone(raw).strftime('%Y-%m-%d %H:%M:%S')
 
         sql = """
             UPDATE
