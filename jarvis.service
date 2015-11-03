@@ -1,0 +1,12 @@
+[Unit]
+Description=Jarvis container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/docker run --name=jarvis --add-host=docker:$HOSTIP -p 4188:4188 --rm jarvis-container
+ExecStop=/usr/bin/docker stop -t 5 jarvis
+
+[Install]
+WantedBy=local.target

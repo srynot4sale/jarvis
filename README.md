@@ -10,6 +10,11 @@ It's clients include:
 - Android: see https://github.com/srynot4sale/jarvis-android
 - Firefox extension: see https://github.com/srynot4sale/jarvis-firefox
 
+## Docker
+
+Jarvis can be run inside docker. It uses a mysql installation outside of the docker. See included
+files (Dockerfile, jarvis.service)
+
 
 ## Dependencies:
 
