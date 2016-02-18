@@ -68,7 +68,7 @@ class action_view(kernel.action.action):
         for item in h.data:
             item_id = str(item[3]['id'])
             # Check if complete
-            c = complete[item_id]['status'] if iitem_id in complete.keys() else 'N'
+            c = complete[item_id]['status'] if item_id in complete.keys() else 'N'
 
             if c == 'N':
                 item_actions = {'Completed!': 'habit update %s %s Y' % (item_id, date)}
