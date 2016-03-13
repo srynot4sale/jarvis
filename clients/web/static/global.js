@@ -509,7 +509,7 @@ var api_call = function(action, options) {
                 item = jarvis_escape(item);
 
                 // Make links clickable
-                var html = item.replace(/(https?:\/\/[^ ]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>");
+                var html = item.replace(/(https?:\/\/[^<\s]+)/g, "<a href=\"$1\" target=\"_blank\">$1</a>");
 
                 li.html(html);
 
