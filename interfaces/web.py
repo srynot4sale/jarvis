@@ -47,6 +47,13 @@ class handler(interface.handler):
         else:
             self.server.kernel.log('Login failure for user "%s"' % username)
             self.set_current_user(None)
+
+            # Send email
+            self.server.kernel.get('interface', 'email').send_to_self(
+                'Web Authentication failure',
+                'Sent by Jarvis'
+            )
+
             self.redirect('/')
 
     def set_current_user(self, user):

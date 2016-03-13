@@ -34,6 +34,12 @@ class handler(interface.handler):
             if not self._authenticate():
                 authentication = self.request.headers['Secret'] if 'Secret' in self.request.headers else None
                 if authentication != self.server.kernel.getConfig('secret'):
+
+                    # Send email
+                    self.server.kernel.get('interface', 'email').send_to_self(
+                        'Authentication failure',
+                        'Sent by Jarvis'
+                    )
                     raise kernel.kernel.JarvisAuthException('Authentication failure')
 
             relative = path.lstrip('/')
