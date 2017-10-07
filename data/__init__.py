@@ -38,7 +38,7 @@ class data(kernel.service.service):
         username = self.kernel.getConfig('database_username')
         password = self.kernel.getConfig('database_password')
 
-        self.kernel.log('Connecting to the MySQL DB')
+        self.kernel.log('Connecting to the MySQL DB at {host}'.format(host=host))
         # Connect to the db
         self._conn = MySQLdb.connect(
             host=host,
