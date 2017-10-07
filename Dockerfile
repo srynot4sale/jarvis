@@ -1,4 +1,4 @@
-FROM ubuntu:15.04
+FROM python:2.7
 
 MAINTAINER Aaron Barnes <aaron@io.net.nz>
 
@@ -7,13 +7,15 @@ RUN apt-get update && \
     apt-get install -y python-pip libmysqld-dev python-dev libcurl4-openssl-dev
 RUN pip install virtualenv
 
-RUN mkdir /code
+ADD requirements.txt /tmp/
 
-ADD . /code/
+RUN mkdir /code
 
 RUN cd /code && \
     virtualenv . && \
-    bin/pip install -r requirements.txt
+    bin/pip install -r /tmp/requirements.txt
+
+ADD . /code/
 
 RUN adduser --system --no-create-home --disabled-login jarvis
 
