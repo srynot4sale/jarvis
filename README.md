@@ -19,7 +19,7 @@ files (Dockerfile, jarvis.service)
 ## Dependencies:
 
 - Python 2.x
-- MySQL
+- MariaDB 10.0
 
 
 ## Installation:
