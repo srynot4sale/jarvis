@@ -12,7 +12,7 @@ It's clients include:
 
 ## Docker
 
-Jarvis can be run inside docker. It uses a mysql installation outside of the docker. See included
+Jarvis can be run inside docker. It uses a MySQL installation outside of the docker. See included
 files (Dockerfile, jarvis.service)
 
 
@@ -77,6 +77,6 @@ Visit the Twitter developer page and create a new application:
 
     https://dev.twitter.com/apps/new
 
-This will get you a consumer key and consumer secret. Performing the "oauth dance" gets you an oauth key and secret that authenticates yourself with Twitter.
+This will get you a consumer key and consumer secret. Performing the "OAuth dance" gets you an OAuth key and secret that authenticates yourself with Twitter.
 
 Add them all to your config (follow the examples in the example config).
